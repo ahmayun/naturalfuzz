@@ -1,0 +1,113 @@
+package examples.monitored
+
+import fuzzer.ProvInfo
+
+import scala.reflect.runtime.universe._
+import org.apache.spark.{SparkConf, SparkContext}
+import provenance.data.Provenance
+import sparkwrapper.SparkContextWithDP
+import provenance.rdd.ProvenanceRDD.toPairRDD
+import symbolicprimitives.{SymInt, SymString}
+import symbolicprimitives.SymImplicits._
+
+object WebpageSegmentation {
+  def main(args: Array[String]): ProvInfo = {
+    println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
+    val sparkConf = new SparkConf()
+    sparkConf.setMaster("local[6]")
+    sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
+    val before_data = args(0)
+    val after_data = args(1)
+    val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
+    ctx.setLogLevel("ERROR")
+    Provenance.setProvenanceType("dual")
+    val before = ctx.textFileProv(before_data, _.split(','))
+    val after = ctx.textFileProv(after_data, _.split(','))
+    val boxes_before = toPairRDD[SymString, (SymString, Vector[SymInt])](before.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
+    val boxes_after = toPairRDD[SymString, (SymString, Vector[SymInt])](after.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
+    val boxes_after_by_site_ungrouped = after.map(r => (r(0), (r.slice(1, r.length - 2).map(_.toInt).toVector, r(r.length - 2), r.last)))
+    val boxes_after_by_site = _root_.refactor.MonitorAttacher.groupByKeyWrapper(0, boxes_after_by_site_ungrouped)
+
+    val pairs = _root_.refactor.MonitorAttacher.joinWrapper(0, boxes_before, boxes_after)
+    val changed = toPairRDD[SymString, (Vector[SymInt], SymString, SymString)](pairs.filter({
+      case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
+    }).map({
+      case (k, (_, (url, a))) =>
+        val Array(_, cid, ctype) = k.split('*')
+        (url, (a, cid, ctype))
+    }))
+    val inter = _root_.refactor.MonitorAttacher.joinWrapper(1, changed, boxes_after_by_site)
+    inter.map{
+      case (url, ((box1, _, _), lst)) =>
+        (url, lst.map{
+          case (box, _, _) => box
+        }.map(intersects(_, box1)))
+    }.collect()//.foreach(println)
+    _root_.refactor.MonitorAttacher.finalize_prov()
+  }
+  def intersects(rect1: IndexedSeq[SymInt], rect2: IndexedSeq[SymInt]): Option[(SymInt, SymInt, SymInt, SymInt)] = {
+    val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
+    val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
+    val endpointax = aSWx + aWidth
+    val startpointax = aSWx
+    val endpointay = aSWy + aHeight
+    val startpointay = aSWy
+    val endpointbx = bSWx + bWidth
+    val startpointbx = bSWx
+    val endpointby = bSWy + bHeight
+    val startpointby = bSWy
+    if (_root_.refactor.MonitorAttacher.provWrapper(endpointax < startpointbx && startpointax < startpointbx, q"$endpointax < $startpointbx && $startpointax < $startpointbx", (List[Any](endpointax, startpointbx, startpointax, startpointbx), List[Any]()), 0)) {
+      return None
+    }
+    if (_root_.refactor.MonitorAttacher.provWrapper(endpointbx < startpointax && startpointbx < startpointax, q"$endpointbx < $startpointax && $startpointbx < $startpointax", (List[Any](endpointbx, startpointax, startpointbx, startpointax), List[Any]()), 1)) {
+      return None
+    }
+    if (_root_.refactor.MonitorAttacher.provWrapper(endpointby < startpointay && startpointby < startpointay, q"$endpointby < $startpointay && $startpointby < $startpointay", (List[Any](endpointby, startpointay, startpointby, startpointay), List[Any]()), 2)) {
+      return None
+    }
+    if (_root_.refactor.MonitorAttacher.provWrapper(endpointay < startpointby && startpointay < startpointby, q"$endpointay < $startpointby && $startpointay < $startpointby", (List[Any](endpointay, startpointby, startpointay, startpointby), List[Any]()), 3)) {
+      return None
+    }
+    if (_root_.refactor.MonitorAttacher.provWrapper(startpointay > endpointby, q"$startpointay > $endpointby", (List[Any](startpointay, endpointby), List[Any]()), 4)) {
+      return None
+    }
+    var iSWx, iSWy, iWidth, iHeight = new SymInt(0)
+    if (_root_.refactor.MonitorAttacher.provWrapper(startpointax <= startpointbx && endpointbx <= endpointax, q"$startpointax <= $startpointbx && $endpointbx <= $endpointax", (List[Any](startpointax, startpointbx, endpointbx, endpointax), List[Any]()), 5)) {
+      iSWx = startpointbx
+      iSWy = if (_root_.refactor.MonitorAttacher.provWrapper(startpointay < startpointby, q"$startpointay < $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 6)) startpointby else startpointay
+      iWidth = bWidth
+      val top = if (_root_.refactor.MonitorAttacher.provWrapper(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 7)) endpointby else endpointay
+      iHeight = top - iSWy
+    } else if (_root_.refactor.MonitorAttacher.provWrapper(startpointbx <= startpointax && endpointax <= endpointbx, q"$startpointbx <= $startpointax && $endpointax <= $endpointbx", (List[Any](startpointbx, startpointax, endpointax, endpointbx), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 8)) {
+      iSWx = startpointax
+      iSWy = if (_root_.refactor.MonitorAttacher.provWrapper(startpointay < startpointby, q"$startpointay < $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 9)) startpointby else startpointay
+      iWidth = aWidth
+      val top = if (_root_.refactor.MonitorAttacher.provWrapper(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 10)) endpointby else endpointay
+      iHeight = top - iSWy
+    } else if (_root_.refactor.MonitorAttacher.provWrapper(startpointax >= startpointbx && startpointax <= endpointbx, q"$startpointax >= $startpointbx && $startpointax <= $endpointbx", (List[Any](startpointax, startpointbx, startpointax, endpointbx), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 11)) {
+      iSWx = startpointax
+      iSWy = if (_root_.refactor.MonitorAttacher.provWrapper(startpointay > startpointby, q"$startpointay > $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 12)) startpointay else startpointby
+      iWidth = endpointbx - startpointax
+      val top = if (_root_.refactor.MonitorAttacher.provWrapper(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 13)) endpointby else endpointay
+      iHeight = top - iSWy
+    } else if (_root_.refactor.MonitorAttacher.provWrapper(startpointbx >= startpointax && startpointbx <= endpointax, q"$startpointbx >= $startpointax && $startpointbx <= $endpointax", (List[Any](startpointbx, startpointax, startpointbx, endpointax), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 14)) {
+      iSWx = startpointbx
+      iSWy = if (_root_.refactor.MonitorAttacher.provWrapper(startpointay > startpointby, q"$startpointay > $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 15)) startpointay else startpointby
+      iWidth = endpointax - startpointbx
+      val top = if (_root_.refactor.MonitorAttacher.provWrapper(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 16)) endpointby else endpointay
+      iHeight = top - iSWy
+    }
+    else if (_root_.refactor.MonitorAttacher.provWrapper(startpointbx > startpointax && startpointbx < endpointax && endpointby <= startpointay, q"$startpointbx > $startpointax && $startpointbx < $endpointax && $endpointby <= $startpointay", (List[Any](startpointbx, startpointax, startpointbx, endpointax, endpointby, startpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 17)) {
+      iSWx = startpointbx
+      iSWy = startpointay
+      iWidth = bWidth
+      iHeight = 0
+    } else if (_root_.refactor.MonitorAttacher.provWrapper(startpointax > startpointbx && startpointax < endpointbx && endpointay <= startpointby, q"$startpointax > $startpointbx && $startpointax < $endpointbx && $endpointay <= $startpointby", (List[Any](startpointax, startpointbx, startpointax, endpointbx, endpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax, startpointbx, startpointax, startpointbx, endpointax, endpointby, startpointay)), 18)) {
+      iSWx = startpointax
+      iSWy = endpointby
+      iWidth = aWidth
+      iHeight = 0
+    }
+    Some((iSWx, iSWy, iHeight, iWidth))
+  }
+}

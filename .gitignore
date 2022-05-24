@@ -1,0 +1,4 @@
+src/main/scala/scoverage_results/
+target/
+out/
+src/main/scala/evaluation_results/
