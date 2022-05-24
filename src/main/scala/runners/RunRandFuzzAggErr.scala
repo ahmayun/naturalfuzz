@@ -39,7 +39,7 @@ object RunRandFuzzAggErr {
 
     val guidance = new RandomGuidance(input_files, schema, runs)
     val benchmark_path = s"src/main/scala/${benchmark_class.split('.').mkString("/")}.scala"
-    val output_dir = "src/main/scala/scoverage_results"
+    val output_dir = Config.scoverageResultsDir
     val program = new Program(benchmark_name,
       benchmark_class,
       benchmark_path,

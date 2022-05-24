@@ -30,7 +30,7 @@ object Fuzzer {
     output_dir
   }
 
-  def Fuzz(program: Program, guidance: Guidance, coverage_out_dir: String, testCaseOutDir: String = "out/output_sandbox"): (FuzzStats, Long, Long) = {
+  def Fuzz(program: Program, guidance: Guidance, coverage_out_dir: String, testCaseOutDir: String = "target/fuzz-output"): (FuzzStats, Long, Long) = {
     new Directory(new File(testCaseOutDir)).deleteRecursively()
     val stats = new FuzzStats(program.name)
     var crashed = false
