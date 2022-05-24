@@ -22,7 +22,7 @@ object ComputeDataReduction {
 //    // ========================================================
 //
 //    val benchmark_path = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
-//    val results_dir = "src/main/scala/evaluation_results/reduction"
+//    val results_dir = "target/evaluation-results/reduction"
 //    val data_reduced = s"$results_dir/data_reduced"
 //    val data_sampled = s"$results_dir/data_sampled"
 //    val full_coverage_dir = s"$results_dir/coverage_full"
