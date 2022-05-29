@@ -52,7 +52,7 @@ object RunRandFuzzAggErr {
         println(s"Fuzzing trial $i")
         Global.iteration = 0
         Fuzzer.Fuzz(program, guidance, output_dir)
-    }.foldLeft((List[FuzzStats](), 0l, 0l)) { case ((list, acc_ts, acc_te), (f, ts, te)) => (list :+ f, acc_ts + ts, acc_te + te) }
+    }.foldLeft((List[FuzzStats](), 0L, 0L)) { case ((list, acc_ts, acc_te), (f, ts, te)) => (list :+ f, acc_ts + ts, acc_te + te) }
 
 
     val coverage = Serializer.deserialize(new File(s"$output_dir/scoverage.coverage"))

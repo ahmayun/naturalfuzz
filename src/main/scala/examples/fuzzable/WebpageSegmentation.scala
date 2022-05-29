@@ -9,8 +9,8 @@ object WebpageSegmentation {
     val sparkConf = new SparkConf()
     sparkConf.setMaster("local[6]")
     sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
-    val before_data = args(0) // "datasets/fuzzing_seeds/webpage_segmentation/before"
-    val after_data = args(1) // "datasets/fuzzing_seeds/webpage_segmentation/after"
+    val before_data = args(0) // "seeds/weak_seed/webpage_segmentation/before"
+    val after_data = args(1) // "seeds/weak_seed/webpage_segmentation/after"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage
     ctx.setLogLevel("ERROR")
     val before = ctx.textFile(before_data).map(_.split(','))

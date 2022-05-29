@@ -52,16 +52,17 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
     val schema = this.schemas(d)(c)
     schema.dataType match {
 //      case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
-      case _ => e
+      case _ => M1(e, c, d)
     }
   }
   def M3(row: String, c: Int = -1, d: Int = -1): String = {
-    val cols = row.split(',')
-    if(cols.length < 2) {
-      return row
-    }
-    val i = Random.nextInt(cols.length-1)
-    cols.slice(0, i+1).mkString(",") + "~" + cols.slice(i+1, cols.length).mkString(",")
+    row
+//    val cols = row.split(',')
+//    if(cols.length < 2) {
+//      return row
+//    }
+//    val i = Random.nextInt(cols.length-1)
+//    cols.slice(0, i+1).mkString(",") + "~" + cols.slice(i+1, cols.length).mkString(",")
   }
   def M4(e: String, c: Int, d: Int): String = {
     M1(e, c, d)
@@ -70,7 +71,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   // input: a dataset row
   // returns new row with random column(s) dropped
   def M5(e: String, c: Int, d: Int): String = {
-    e
+    M1(e, c, d)
 //    val cols = e.split(',').to
 //    val to_drop = (0 to Random.nextInt(this.max_col_drops)).map(_ => Random.nextInt(cols.length))
 //    cols.zipWithIndex.filter{ case (_, i) => !to_drop.contains(i)}.map(_._1).mkString(",")
@@ -79,7 +80,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   // input: a column value
   // returns an empty column (BigFuzz Paper)
   def M6(e: String, c: Int, d: Int): String = {
-    e
+    M1(e, c, d)
   }
 
   def applySchemaAwareMutation(e: String, schema: Schema[Any], rand: Random): String = {
@@ -90,35 +91,34 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
       case Schema.TYPE_NUMERICAL => mutateNumberSchemaAware(e, schema, this.oor_prob, rand)
     }
   }
-//
-//  def mutateCol(v: String, c: Int, d: Int): String = {
-//    val mutation_ids = Array(1, 2, 4, 5, 6).map(_-1)
-//    val probs = mutation_ids.map(this.mutateProbs(_))
-//    val to_apply = MutationUtils.RouletteSelect(mutation_ids, probs)
-//    this.actual_app(to_apply) += 1
-//    probabalisticApply(this.mutations(to_apply), v, c, d)
-//  }
-//
-//  def mutateRow(row: String, row_id: Int, dataset: Int, same_mut_locations: Array[Array[(Int, Int, Int)]]): String = {
-//    val nop_cols = same_mut_locations.flatten.filter{case (d, _, _) => d == dataset}.map{case (_, c, r) => Vector(c,r)}
-//    probabalisticApply(M3, row.split(',').zipWithIndex.map{
-//      case (e, i) if !nop_cols.contains(Vector(i,row_id)) =>
-////        println(s"normal mutation applied to ($dataset, $i, $row_id)")
-//        mutateCol(e, i, dataset)
-//      case (e, _) => e
-//    }.mkString(","), prob=0.0f)
-//  }
-//
-//  def mutate(dataset: Seq[String], d: Int, same_mut_locations: Array[Array[(Int, Int, Int)]]): Seq[String] = {
-////   dataset.map(mutateRow(_, d, same_mut_locations))
-//    randomDuplications(dataset, this.max_row_dups, this.row_dup_prob).zipWithIndex
-//      .map{case (row, i) => mutateRow(randomDuplications(row.split(','), this.max_col_dups, this.col_dup_prob).mkString(","), i, d, same_mut_locations)}
-//  }
-//
-//  def applyNormMutations(datasets: Array[Seq[String]], same_mut_locations: Array[Array[(Int, Int, Int)]]): Array[Seq[String]] = {
-//    datasets.zipWithIndex.map{case (d, i) => mutate(d, i, same_mut_locations)}
-//  }
-//
+
+  def mutateCol(v: String, c: Int, d: Int): String = {
+    val mutation_ids = Array(1, 2, 4, 5, 6).map(_-1)
+    val probs = mutation_ids.map(Config.mutateProbs(_))
+    val to_apply = MutationUtils.RouletteSelect(mutation_ids, probs)
+    this.actual_app(to_apply) += 1
+    probabalisticApply(this.mutations(to_apply), v, c, d)
+  }
+
+  def mutateRow(row: String, row_id: Int, dataset: Int, same_mut_locations: Array[Array[(Int, Int, Int)]]): String = {
+    val nop_cols = same_mut_locations.flatten.filter{case (d, _, _) => d == dataset}.map{case (_, c, r) => Vector(c,r)}
+    probabalisticApply(M3, row.split(',').zipWithIndex.map{
+      case (e, i) if !nop_cols.contains(Vector(i,row_id)) =>
+//        println(s"normal mutation applied to ($dataset, $i, $row_id)")
+        mutateCol(e, i, dataset)
+      case (e, _) => e
+    }.mkString(","), prob=0.0f)
+  }
+
+  def mutate(dataset: Seq[String], d: Int, same_mut_locations: Array[Array[(Int, Int, Int)]]): Seq[String] = {
+//   dataset.map(mutateRow(_, d, same_mut_locations))
+    randomDuplications(dataset, this.max_row_dups, this.row_dup_prob).zipWithIndex
+      .map{case (row, i) => mutateRow(randomDuplications(row.split(','), this.max_col_dups, this.col_dup_prob).mkString(","), i, d, same_mut_locations)}
+  }
+
+  def applyNormMutations(datasets: Array[Seq[String]], same_mut_locations: Array[Array[(Int, Int, Int)]]): Array[Seq[String]] = {
+    datasets.zipWithIndex.map{case (d, i) => mutate(d, i, same_mut_locations)}
+  }
   def mutator(data: Seq[String], d: Int, c: Int, r: Int, seed: Long): Seq[String] = {
     val rand = new Random(seed)
     val schema = this.schemas(d)(c)
@@ -306,11 +306,12 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
         case ((accD, accP), _) =>
           provenanceAwareDupication(accD, accP, provInfoRand, n)
       }
-    applyCoDependentMutations(duplicated, provInfoDuplicated)
+    val mutated = applyCoDependentMutations(duplicated, provInfoDuplicated)
+    applyNormMutations(mutated, provInfoDuplicated.depsInfo)
   }
 
   def mutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
-    val mutatedDatasets =  applyProvAwareMutation(inputDatasets, provInfo)
+    val mutatedDatasets = applyProvAwareMutation(inputDatasets, provInfo)
     mutatedDatasets
   }
 
