@@ -1,8 +1,11 @@
 package refactor
 
+import scala.meta._
+
 object TestMonitorAttacher {
 
   def main(args: Array[String]): Unit = {
+    val file = "DeliveryFaults.scala"
     val program =
       """
         |package examples.benchmarks.input_reduction_benchmarks
@@ -20,10 +23,9 @@ object TestMonitorAttacher {
     val basepath = "src/main/scala/examples"
     val benchfolder = s"$basepath/benchmarks"
     val trackedfolder = s"$basepath/monitored"
-    val file = "DeliveryFaults.scala"
     val readpath = s"$benchfolder/$file"
     val writepath = s"$trackedfolder/probe_$file"
-    //        val tree = program.parse[Source].get
+//    val tree = program.parse[Source].get
     val tree = MonitorAttacher.treeFromFile(readpath)
     val transformed = MonitorAttacher(tree)
     println("-" * 50)

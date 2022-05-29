@@ -27,26 +27,26 @@ object Customers {
       row =>
         (row(0), row(1))
     }
-    val joined = _root_.refactor.MonitorAttacher.joinWrapper(0, c, o).filter({
+    val joined = _root_.monitoring.Monitors.monitorJoin(0, c, o).filter({
       case (_, (_, (_, date))) =>
         val this_year = 1641013200
-        if (_root_.refactor.MonitorAttacher.provWrapper(date > this_year, q"$date > $this_year", (List[Any](date, this_year), List[Any]()), 0)) true else false
+        if (_root_.monitoring.Monitors.monitorPredicate(date > this_year, q"$date > $this_year", (List[Any](date, this_year), List[Any]()), 0)) true else false
     })
-    val grouped = _root_.refactor.MonitorAttacher.groupByKeyWrapper(0, joined)
+    val grouped = _root_.monitoring.Monitors.monitorGroupByKey(0, joined)
     val numpur = grouped.mapValues {
       iter => iter.size
     }
     val thresh = numpur.filter(_._2 >= 3)
     val top = thresh.sortBy(_._2).take(3)
-    if (_root_.refactor.MonitorAttacher.provWrapper({
+    if (_root_.monitoring.Monitors.monitorPredicate({
       top.length
     } < 3, q"${top.length} < 3", (List[Any](), List[Any]()), 1)) {
       println("not enough data")
-      return _root_.refactor.MonitorAttacher.finalize_prov()
+      return _root_.monitoring.Monitors.finalizeProvenance()
     }
     val rewards = top.map(computeRewards)
     rewards.foreach(println)
-    _root_.refactor.MonitorAttacher.finalize_prov()
+    _root_.monitoring.Monitors.finalizeProvenance()
   }
   def computeRewards(custInfo: (SymString, Int)): (SymString, Float, String) = {
     val (id, num) = custInfo

@@ -23,8 +23,8 @@ object FlightDistance {
     val departure_flights = flights.map(r => (r(4), r(0)))
     val arrival_flights = flights.map(r => (r(5), r(0)))
     val airports_and_coords = airports.map(r => (r(0), (r(3), r(4))))
-    val dairports_and_coords = _root_.refactor.MonitorAttacher.joinWrapper(0, departure_flights, airports_and_coords, sc)
-    val aairports_and_coords = _root_.refactor.MonitorAttacher.joinWrapper(1, arrival_flights, airports_and_coords, sc)
+    val dairports_and_coords = _root_.monitoring.Monitors.monitorJoin(0, departure_flights, airports_and_coords, sc)
+    val aairports_and_coords = _root_.monitoring.Monitors.monitorJoin(1, arrival_flights, airports_and_coords, sc)
     val dflights_and_coords = dairports_and_coords.map({
       case (ap, (id, (lat, long))) =>
         (id, (ap, lat, long))
@@ -33,13 +33,13 @@ object FlightDistance {
       case (ap, (id, (lat, long))) =>
         (id, (ap, lat, long))
     })
-    val flights_and_coords = _root_.refactor.MonitorAttacher.joinWrapper(2, dflights_and_coords, aflights_and_coords, sc)
+    val flights_and_coords = _root_.monitoring.Monitors.monitorJoin(2, dflights_and_coords, aflights_and_coords, sc)
     val flights_and_distances = flights_and_coords.map({
       case (fid, ((dap, dlat, dlong), (aap, alat, along))) =>
         (fid, (dap, aap, distance((dlat.toFloat, dlong.toFloat), (alat.toFloat, along.toFloat))))
     })
     flights_and_distances.collect().take(10).foreach(println)
-    _root_.refactor.MonitorAttacher.finalize_prov()
+    _root_.monitoring.Monitors.finalizeProvenance()
   }
   def distance(departure: (SymFloat, SymFloat), arrival: (SymFloat, SymFloat)): Float = {
     val R = 6373.0d
