@@ -74,6 +74,26 @@ object Monitors {
     bool
   }
 
+  def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
+    if (bool) {
+      val this_branch_prov = new RoaringBitmap()
+      val prev_branch_prov = new RoaringBitmap()
+
+      prov._1.foreach {
+        case v: SymBase => this_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+        case _ =>
+      }
+
+      prov._2.foreach {
+        case v: SymBase => prev_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+        case _ =>
+      }
+
+      updateMap(id, this_branch_prov, prev_branch_prov)
+    }
+    bool
+  }
+
   def monitorGroupByKey[K<:SymBase:ClassTag,V:ClassTag](id: Int, dataset: PairProvenanceDefaultRDD[K,V]): PairProvenanceDefaultRDD[K, Iterable[V]] = {
     val prov = dataset.take(agg_samples)(0)._1.getProvenance().asInstanceOf[DualRBProvenance].bitmap
     gbk_map.update(id, prov)

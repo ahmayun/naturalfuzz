@@ -1,38 +1,20 @@
 package refactor
 
+import java.io.File
 import scala.meta._
 
 object TestMonitorAttacher {
 
   def main(args: Array[String]): Unit = {
-    val file = "DeliveryFaults.scala"
-    val program =
-      """
-        |package examples.benchmarks.input_reduction_benchmarks
-        |object AggOpWrapperTest {
-        |
-        |  def main(args: Array[String]): Unit = {
-        |
-        |    val joined = c.join(o)
-        |    val grouped = c.groupByKey()
-        |
-        |  }
-        |}
-        |""".stripMargin
+    val outputFolder = "src/main/scala/refactor/testout"
+    new File(outputFolder).mkdirs()
 
-    val basepath = "src/main/scala/examples"
-    val benchfolder = s"$basepath/benchmarks"
-    val trackedfolder = s"$basepath/monitored"
-    val readpath = s"$benchfolder/$file"
-    val writepath = s"$trackedfolder/probe_$file"
-//    val tree = program.parse[Source].get
-    val tree = MonitorAttacher.treeFromFile(readpath)
-    val transformed = MonitorAttacher(tree)
-    println("-" * 50)
-    println(tree.structure)
-    println("-" * 50)
-    println(transformed)
-    println("-" * 50)
-    MonitorAttacher.writeTransformed(transformed.toString, writepath)
+    TestCases.testCases.foreach { case (testName, testData) =>
+      println("-"*3 + s" $testName " + "-"*10)
+      val outputFile = s"$outputFolder/$testName.scala"
+      val tree = testData.parse[Source].get
+      val transformed = MonitorAttacher.attachMonitors(tree)
+      MonitorAttacher.writeTransformed(transformed.toString(), outputFile)
+    }
   }
 }
