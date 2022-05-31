@@ -53,27 +53,6 @@ object Monitors {
     p2.or(prov2)
   }
 
-  // provWrapper(AST, (vars_thisbranch, vars_prevbranch), branch_id);
-  def monitorPredicate(bool: Boolean, exp: reflect.runtime.universe.Tree, prov: (List[Any], List[Any]), id: Int): Boolean = {
-    if (bool) {
-      val this_branch_prov = new RoaringBitmap()
-      val prev_branch_prov = new RoaringBitmap()
-
-      prov._1.foreach {
-        case v: SymBase => this_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
-        case _ =>
-      }
-
-      prov._2.foreach {
-        case v: SymBase => prev_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
-        case _ =>
-      }
-
-      updateMap(id, this_branch_prov, prev_branch_prov)
-    }
-    bool
-  }
-
   def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
     if (bool) {
       val this_branch_prov = new RoaringBitmap()

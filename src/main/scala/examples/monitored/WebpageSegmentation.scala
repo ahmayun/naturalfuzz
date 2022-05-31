@@ -56,53 +56,53 @@ object WebpageSegmentation {
     val startpointbx = bSWx
     val endpointby = bSWy + bHeight
     val startpointby = bSWy
-    if (_root_.monitoring.Monitors.monitorPredicate(endpointax < startpointbx && startpointax < startpointbx, q"$endpointax < $startpointbx && $startpointax < $startpointbx", (List[Any](endpointax, startpointbx, startpointax, startpointbx), List[Any]()), 0)) {
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointax < startpointbx && startpointax < startpointbx, (List[Any](endpointax, startpointbx, startpointax, startpointbx), List[Any]()), 0)) {
       return None
     }
-    if (_root_.monitoring.Monitors.monitorPredicate(endpointbx < startpointax && startpointbx < startpointax, q"$endpointbx < $startpointax && $startpointbx < $startpointax", (List[Any](endpointbx, startpointax, startpointbx, startpointax), List[Any]()), 1)) {
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointbx < startpointax && startpointbx < startpointax, (List[Any](endpointbx, startpointax, startpointbx, startpointax), List[Any]()), 1)) {
       return None
     }
-    if (_root_.monitoring.Monitors.monitorPredicate(endpointby < startpointay && startpointby < startpointay, q"$endpointby < $startpointay && $startpointby < $startpointay", (List[Any](endpointby, startpointay, startpointby, startpointay), List[Any]()), 2)) {
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointby < startpointay && startpointby < startpointay, (List[Any](endpointby, startpointay, startpointby, startpointay), List[Any]()), 2)) {
       return None
     }
-    if (_root_.monitoring.Monitors.monitorPredicate(endpointay < startpointby && startpointay < startpointby, q"$endpointay < $startpointby && $startpointay < $startpointby", (List[Any](endpointay, startpointby, startpointay, startpointby), List[Any]()), 3)) {
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointay < startpointby && startpointay < startpointby, (List[Any](endpointay, startpointby, startpointay, startpointby), List[Any]()), 3)) {
       return None
     }
-    if (_root_.monitoring.Monitors.monitorPredicate(startpointay > endpointby, q"$startpointay > $endpointby", (List[Any](startpointay, endpointby), List[Any]()), 4)) {
+    if (_root_.monitoring.Monitors.monitorPredicate(startpointay > endpointby, (List[Any](startpointay, endpointby), List[Any]()), 4)) {
       return None
     }
     var iSWx, iSWy, iWidth, iHeight = new SymInt(0)
-    if (_root_.monitoring.Monitors.monitorPredicate(startpointax <= startpointbx && endpointbx <= endpointax, q"$startpointax <= $startpointbx && $endpointbx <= $endpointax", (List[Any](startpointax, startpointbx, endpointbx, endpointax), List[Any]()), 5)) {
+    if (_root_.monitoring.Monitors.monitorPredicate(startpointax <= startpointbx && endpointbx <= endpointax, (List[Any](startpointax, startpointbx, endpointbx, endpointax), List[Any]()), 5)) {
       iSWx = startpointbx
-      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay < startpointby, q"$startpointay < $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 6)) startpointby else startpointay
+      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay < startpointby, (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 6)) startpointby else startpointay
       iWidth = bWidth
-      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 7)) endpointby else endpointay
+      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 7)) endpointby else endpointay
       iHeight = top - iSWy
-    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointbx <= startpointax && endpointax <= endpointbx, q"$startpointbx <= $startpointax && $endpointax <= $endpointbx", (List[Any](startpointbx, startpointax, endpointax, endpointbx), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 8)) {
+    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointbx <= startpointax && endpointax <= endpointbx, (List[Any](startpointbx, startpointax, endpointax, endpointbx), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 8)) {
       iSWx = startpointax
-      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay < startpointby, q"$startpointay < $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 9)) startpointby else startpointay
+      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay < startpointby, (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 9)) startpointby else startpointay
       iWidth = aWidth
-      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 10)) endpointby else endpointay
+      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 10)) endpointby else endpointay
       iHeight = top - iSWy
-    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointax >= startpointbx && startpointax <= endpointbx, q"$startpointax >= $startpointbx && $startpointax <= $endpointbx", (List[Any](startpointax, startpointbx, startpointax, endpointbx), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 11)) {
+    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointax >= startpointbx && startpointax <= endpointbx, (List[Any](startpointax, startpointbx, startpointax, endpointbx), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx)), 11)) {
       iSWx = startpointax
-      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay > startpointby, q"$startpointay > $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 12)) startpointay else startpointby
+      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay > startpointby, (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 12)) startpointay else startpointby
       iWidth = endpointbx - startpointax
-      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 13)) endpointby else endpointay
+      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 13)) endpointby else endpointay
       iHeight = top - iSWy
-    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointbx >= startpointax && startpointbx <= endpointax, q"$startpointbx >= $startpointax && $startpointbx <= $endpointax", (List[Any](startpointbx, startpointax, startpointbx, endpointax), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 14)) {
+    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointbx >= startpointax && startpointbx <= endpointax, (List[Any](startpointbx, startpointax, startpointbx, endpointax), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx)), 14)) {
       iSWx = startpointbx
-      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay > startpointby, q"$startpointay > $startpointby", (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 15)) startpointay else startpointby
+      iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay > startpointby, (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 15)) startpointay else startpointby
       iWidth = endpointax - startpointbx
-      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, q"$endpointby < $endpointay", (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 16)) endpointby else endpointay
+      val top = if (_root_.monitoring.Monitors.monitorPredicate(endpointby < endpointay, (List[Any](endpointby, endpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 16)) endpointby else endpointay
       iHeight = top - iSWy
     }
-    else if (_root_.monitoring.Monitors.monitorPredicate(startpointbx > startpointax && startpointbx < endpointax && endpointby <= startpointay, q"$startpointbx > $startpointax && $startpointbx < $endpointax && $endpointby <= $startpointay", (List[Any](startpointbx, startpointax, startpointbx, endpointax, endpointby, startpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 17)) {
+    else if (_root_.monitoring.Monitors.monitorPredicate(startpointbx > startpointax && startpointbx < endpointax && endpointby <= startpointay, (List[Any](startpointbx, startpointax, startpointbx, endpointax, endpointby, startpointay), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax)), 17)) {
       iSWx = startpointbx
       iSWy = startpointay
       iWidth = bWidth
       iHeight = 0
-    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointax > startpointbx && startpointax < endpointbx && endpointay <= startpointby, q"$startpointax > $startpointbx && $startpointax < $endpointbx && $endpointay <= $startpointby", (List[Any](startpointax, startpointbx, startpointax, endpointbx, endpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax, startpointbx, startpointax, startpointbx, endpointax, endpointby, startpointay)), 18)) {
+    } else if (_root_.monitoring.Monitors.monitorPredicate(startpointax > startpointbx && startpointax < endpointbx && endpointay <= startpointby, (List[Any](startpointax, startpointbx, startpointax, endpointbx, endpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax, startpointbx, startpointax, endpointax, endpointbx, startpointax, startpointbx, startpointax, endpointbx, startpointbx, startpointax, startpointbx, endpointax, startpointbx, startpointax, startpointbx, endpointax, endpointby, startpointay)), 18)) {
       iSWx = startpointax
       iSWy = endpointby
       iWidth = aWidth
