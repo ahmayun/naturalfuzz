@@ -109,6 +109,15 @@ object FlatProvenanceDefaultRDD {
 //      })
     )
   }
+
+  implicit def flatArrayToPair[T: ClassTag](flatRdd: FlatProvenanceDefaultRDD[Array[T]])
+  : PairProvenanceDefaultRDD[T, Array[T]] = {
+    new PairProvenanceDefaultRDD[T,Array[T]](
+      flatRdd.rdd.map(
+        {case (arr, prov: Provenance) => (arr.head, (arr.tail, prov))}
+      )
+    )
+  }
   
   // Commented out because ideally we shouldn't need this
   implicit def pairToFlat[K: ClassTag, V:ClassTag](pairRdd: PairProvenanceDefaultRDD[K,V])

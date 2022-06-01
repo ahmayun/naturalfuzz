@@ -2,6 +2,7 @@ package monitoring
 
 import fuzzer.ProvInfo
 import org.apache.spark.SparkContext
+import org.apache.spark.rdd.RDD
 import org.roaringbitmap.RoaringBitmap
 import provenance.data.DualRBProvenance
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
@@ -20,37 +21,31 @@ object Monitors {
   val agg_samples = 100
   val max_samples = 5
 
+  def updateMap(id: Int, prov1: RoaringBitmap, prov2: RoaringBitmap): Unit = {
+    val (p1, p2) = mapPredicateProvenance.getOrElseUpdate(id, (new RoaringBitmap, new RoaringBitmap))
+    p1.or(prov1)
+    p2.or(prov2)
+  }
 
-  def monitorJoin[K<:SymBase:ClassTag,V1,V2](id: Int,
-                                             d1: PairProvenanceDefaultRDD[K,V1],
+  def monitorJoin[K<:SymBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
                                              d2: PairProvenanceDefaultRDD[K,V2],
-                                             sc: SparkContext = null): PairProvenanceRDD[K,(V1,V2)] = {
-    println(s"joinWrapper $id d1")
+                                             id: Int): PairProvenanceRDD[K,(V1,V2)] = {
     val d1j = d1.join(d2)
     val d2j = d2.join(d1)
     d1j.map(r => r._1).take(agg_samples).foreach (
       sample => {
-        println(sample)
         val (old, _) = mapJoinProvenance.getOrElseUpdate(id, (new RoaringBitmap, new RoaringBitmap))
         old.or(sample.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
       }
     )
 
-    println(s"joinWrapper $id d2")
     d2j.map(r => r._1).take(agg_samples).foreach (
       sample => {
-        println(sample)
         val (_, old) = mapJoinProvenance.getOrElseUpdate(id, (new RoaringBitmap, new RoaringBitmap))
         old.or(sample.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
       }
     )
     d1j
-  }
-
-  def updateMap(id: Int, prov1: RoaringBitmap, prov2: RoaringBitmap): Unit = {
-    val (p1, p2) = mapPredicateProvenance.getOrElseUpdate(id, (new RoaringBitmap, new RoaringBitmap))
-    p1.or(prov1)
-    p2.or(prov2)
   }
 
   def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
@@ -73,13 +68,13 @@ object Monitors {
     bool
   }
 
-  def monitorGroupByKey[K<:SymBase:ClassTag,V:ClassTag](id: Int, dataset: PairProvenanceDefaultRDD[K,V]): PairProvenanceDefaultRDD[K, Iterable[V]] = {
+  def monitorGroupByKey[K<:SymBase:ClassTag,V:ClassTag](dataset: PairProvenanceDefaultRDD[K,V], id: Int): PairProvenanceDefaultRDD[K, Iterable[V]] = {
     val prov = dataset.take(agg_samples)(0)._1.getProvenance().asInstanceOf[DualRBProvenance].bitmap
     gbk_map.update(id, prov)
     dataset.groupByKey()
   }
 
-  def monitorReduceByKey[K<:SymBase:ClassTag,V](id: Int, dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V): PairProvenanceRDD[K, V] = {
+  def monitorReduceByKey[K<:SymBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
     val reduced = dataset.reduceByKey(func)
 
     reduced.map(r => r._1).take(agg_samples).foreach (
@@ -89,6 +84,10 @@ object Monitors {
       }
     )
     reduced
+  }
+
+  def monitorFilter[T](rdd: RDD[T], f: T => Boolean): RDD[T] = {
+    rdd
   }
 
   // called at the end of main function

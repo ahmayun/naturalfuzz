@@ -14,6 +14,8 @@ object TestMonitorAttacher {
       val outputFile = s"$outputFolder/$testName.scala"
       val tree = testData.parse[Source].get
       val transformed = MonitorAttacher.attachMonitors(tree)
+      println(tree.structure)
+      println(transformed.structure)
       MonitorAttacher.writeTransformed(transformed.toString(), outputFile)
     }
   }

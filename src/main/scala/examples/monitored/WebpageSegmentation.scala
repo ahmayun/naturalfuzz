@@ -26,9 +26,9 @@ object WebpageSegmentation {
     val boxes_before = toPairRDD[SymString, (SymString, Vector[SymInt])](before.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
     val boxes_after = toPairRDD[SymString, (SymString, Vector[SymInt])](after.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
     val boxes_after_by_site_ungrouped = after.map(r => (r(0), (r.slice(1, r.length - 2).map(_.toInt).toVector, r(r.length - 2), r.last)))
-    val boxes_after_by_site = _root_.monitoring.Monitors.monitorGroupByKey(0, boxes_after_by_site_ungrouped)
+    val boxes_after_by_site = _root_.monitoring.Monitors.monitorGroupByKey(boxes_after_by_site_ungrouped, 0)
 
-    val pairs = _root_.monitoring.Monitors.monitorJoin(0, boxes_before, boxes_after)
+    val pairs = _root_.monitoring.Monitors.monitorJoin(boxes_before, boxes_after, 1)
     val changed = toPairRDD[SymString, (Vector[SymInt], SymString, SymString)](pairs.filter({
       case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
     }).map({
@@ -36,7 +36,7 @@ object WebpageSegmentation {
         val Array(_, cid, ctype) = k.split('*')
         (url, (a, cid, ctype))
     }))
-    val inter = _root_.monitoring.Monitors.monitorJoin(1, changed, boxes_after_by_site)
+    val inter = _root_.monitoring.Monitors.monitorJoin(changed, boxes_after_by_site, 2)
     inter.map{
       case (url, ((box1, _, _), lst)) =>
         (url, lst.map{

@@ -17,12 +17,12 @@ object Delays {
     Provenance.setProvenanceType("dual")
     val station1 = sc.textFileProv(args(0),_.split(',')).map(r => (r(0), (r(1).toInt, r(2).toInt, r(3))))
     val station2 = sc.textFileProv(args(1),_.split(',')).map(r => (r(0), (r(1).toInt, r(2).toInt, r(3))))
-    val joined = _root_.monitoring.Monitors.monitorJoin(0, station1, station2)
+    val joined = _root_.monitoring.Monitors.monitorJoin(station1, station2, 0)
     val mapped = joined.map({
       case (_, ((dep, adep, rid), (arr, aarr, _))) =>
         (buckets((arr-aarr) - (dep-adep)), rid)
     })
-    val grouped = _root_.monitoring.Monitors.monitorGroupByKey(0, mapped)
+    val grouped = _root_.monitoring.Monitors.monitorGroupByKey(mapped, 1)
     val filtered = grouped.filter(_._1 > 2).flatMap(_._2).map((_, 1))
     val reduced = filtered.reduceByKey(_+_)
     reduced.collect().foreach(println)

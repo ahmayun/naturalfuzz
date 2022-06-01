@@ -67,4 +67,11 @@ object ProvenanceRDD {
       case _ => throw new NotImplementedError("Unknown RDD type for pair conversion: $rdd")
     }
   }
+
+  implicit def toPairRDD[T: ClassTag](rdd: ProvenanceRDD[Array[T]]): PairProvenanceDefaultRDD[T, Array[T]] = {
+    rdd match {
+      case flat: FlatProvenanceDefaultRDD[Array[T]] => FlatProvenanceDefaultRDD.flatArrayToPair(flat)
+      case _ => throw new NotImplementedError("Unknown RDD type for pair conversion: $rdd")
+    }
+  }
 }

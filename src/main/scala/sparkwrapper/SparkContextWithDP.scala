@@ -23,7 +23,7 @@ class SparkContextWithDP(sc: SparkContext) {
   def setLogLevel(s: String): Unit = {
     sc.setLogLevel(s)
   }
-  
+
   private def textFileProvenanceCreator[T: ClassTag](filepath: String,
                                            followup: (String, Provenance) => T): RDD[T] = {
     val rdd = sc.textFile(filepath)
@@ -87,16 +87,9 @@ class SparkContextWithDP(sc: SparkContext) {
     Utils.setUDFAwareDefaultValue(true)
     new FlatProvenanceDefaultRDD[Array[SymString]](baseRDD)
   }
-}
 
-object SparkContextWithDP {
-//  var datasets = -1
-//  val set = new mutable.HashSet[Int]()
-//
-//  def incrementOnce(id: Int) = {
-//    if(!set.contains(id)){
-//      set.add(id)
-//      datasets += 1
-//    }
-//  }
+  def parallelize[T: ClassTag](seq: Seq[T], numSlices: Int = sc.defaultParallelism): ProvenanceRDD[T] = {
+    // TODO: attach provenance? not very important
+    new FlatProvenanceDefaultRDD[T](sc.parallelize(seq, numSlices))
+  }
 }

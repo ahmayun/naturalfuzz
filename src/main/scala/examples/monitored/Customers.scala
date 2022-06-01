@@ -27,12 +27,12 @@ object Customers {
       row =>
         (row(0), row(1))
     }
-    val joined = _root_.monitoring.Monitors.monitorJoin(0, c, o).filter({
+    val joined = _root_.monitoring.Monitors.monitorJoin(c, o, 0).filter({
       case (_, (_, (_, date))) =>
         val this_year = 1641013200
         if (_root_.monitoring.Monitors.monitorPredicate(date > this_year, (List[Any](date, this_year), List[Any]()), 0)) true else false
     })
-    val grouped = _root_.monitoring.Monitors.monitorGroupByKey(0, joined)
+    val grouped = _root_.monitoring.Monitors.monitorGroupByKey(joined, 1)
     val numpur = grouped.mapValues {
       iter => iter.size
     }
