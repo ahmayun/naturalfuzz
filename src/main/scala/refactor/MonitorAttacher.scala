@@ -48,7 +48,7 @@ object MonitorAttacher extends Transformer {
     println(s"found dfo $dfoName called on rdd: $rddName")
     dfoName match {
       case Constants.KEY_JOIN => s"${Constants.MAP_TRANSFORMS(Constants.KEY_JOIN)}($rddName, ${args.mkString(",")}, $id)".parse[Term].get
-      case Constants.KEY_FILTER => s"${Constants.MAP_TRANSFORMS(Constants.KEY_FILTER)}($rddName, ${args.mkString(",")}, $id)".parse[Term].get
+//      case Constants.KEY_FILTER => s"${Constants.MAP_TRANSFORMS(Constants.KEY_FILTER)}($rddName, ${args.mkString(",")}, $id)".parse[Term].get
       case _ => dfo
     }
   }
@@ -62,9 +62,15 @@ object MonitorAttacher extends Transformer {
     Term.New(Init(Type.Name("SparkContextWithDP"), Name(""), List(List(term))))
   }
 
+  def modifyTextFile(term: Term): Term = {
+    val Term.Apply(Term.Select(prefix, _), args) = term
+    Term.Apply(Term.Select(prefix, Term.Name("textFileProv")), args :+ """_.split(",")""".parse[Term].get)
+  }
+
   override def apply(tree: Tree): Tree = {
     tree match {
       case node @ Term.New(Init(Type.Name("SparkContext"), _, _)) => modifySparkContext(node)
+      case node @ Term.Apply(Term.Select(_, Term.Name("textFile")), _) => modifyTextFile(node)
       case node @ Term.Apply(Term.Select(_, name), _) if Constants.MAP_TRANSFORMS.contains(name.value) => super.apply(attachDFOMonitor(node))
       case node @ Defn.Def(_, Term.Name("main"), _, _ , _, _) => super.apply(insertAtEndOfFunction(node, Constants.CONSOLIDATOR.parse[Stat].get))
       case Term.If(predicate, ifBody, elseBody) => super.apply(Term.If(attachPredicateMonitor(predicate), ifBody, elseBody))

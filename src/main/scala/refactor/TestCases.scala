@@ -28,17 +28,13 @@ object TestCases {
         |  def main(args: Array[String]): Unit = {
         |    val sparkConf = new SparkConf().setMaster("local[*]").setAppName("Test")
         |    val ctx = new SparkContext(sparkConf)
-        |    val data1 = ctx.parallelize(Seq[Int]()).mapPartitions { _ =>
-        |      (1 to 10).map{ k =>
-        |        (s"$k", "value")
-        |      }.iterator}
+        |    val data1 = ctx.textFile("dummydata/predicateTest2").map{arr => arr.split(",")}
+        |    val data2 = ctx.textFile("dummydata/predicateTest2").map{arr => arr.split(",")}
         |
-        |    val data2 = ctx.parallelize(Seq[Int]()).mapPartitions { _ =>
-        |      (1 to 10).map{ k =>
-        |        (s"$k", "value")
-        |      }.iterator}
+        |    val d1 = data1.map(arr => (arr.head, arr.tail))
+        |    val d2 = data2.map(arr => (arr.head, arr.tail))
         |
-        |    data1.join(data2).filter{ case (k, (_, _)) => k.toInt > 3 && k.toInt < 6}.foreach(println)
+        |    d1.join(d2).filter{ case (k, (_, _)) => k.toInt > 3 && k.toInt < 6}.foreach(println)
         |  }
         |
         |}

@@ -93,6 +93,8 @@ class FlatProvenanceDefaultRDD[T: ClassTag](override val rdd: RDD[ProvenanceRow[
       }}
     new provenance.rdd.FlatProvenanceDefaultRDD(rdd.sortBy(wrapper, ascending))
   }
+
+  override def foreach(f: ((T, Provenance)) => Unit): Unit = rdd.foreach(f)
 }
 
 object FlatProvenanceDefaultRDD {

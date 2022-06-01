@@ -15,6 +15,7 @@ import scala.reflect.ClassTag
 class SparkContextWithDP(sc: SparkContext) {
 
   var datasets = 0
+  Provenance.setProvenanceType("dual")
 
   def textFile(filepath: String): RDD[String] ={
     sc.textFile(filepath)
@@ -88,8 +89,4 @@ class SparkContextWithDP(sc: SparkContext) {
     new FlatProvenanceDefaultRDD[Array[SymString]](baseRDD)
   }
 
-  def parallelize[T: ClassTag](seq: Seq[T], numSlices: Int = sc.defaultParallelism): ProvenanceRDD[T] = {
-    // TODO: attach provenance? not very important
-    new FlatProvenanceDefaultRDD[T](sc.parallelize(seq, numSlices))
-  }
 }

@@ -484,4 +484,6 @@ class PairProvenanceDefaultRDD[K, V](override val rdd: RDD[(K, ProvenanceRow[V])
       }}
     new PairProvenanceDefaultRDD(rdd.sortBy(wrapper, ascending))
   }
+
+  override def foreach(f: (((K, V), Provenance)) => Unit): Unit = rdd.foreach{case (k, (v, p)) => f(((k,v), p))}
 }

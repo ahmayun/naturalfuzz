@@ -1,12 +1,14 @@
 package provenance.rdd
 
 import org.apache.spark.rdd.RDD
+import provenance.data.Provenance
 
 import scala.reflect.ClassTag
 
 
 /** Trait to ensure consistent base API between Pair and non-Pair */
 trait ProvenanceRDD[T] extends Serializable {
+  def foreach(f: ((T, Provenance)) => Unit): Unit
 
   def map[U: ClassTag](f: T => U, enableUDFAwareProv: Option[Boolean] = None): ProvenanceRDD[U]
   
