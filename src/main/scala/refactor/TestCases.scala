@@ -34,7 +34,8 @@ object TestCases {
         |    val d1 = data1.map(arr => (arr.head, arr.tail))
         |    val d2 = data2.map(arr => (arr.head, arr.tail))
         |
-        |    d1.join(d2).filter{ case (k, (_, _)) => k.toInt > 3 && k.toInt < 6}.foreach(println)
+        |    val d3 = d1.join(d2).filter{ case (k, (_, _)) => k.toInt > 3 && k.toInt < 6}
+        |    d3.groupByKey().foreach(println)
         |  }
         |
         |}
