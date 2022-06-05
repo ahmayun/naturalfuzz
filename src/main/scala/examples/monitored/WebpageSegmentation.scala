@@ -4,8 +4,8 @@ import fuzzer.ProvInfo
 
 import scala.reflect.runtime.universe._
 import org.apache.spark.{SparkConf, SparkContext}
-import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
+import provenance.data.Provenance
 import provenance.rdd.ProvenanceRDD.toPairRDD
 import symbolicprimitives.{SymInt, SymString}
 import symbolicprimitives.SymImplicits._
