@@ -1,7 +1,7 @@
 package refactor.testout
-import org.apache.spark.{ SparkConf, SparkContext }, sparkwrapper.SparkContextWithDP
+import org.apache.spark.{ SparkConf, SparkContext }, sparkwrapper.SparkContextWithDP, symbolicprimitives._, symbolicprimitives.SymImplicits._
 object predicateTest2 {
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[SymString]): Unit = {
     val sparkConf = new SparkConf().setMaster("local[*]").setAppName("Test")
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
     val data1 = ctx.textFileProv("dummydata/predicateTest2", {

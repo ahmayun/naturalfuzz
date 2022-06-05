@@ -66,11 +66,16 @@ object MonitorAttacher extends Transformer {
   }
 
   def addImports(imports: List[Importer]): List[Importer] = {
-    imports :+
-      Importer(Term.Name("sparkwrapper"), List(Importee.Name(Name("SparkContextWithDP"))))
+    imports ++ List(
+      "sparkwrapper.SparkContextWithDP",
+      "symbolicprimitives._",
+      "symbolicprimitives.SymImplicits._"
+    ).map(_.parse[Importer].get)
+//      Importer(Term.Name("sparkwrapper"), List(Importee.Name(Name("SparkContextWithDP"))))
   }
 
   var id = 0
+
   override def apply(tree: Tree): Tree = {
     tree match {
       case Import(imports) =>
@@ -84,6 +89,8 @@ object MonitorAttacher extends Transformer {
         super.apply(term)
       case node @ Defn.Def(_, Term.Name("main"), _, _ , _, _) =>
         super.apply(insertAtEndOfFunction(node, Constants.CONSOLIDATOR.parse[Stat].get))
+      case Type.Name(name) if Constants.MAP_PRIM2SYM.contains(name) =>
+        Type.Name(Constants.MAP_PRIM2SYM(name))
       case Term.If(predicate, ifBody, elseBody) =>
         val (term, nid) = attachPredicateMonitor(predicate, id); id = nid
         super.apply(Term.If(term, ifBody, elseBody))

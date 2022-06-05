@@ -45,8 +45,8 @@ object SymImplicits {
   implicit def floatLongTupleToSyms(tuple: (Float, Long)): (SymFloat, SymLong) = (tuple._1, tuple._2)
   implicit def floatDoubleTupleToSyms(tuple: (Float, Double)): (SymFloat, SymDouble) = (tuple._1, tuple._2)
   implicit def floatFloatTupleToSyms(tuple: (Float, Float)): (SymFloat, SymFloat) = (tuple._1, tuple._2)
-  
-  
+
+
   
   // Implicits are applied in order of priority, so these should be defined last so we try to use
   // symbolics as much as possible.

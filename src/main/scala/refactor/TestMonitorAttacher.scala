@@ -36,7 +36,8 @@ object TestMonitorAttacher {
 //                  List(
 //                    Defn.Def(
 //                      Nil,
-//                      Term.Name("main"), Nil,
+//                      Term.Name("main"),
+//                      Nil,
 //                      List(List(Term.Param(Nil, Term.Name("args"), Some(Type.Apply(Type.Name("Array"), List(Type.Name("String")))), None))),
 //                      Some(Type.Name("Unit")),
 //                      Term.Block(
