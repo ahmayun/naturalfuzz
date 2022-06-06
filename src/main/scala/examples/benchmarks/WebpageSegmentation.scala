@@ -37,88 +37,81 @@ object WebpageSegmentation {
     val inter = changed.join(boxes_after_by_site)
     inter.map{
       case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
-    }.collect()//.foreach(println)
-
-    //    val iRects =  pairs.map{ case (id, (rect1, rect2)) => (id, intersects(rect1, rect2))}
-    //    iRects.collect().foreach(println)
+    }.collect().foreach(println)
   }
 
   def intersects(rect1: IndexedSeq[Int],
                  rect2: IndexedSeq[Int]): Option[(Int, Int, Int, Int)] = {
-
+//  Path condition for reaching this function
+//  boxes_before(0) == boxes_after(0) && boxes_before(1)(1) != boxes_after(1)(1) && after(0) == after(0)
     val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
     val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
-    val endpointax = aSWx + aWidth;
-    val startpointax = aSWx;
-    val endpointay = aSWy + aHeight;
-    val startpointay = aSWy;
-    val endpointbx = bSWx + bWidth;
-    val startpointbx = bSWx;
-    val endpointby = bSWy + bHeight;
-    val startpointby = bSWy;
+    val endpointax = aSWx + aWidth // before(1+4)
+    val startpointax = aSWx // before(1)
+    val endpointay = aSWy + aHeight // before(2+3)
+    val startpointay = aSWy // before(2)
+    val endpointbx = bSWx + bWidth // after(1+4)
+    val startpointbx = bSWx // after(1)
+    val endpointby = bSWy + bHeight // after(2+3)
+    val startpointby = bSWy // after(2)
 
 
+    // PC: before(1+4) < after(1) && before(1) < after(1)
     if ((endpointax < startpointbx) && (startpointax < startpointbx) ){
-      return None;
+      return None
     }
+    // PC: after(1+4) < before(1) && after(1) < before(1)
     if ((endpointbx < startpointax) && (startpointbx < startpointax)){
-      return None;
+      return None
     }
-
+    // PC: after(2+3) < before(2) && after(2) < before(2)
     if ((endpointby < startpointay) && (startpointby < startpointay)){
-      return None;
+      return None
     }
-
+    // PC: before(2+3) < after(2) && before(2) < after(2)
     if ((endpointay < startpointby) && (startpointay < startpointby)){
-      return None;
+      return None
     }
-
+    // PC: before(2) > after(2+3)
     if (startpointay > endpointby){
-      return None;
+      return None
     }
 
     var iSWx, iSWy, iWidth, iHeight  = 0
 
+    // PC: before(1) <= after(1) && after(1+4) <= before(1+4)
     if ((startpointax <= startpointbx) && (endpointbx <= endpointax)) {
-      iSWx  = startpointbx;
-      iSWy = if (startpointay < startpointby) startpointby else startpointay;
-      iWidth = bWidth;
-      val top = if (endpointby < endpointay) endpointby else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointbx
+      iSWy = if (startpointay < startpointby) startpointby else startpointay
+      iWidth = bWidth
+      val top = if (endpointby < endpointay) endpointby else endpointay
+      iHeight = (top - iSWy)
     }
+    // PC: after(1) <= before(1) && before(1+4) <= after(1+4)
     else if ((startpointbx <= startpointax) && (endpointax <= endpointbx)) {
-      iSWx  = startpointax;
-      iSWy = if (startpointay < startpointby) startpointby else startpointay;
-      iWidth = aWidth;
-      val top = if (endpointby < endpointay) endpointby  else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointax
+      iSWy = if (startpointay < startpointby) startpointby else startpointay
+      iWidth = aWidth
+      val top = if (endpointby < endpointay) endpointby  else endpointay
+      iHeight = (top - iSWy)
     }
+    // PC: before(1) >= after(1) && before(1) <= after(1+4)
     else if ((startpointax >= startpointbx) && (startpointax <= endpointbx)) {
-      iSWx  = startpointax;
-      iSWy = if (startpointay > startpointby) startpointay else startpointby;
-      iWidth = (endpointbx - startpointax);
-      val top = if (endpointby < endpointay) endpointby  else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointax
+      iSWy = if (startpointay > startpointby) startpointay else startpointby
+      iWidth = (endpointbx - startpointax)
+      val top = if (endpointby < endpointay) endpointby  else endpointay
+      iHeight = (top - iSWy)
     }
+
+    // PC: after(1) >= before(1) && after(1) <= before(1+4)
     else if ((startpointbx >= startpointax) && (startpointbx <= endpointax)) {
-      iSWx  = startpointbx;
-      iSWy = if (startpointay > startpointby) startpointay else startpointby;
-      iWidth = (endpointax - startpointbx);
-      val top = if (endpointby < endpointay) endpointby  else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointbx
+      iSWy = if (startpointay > startpointby) startpointay else startpointby
+      iWidth = (endpointax - startpointbx)
+      val top = if (endpointby < endpointay) endpointby  else endpointay
+      iHeight = (top - iSWy)
     }
-//    else if (startpointbx > startpointax && startpointbx < endpointax && endpointby <= startpointay){
-//      iSWx  = startpointbx;
-//      iSWy = startpointay;
-//      iWidth = bWidth;
-//      iHeight = 0;
-//    }
-//    else if (startpointax > startpointbx && startpointax < endpointbx && endpointay <= startpointby) {
-//      iSWx  = startpointax;
-//      iSWy = endpointby;
-//      iWidth = aWidth;
-//      iHeight = 0;
-//    }
 
     Some((iSWx, iSWy, iHeight, iWidth))
   }

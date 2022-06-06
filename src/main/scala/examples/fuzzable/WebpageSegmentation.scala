@@ -45,78 +45,66 @@ object WebpageSegmentation {
 
     val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
     val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
-    val endpointax = aSWx + aWidth;
-    val startpointax = aSWx;
-    val endpointay = aSWy + aHeight;
-    val startpointay = aSWy;
-    val endpointbx = bSWx + bWidth;
-    val startpointbx = bSWx;
-    val endpointby = bSWy + bHeight;
-    val startpointby = bSWy;
+    val endpointax = aSWx + aWidth
+    val startpointax = aSWx
+    val endpointay = aSWy + aHeight
+    val startpointay = aSWy
+    val endpointbx = bSWx + bWidth
+    val startpointbx = bSWx
+    val endpointby = bSWy + bHeight
+    val startpointby = bSWy
 
 
 
     if ((endpointax < startpointbx) && (startpointax < startpointbx) ){
-      return None;
+      return None
     }
     if ((endpointbx < startpointax) && (startpointbx < startpointax)){
-      return None;
+      return None
     }
 
     if ((endpointby < startpointay) && (startpointby < startpointay)){
-      return None;
+      return None
     }
 
     if ((endpointay < startpointby) && (startpointay < startpointby)){
-      return None;
+      return None
     }
 
     if (startpointay > endpointby){
-      return None;
+      return None
     }
 
     var iSWx, iSWy, iWidth, iHeight  = 0
 
     if ((startpointax <= startpointbx) && (endpointbx <= endpointax)) {
-      iSWx  = startpointbx;
-      iSWy = if (startpointay < startpointby) startpointby else startpointay;
-      iWidth = bWidth;
-      val top = if (endpointby < endpointay) endpointby else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointbx
+      iSWy = if (startpointay < startpointby) startpointby else startpointay
+      iWidth = bWidth
+      val top = if (endpointby < endpointay) endpointby else endpointay
+      iHeight = top - iSWy
     }
     else if ((startpointbx <= startpointax) && (endpointax <= endpointbx)) {
-      iSWx  = startpointax;
-      iSWy = if (startpointay < startpointby) startpointby else startpointay;
-      iWidth = aWidth;
-      val top = if (endpointby < endpointay) endpointby  else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointax
+      iSWy = if (startpointay < startpointby) startpointby else startpointay
+      iWidth = aWidth
+      val top = if (endpointby < endpointay) endpointby  else endpointay
+      iHeight = top - iSWy
     }
     else if ((startpointax >= startpointbx) && (startpointax <= endpointbx)) {
-      iSWx  = startpointax;
-      iSWy = if (startpointay > startpointby) startpointay else startpointby;
-      iWidth = (endpointbx - startpointax);
-      val top = if (endpointby < endpointay) endpointby  else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointax
+      iSWy = if (startpointay > startpointby) startpointay else startpointby
+      iWidth = endpointbx - startpointax
+      val top = if (endpointby < endpointay) endpointby  else endpointay
+      iHeight = top - iSWy
     }
     else if ((startpointbx >= startpointax) && (startpointbx <= endpointax)) {
-      iSWx  = startpointbx;
-      iSWy = if (startpointay > startpointby) startpointay else startpointby;
-      iWidth = (endpointax - startpointbx);
-      val top = if (endpointby < endpointay) endpointby  else endpointay;
-      iHeight = (top - iSWy);
+      iSWx  = startpointbx
+      iSWy = if (startpointay > startpointby) startpointay else startpointby
+      iWidth = endpointax - startpointbx
+      val top = if (endpointby < endpointay) endpointby  else endpointay
+      iHeight = top - iSWy
     }
-//    else if (startpointbx > startpointax && startpointbx < endpointax && endpointby <= startpointay){
-//      iSWx  = startpointbx;
-//      iSWy = startpointay;
-//      iWidth = bWidth;
-//      iHeight = 0;
-//    }
-//    else if (startpointax > startpointbx && startpointax < endpointbx && endpointay <= startpointby) {
-//      iSWx  = startpointax;
-//      iSWy = endpointby;
-//      iWidth = aWidth;
-//      iHeight = 0;
-//    }
 
     Some((iSWx, iSWy, iHeight, iWidth))
   }
