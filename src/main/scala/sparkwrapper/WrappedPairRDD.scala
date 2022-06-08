@@ -3,7 +3,7 @@ package sparkwrapper
 import org.apache.spark.rdd.PairRDDFunctions
 import org.roaringbitmap.RoaringBitmap
 import sparkwrapper.WrappedRDD._
-import symbolicprimitives.Tracker
+import taintedprimitives.Tracker
 
 import scala.reflect.ClassTag
 

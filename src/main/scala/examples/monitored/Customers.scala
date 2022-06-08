@@ -6,7 +6,7 @@ import scala.reflect.runtime.universe._
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
-import symbolicprimitives.{SymInt, SymString}
+import taintedprimitives.{TaintedInt, TaintedString}
 object Customers {
   def main(args: Array[String]): ProvInfo = {
     val sparkConf = new SparkConf()
@@ -48,7 +48,7 @@ object Customers {
     rewards.foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
-  def computeRewards(custInfo: (SymString, Int)): (SymString, Float, String) = {
+  def computeRewards(custInfo: (TaintedString, Int)): (TaintedString, Float, String) = {
     val (id, num) = custInfo
     (id, 100.0f, s"$id has won ${"$"}100.0f")
   }

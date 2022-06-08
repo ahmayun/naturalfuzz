@@ -7,7 +7,7 @@ import org.roaringbitmap.RoaringBitmap
 import provenance.data.DualRBProvenance
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import runners.Config
-import symbolicprimitives.SymBase
+import taintedprimitives.TaintedBase
 
 import scala.collection.mutable.HashMap
 import scala.reflect.ClassTag
@@ -27,9 +27,9 @@ object Monitors {
     p2.or(prov2)
   }
 
-  def monitorJoin[K<:SymBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
-                                             d2: PairProvenanceDefaultRDD[K,V2],
-                                             id: Int): PairProvenanceRDD[K,(V1,V2)] = {
+  def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
+                                                 d2: PairProvenanceDefaultRDD[K,V2],
+                                                 id: Int): PairProvenanceRDD[K,(V1,V2)] = {
     val d1j = d1.join(d2)
     val d2j = d2.join(d1)
     d1j.map(r => r._1).take(agg_samples).foreach (
@@ -54,12 +54,12 @@ object Monitors {
       val prev_branch_prov = new RoaringBitmap()
 
       prov._1.foreach {
-        case v: SymBase => this_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+        case v: TaintedBase => this_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
         case _ =>
       }
 
       prov._2.foreach {
-        case v: SymBase => prev_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+        case v: TaintedBase => prev_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
         case _ =>
       }
 
@@ -68,13 +68,13 @@ object Monitors {
     bool
   }
 
-  def monitorGroupByKey[K<:SymBase:ClassTag,V:ClassTag](dataset: PairProvenanceDefaultRDD[K,V], id: Int): PairProvenanceDefaultRDD[K, Iterable[V]] = {
+  def monitorGroupByKey[K<:TaintedBase:ClassTag,V:ClassTag](dataset: PairProvenanceDefaultRDD[K,V], id: Int): PairProvenanceDefaultRDD[K, Iterable[V]] = {
     val prov = dataset.take(agg_samples)(0)._1.getProvenance().asInstanceOf[DualRBProvenance].bitmap
     gbk_map.update(id, prov)
     dataset.groupByKey()
   }
 
-  def monitorReduceByKey[K<:SymBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
+  def monitorReduceByKey[K<:TaintedBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
     val reduced = dataset.reduceByKey(func)
 
     reduced.map(r => r._1).take(agg_samples).foreach (

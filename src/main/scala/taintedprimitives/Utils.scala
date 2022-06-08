@@ -1,4 +1,4 @@
-package symbolicprimitives
+package taintedprimitives
 
 import org.apache.spark.rdd.RDD
 import org.roaringbitmap.RoaringBitmap
@@ -45,10 +45,10 @@ object Utils {
     rdd
   }
 
-  private val colProvRDD: ListBuffer[RDD[(Array[SymString], Provenance)]] = new ListBuffer[RDD[(Array[SymString], Provenance)]];
+  private val colProvRDD: ListBuffer[RDD[(Array[TaintedString], Provenance)]] = new ListBuffer[RDD[(Array[TaintedString], Provenance)]];
   def setInputZip[T: ClassTag](rdd: RDD[T]): RDD[T] = {
     rdd match {
-      case _ : RDD[(Array[SymString], Provenance)] => colProvRDD.append(rdd.asInstanceOf[RDD[(Array[SymString], Provenance)]])
+      case _ : RDD[(Array[TaintedString], Provenance)] => colProvRDD.append(rdd.asInstanceOf[RDD[(Array[TaintedString], Provenance)]])
       case _ => throw new UnsupportedOperationException(s"Can't set prov rdd in utils, type mismatch")
     }
     rdd
@@ -148,14 +148,14 @@ object Utils {
     * if any non-symbolic or unsupported type is observed. */
   def inferProvenance[Any](in: Any, defaultProv: Provenance = DummyProvenance.create()): Provenance = {
     in match {
-      case o: SymBase =>
+      case o: TaintedBase =>
         o.getProvenance()
       case product: Product =>
         product.productIterator.map(x => inferProvenance(x, defaultProv))
                 .foldLeft(DummyProvenance.create())(_.merge(_))
       /*case product2: Product2[_,_] => // includes Tuple
         product2 match {
-          case (a: SymBase, b: SymBase) =>
+          case (a: TaintedBase, b: TaintedBase) =>
             product2.productIterator.map(x => inferProvenance(x, defaultProv))
                     .foldLeft(DummyProvenance.create())(_.merge(_))
           case _ =>
@@ -164,7 +164,7 @@ object Utils {
         }
       case product3: Product3[_,_,_] =>
         product3 match {
-          case (a: SymBase, b: SymBase, c: SymBase) =>
+          case (a: TaintedBase, b: TaintedBase, c: TaintedBase) =>
             //a.getProvenance().merge(b.getProvenance()).merge(c.getProvenance())
             product3.productIterator.map(x => inferProvenance(x, defaultProv))
                     .foldLeft(DummyProvenance.create())(_.merge(_))
@@ -185,7 +185,7 @@ object Utils {
     */
   def replaceSymProvenance[T](in: T, replaceFn: Provenance => Provenance): T = {
     in match {
-      case o: SymBase =>
+      case o: TaintedBase =>
         o.setProvenance(replaceFn(o.getProvenance()))
       case product: Product =>
         product.productIterator.foreach(x => replaceSymProvenance(x, replaceFn))
@@ -202,7 +202,7 @@ object Utils {
   
   def simplifySyms[T](in: T): String = {
     in match {
-      case o: SymAny[_] =>
+      case o: TaintedAny[_] =>
         o.value.toString
       case product: Product =>
         // toSeq since we can't reuse the iterator
@@ -227,7 +227,7 @@ object Utils {
       buildSymbolicProvenanceRow(f(input._1), input._2)
     } else {
       input._1 match {
-        case r: SymBase =>
+        case r: TaintedBase =>
           // Note: this is an optimization that must be done *before* calling f on the input.
           r.setProvenance(DummyProvenance.create()) // Let sym objects use a dummy provenance
         case _ =>
@@ -235,7 +235,7 @@ object Utils {
       (f(input._1), input._2) // use input provenance and pass it to next operator
     }
 //    input._1 match {
-//      case r: SymBase =>
+//      case r: TaintedBase =>
 //        if (!udfAware) {
 //          // Note: this is an optimization that must be done *before* calling f on the input.
 //          r.setProvenance(DummyProvenance.create()) // Let sym objects use a dummy provenance
@@ -256,12 +256,12 @@ object Utils {
   def combine(r: Long, c: Long, dataset_id: Long): Long = {
     r | (c << DualRBProvenance.ROW_BITS) | (dataset_id << (DualRBProvenance.ROW_BITS + DualRBProvenance.COL_BITS))
   }
-  def makeProv(row: Long, t: (String, Int), provCreatorFn: Seq[Long] => Provenance, dataset_id: Long): SymString = {
+  def makeProv(row: Long, t: (String, Int), provCreatorFn: Seq[Long] => Provenance, dataset_id: Long): TaintedString = {
     val (v, col) = t
     val provNum = combine(row, col, dataset_id)
     val prov = provCreatorFn(Seq(provNum))
 //    println(s"assigning prov ${provNum.toBinaryString} to col $col")
-    SymString(v, prov)
+    TaintedString(v, prov)
   }
 
   def makeSeq(zipped: Array[(String, Int)], row: Long, dataset_id: Long): Array[Long] = {
@@ -271,7 +271,7 @@ object Utils {
     })
   }
 
-  def attachProv[T: ClassTag](record: (String, Long), followup: (Array[SymString], Provenance) => T, createCol: String => Array[String], dataset_id: Long): T = {
+  def attachProv[T: ClassTag](record: (String, Long), followup: (Array[TaintedString], Provenance) => T, createCol: String => Array[String], dataset_id: Long): T = {
     val provCreatorFn = Provenance.createFn()
     val split = createCol(record._1)
     val zipped = split.zip({0 to split.length})
@@ -294,7 +294,7 @@ object Utils {
       f(input._1).map(buildSymbolicProvenanceRow(_, input._2))
     } else {
       input._1 match {
-        case r: SymBase =>
+        case r: TaintedBase =>
           // Note: this is an optimization that must be done *before* calling f on the input.
           r.setProvenance(DummyProvenance.create()) // Let sym objects use a dummy provenance
         case _ =>
@@ -303,14 +303,14 @@ object Utils {
     }
     
 //    input._1 match {
-//      case r: SymBase =>
+//      case r: TaintedBase =>
 //        if (!udfAware) {
 //          r.setProvenance(DummyProvenance.create()) // Let sym objects use a dummy provenance
 //          f(input._1).map((_, input._2))
 //        } else {
 //          f(input._1).map { out =>
 //            out match {
-//              case o: SymBase =>
+//              case o: TaintedBase =>
 //                (out, o.getProvenance())
 //              case a => (a, input._2)
 //            }
@@ -355,7 +355,7 @@ object Utils {
     //  rather than simultaneously (e.g. if only one of V/C are symbolic, disable accordingly).
     //  (this is only a performance improvement).
     (value._1, combiner._1._1) match {
-      case (v: SymBase, c: SymBase) =>
+      case (v: TaintedBase, c: TaintedBase) =>
         if (!udfAware) {
 
           v.setProvenance(DummyProvenance.create()) // Let sym objects use a dummy provenance
@@ -369,7 +369,7 @@ object Utils {
 
           val out = f(combiner._1._1, value._1)
           out match {
-            case o: SymBase =>
+            case o: TaintedBase =>
               ( ( out, value._1),  o.getProvenance())
             case a =>
               val combiner_influence  = (combiner._1._2 , combiner._2)
@@ -409,7 +409,7 @@ object Utils {
     //  rather than simultaneously (e.g. if only one of the two are symbolic, disable accordingly).
     //  (this is only a performance improvement).
     (combiner1._1._1 , combiner2._1._1) match {
-      case (v: SymBase, c: SymBase) =>
+      case (v: TaintedBase, c: TaintedBase) =>
         if (!udfAware) {
 
           v.setProvenance(DummyProvenance.create()) // Let sym objects use a dummy provenance
@@ -422,7 +422,7 @@ object Utils {
 
           val out = f(combiner1._1._1 , combiner2._1._1)
           out match {
-            case o: SymBase =>
+            case o: TaintedBase =>
               ( ( out, combiner1._1._2),  o.getProvenance()) // Using a random influence V.
             case a =>
               val  (infl_value, prov) =  mergeWithInfluence((combiner1._1._2 , combiner1._2),(combiner2._1._2 , combiner2._2), InfluenceMarker.both)
@@ -457,9 +457,9 @@ object Utils {
     defaultUDFAwareEnabled = value
   }
   
-  /** Computes the union of all (non-nested) SymBase provenances in the list. */
+  /** Computes the union of all (non-nested) TaintedBase provenances in the list. */
   def addProvDependency(list: List[Any]): Provenance = {
-    val symBases = list.collect({case s: SymBase => s})
+    val symBases = list.collect({case s: TaintedBase => s})
     if(symBases.isEmpty) DummyProvenance.create() else
         symBases.foldLeft(Provenance.create())((prov,symbase) => prov.merge(symbase.getProvenance()))
   }
@@ -468,7 +468,7 @@ object Utils {
   // that we want to skip when finding the call site of a method.
   private val SPARK_CORE_CLASS_REGEX =
     """^org\.apache\.spark(\.api\.java)?(\.util)?(\.rdd)?(\.broadcast)?\.[A-Z]""".r
-  private val SYMEx_CORE_REGEX = """^main\.symbolicprimitives.*""".r
+  private val SYMEx_CORE_REGEX = """^main\.taintedprimitives.*""".r
 
   /** Default filtering function for finding call sites using `getCallSite`. */
   private def sparkInternalExclusionFunction(className: String): Boolean = {

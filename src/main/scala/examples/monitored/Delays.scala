@@ -6,8 +6,8 @@ import scala.reflect.runtime.universe._
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
-import symbolicprimitives.SymInt
-import symbolicprimitives.SymImplicits._
+import taintedprimitives.TaintedInt
+import taintedprimitives.SymImplicits._
 object Delays {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
@@ -28,7 +28,7 @@ object Delays {
     reduced.collect().foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
-  def buckets(v: SymInt): SymInt = {
+  def buckets(v: TaintedInt): TaintedInt = {
     v / 1800
   }
 }

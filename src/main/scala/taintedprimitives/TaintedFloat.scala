@@ -1,4 +1,4 @@
-package symbolicprimitives
+package taintedprimitives
 
 import provenance.data.Provenance
 
@@ -8,8 +8,8 @@ import scala.reflect.runtime.universe._
   * Created by malig on 4/25/19.
   */
 
-case class SymFloat(override val value: Float, p:Provenance) extends SymAny(value, p){
-  def <(x: SymFloat): Boolean = {
+case class TaintedFloat(override val value: Float, p:Provenance) extends TaintedAny(value, p){
+  def <(x: TaintedFloat): Boolean = {
     // mergeProvenance(x.getProvenance())
     value < x.value
   }
@@ -18,50 +18,50 @@ case class SymFloat(override val value: Float, p:Provenance) extends SymAny(valu
     * Overloading operators from here onwards
     */
 
-  def +(x: Float): SymFloat = {
+  def +(x: Float): TaintedFloat = {
     val d = value + x
-    SymFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance())
   }
 
-  def -(x: Float): SymFloat = {
+  def -(x: Float): TaintedFloat = {
     val d = value - x
-    SymFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance())
   }
 
-  def *(x: Float): SymFloat = {
+  def *(x: Float): TaintedFloat = {
     val d = value * x
-    SymFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance())
 
   }
 
-  def /(x: Float): SymFloat = {
+  def /(x: Float): TaintedFloat = {
     val d = value / x
-    SymFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance())
   }
 
-  def +(x: SymFloat): SymFloat = {
-    SymFloat(value + x.value, newProvenance(x.getProvenance()))
+  def +(x: TaintedFloat): TaintedFloat = {
+    TaintedFloat(value + x.value, newProvenance(x.getProvenance()))
   }
 
-  def +(x: SymDouble): SymDouble = {
-    SymDouble(value + x.value, newProvenance(x.getProvenance()))
+  def +(x: TaintedDouble): TaintedDouble = {
+    TaintedDouble(value + x.value, newProvenance(x.getProvenance()))
   }
 
-  def -(x: SymFloat): SymFloat = {
-    SymFloat(value - x.value, newProvenance(x.getProvenance()))
+  def -(x: TaintedFloat): TaintedFloat = {
+    TaintedFloat(value - x.value, newProvenance(x.getProvenance()))
   }
 
-  def *(x: SymFloat): SymFloat = {
-    SymFloat(value * x.value, newProvenance(x.getProvenance()))
+  def *(x: TaintedFloat): TaintedFloat = {
+    TaintedFloat(value * x.value, newProvenance(x.getProvenance()))
 
   }
 
-  def /(x: SymFloat): SymFloat = {
-    SymFloat(value / x.value, newProvenance(x.getProvenance()))
+  def /(x: TaintedFloat): TaintedFloat = {
+    TaintedFloat(value / x.value, newProvenance(x.getProvenance()))
   }
   
-  // Incomplete comparison operators - see discussion in SymDouble on provenance
-  def >(x: SymFloat): Boolean = {
+  // Incomplete comparison operators - see discussion in TaintedDouble on provenance
+  def >(x: TaintedFloat): Boolean = {
     // mergeProvenance(x.getProvenance())
     value > x.value
   }
@@ -283,8 +283,8 @@ case class SymFloat(override val value: Float, p:Provenance) extends SymAny(valu
 
 }
 
-object SymFloat {
-  implicit def lift = Liftable[SymFloat] { si =>
-    q"(_root_.symbolicprimitives.SymFloat(${si.value}, ${si.p}))"
+object TaintedFloat {
+  implicit def lift = Liftable[TaintedFloat] { si =>
+    q"(_root_.taintedprimitives.TaintedFloat(${si.value}, ${si.p}))"
   }
 }

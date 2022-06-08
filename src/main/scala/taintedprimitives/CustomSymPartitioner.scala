@@ -1,4 +1,4 @@
-package symbolicprimitives
+package taintedprimitives
 
 import org.apache.spark.{HashPartitioner, Partitioner}
 

@@ -4,8 +4,8 @@ import fuzzer.ProvInfo
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
-import symbolicprimitives.SymFloat
-import symbolicprimitives.SymImplicits._
+import taintedprimitives.TaintedFloat
+import taintedprimitives.SymImplicits._
 
 object FlightDistance {
   def main(args: Array[String]): ProvInfo = {
@@ -41,7 +41,7 @@ object FlightDistance {
     flights_and_distances.collect().take(10).foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
-  def distance(departure: (SymFloat, SymFloat), arrival: (SymFloat, SymFloat)): Float = {
+  def distance(departure: (TaintedFloat, TaintedFloat), arrival: (TaintedFloat, TaintedFloat)): Float = {
     val R = 6373.0d
     val (dlat, dlong) = departure
     val (alat, along) = arrival
@@ -53,7 +53,7 @@ object FlightDistance {
     val c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     (R * c * 0.621371d).toFloat
   }
-  def toRad(d: SymFloat): SymFloat = {
+  def toRad(d: TaintedFloat): TaintedFloat = {
     d * math.Pi.toFloat / 180.0f
   }
 }

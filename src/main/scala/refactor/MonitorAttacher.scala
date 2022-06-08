@@ -68,8 +68,8 @@ object MonitorAttacher extends Transformer {
   def addImports(imports: List[Importer]): List[Importer] = {
     imports ++ List(
       "sparkwrapper.SparkContextWithDP",
-      "symbolicprimitives._",
-      "symbolicprimitives.SymImplicits._"
+      "taintedprimitives._",
+      "taintedprimitives.SymImplicits._"
     ).map(_.parse[Importer].get)
 //      Importer(Term.Name("sparkwrapper"), List(Importee.Name(Name("SparkContextWithDP"))))
   }

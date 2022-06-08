@@ -1,4 +1,4 @@
-package symbolicprimitives
+package taintedprimitives
 
 /**
   * Created by malig on 11/19/19.
@@ -25,28 +25,28 @@ object MathSym {
   def random(): Double = java.lang.Math.random()
 
   /**  @group trig */
-  def sin(x: SymDouble): SymDouble =
-    SymDouble(Math.sin(x.value), x.getProvenance())
+  def sin(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.sin(x.value), x.getProvenance())
 
   /**  @group trig */
-  def cos(x: SymDouble): SymDouble =
-    SymDouble(Math.cos(x.value), x.getProvenance())
+  def cos(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.cos(x.value), x.getProvenance())
 
   /**  @group trig */
-  def tan(x: SymDouble): SymDouble =
-    SymDouble(Math.tan(x.value), x.getProvenance())
+  def tan(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.tan(x.value), x.getProvenance())
 
   /**  @group trig */
-  def asin(x: SymDouble): SymDouble =
-    SymDouble(Math.asin(x.value), x.getProvenance())
+  def asin(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.asin(x.value), x.getProvenance())
 
   /**  @group trig */
-  def acos(x: SymDouble): SymDouble =
-    SymDouble(Math.acos(x.value), x.getProvenance())
+  def acos(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.acos(x.value), x.getProvenance())
 
   /**  @group trig */
-  def atan(x: SymDouble): SymDouble =
-    SymDouble(Math.atan(x.value), x.getProvenance())
+  def atan(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.atan(x.value), x.getProvenance())
 
   /** Converts an angle measured in degrees to an approximately equivalent
     *  angle measured in radians.
@@ -55,8 +55,8 @@ object MathSym {
     *  @return the measurement of the angle `x` in radians.
     *  @group angle-conversion
     */
-  def toRadians(x: SymDouble): SymDouble =
-    SymDouble(Math.toRadians(x.value), x.getProvenance())
+  def toRadians(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.toRadians(x.value), x.getProvenance())
 
   /** Converts an angle measured in radians to an approximately equivalent
     *  angle measured in degrees.
@@ -65,8 +65,8 @@ object MathSym {
     *  @return the measurement of the angle `x` in degrees.
     *  @group angle-conversion
     */
-  def toDegrees(x: SymDouble): SymDouble =
-    SymDouble(Math.toDegrees(x.value), x.getProvenance())
+  def toDegrees(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.toDegrees(x.value), x.getProvenance())
 
   /** Converts rectangular coordinates `(x, y)` to polar `(r, theta)`.
     *
@@ -96,12 +96,12 @@ object MathSym {
   // -----------------------------------------------------------------------
 
   /** @group rounding */
-  def ceil(x: SymDouble): SymDouble =
-    SymDouble(Math.ceil(x.value), x.getProvenance())
+  def ceil(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.ceil(x.value), x.getProvenance())
 
   /** @group rounding */
-  def floor(x: SymDouble): SymDouble =
-    SymDouble(Math.floor(x.value), x.getProvenance())
+  def floor(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.floor(x.value), x.getProvenance())
 
   /** Returns the `Double` value that is closest in value to the
     *  argument and is equal to a mathematical integer.
@@ -140,22 +140,22 @@ object MathSym {
   def round(x: Double): Long = java.lang.Math.round(x)
 
   /** @group abs */
-  def abs(x: SymInt): SymInt =
-    SymInt(Math.abs(x.value), x.getProvenance())
+  def abs(x: TaintedInt): TaintedInt =
+    TaintedInt(Math.abs(x.value), x.getProvenance())
 
   /** @group abs */
   def abs(x: Long): Long = java.lang.Math.abs(x)
 
   /** @group abs */
-  def abs(x: SymFloat): SymFloat =
-     SymFloat(Math.abs(x.value), x.getProvenance())
+  def abs(x: TaintedFloat): TaintedFloat =
+     TaintedFloat(Math.abs(x.value), x.getProvenance())
 
   /** @group abs */
-  def abs(x: SymDouble): SymDouble =
-     SymDouble(Math.abs(x.value), x.getProvenance())
+  def abs(x: TaintedDouble): TaintedDouble =
+     TaintedDouble(Math.abs(x.value), x.getProvenance())
 
   /** @group minmax */
-  def max(x: SymInt, y: SymInt): SymInt = {
+  def max(x: TaintedInt, y: TaintedInt): TaintedInt = {
     if (Math.max(x.value, y.value) == x.value)  x
     else  y
   }
@@ -164,19 +164,19 @@ object MathSym {
   def max(x: Long, y: Long): Long = java.lang.Math.max(x, y)
 
   /** @group minmax */
-  def max(x: SymFloat, y: SymFloat): SymFloat = {
+  def max(x: TaintedFloat, y: TaintedFloat): TaintedFloat = {
     if (Math.max(x.value, y.value) == x.value)  x
     else return y
   }
 
   /** @group minmax */
-  def max(x: SymDouble, y: SymDouble): SymDouble = {
+  def max(x: TaintedDouble, y: TaintedDouble): TaintedDouble = {
     if (Math.max(x.value, y.value) == x.value)  x
     else  y
   }
 
   /** @group minmax */
-  def min(x: SymInt, y: SymInt): SymInt = {
+  def min(x: TaintedInt, y: TaintedInt): TaintedInt = {
     if (Math.min(x.value, y.value) == x.value)  x
     else  y
   }
@@ -185,13 +185,13 @@ object MathSym {
   def min(x: Long, y: Long): Long = java.lang.Math.min(x, y)
 
   /** @group minmax */
-  def min(x: SymFloat, y: SymFloat): SymFloat = {
+  def min(x: TaintedFloat, y: TaintedFloat): TaintedFloat = {
     if (Math.min(x.value, y.value) == x.value)  x
     else return y
   }
 
   /** @group minmax */
-  def min(x: SymDouble, y: SymDouble): SymDouble = {
+  def min(x: TaintedDouble, y: TaintedDouble): TaintedDouble = {
     if (Math.min(x.value, y.value) == x.value) return x
     else return y
   }
@@ -270,8 +270,8 @@ object MathSym {
     * @return the value √x
     * @group root-extraction
     */
-  def sqrt(x: SymDouble): SymDouble =
-    SymDouble(Math.sqrt(x.value), x.getProvenance())
+  def sqrt(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.sqrt(x.value), x.getProvenance())
 
   /** Returns the cube root of the given `Double` value.
     *
@@ -279,8 +279,8 @@ object MathSym {
     * @return the value ∛x
     * @group root-extraction
     */
-  def cbrt(x: SymDouble): SymDouble =
-    SymDouble(Math.cbrt(x.value), x.getProvenance())
+  def cbrt(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.cbrt(x.value), x.getProvenance())
 
   // -----------------------------------------------------------------------
   // exponential functions
@@ -294,8 +294,8 @@ object MathSym {
     *  @return the value `x^y^`.
     *  @group explog
     */
-  def pow(x: SymDouble, y: SymDouble): SymDouble =
-    SymDouble(Math.pow(x.value, y.value), x.newProvenance(y.getProvenance()))
+  def pow(x: TaintedDouble, y: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.pow(x.value, y.value), x.newProvenance(y.getProvenance()))
 
   /** Returns Euler's number `e` raised to the power of a `Double` value.
     *
@@ -304,8 +304,8 @@ object MathSym {
     *          logarithms.
     *  @group explog
     */
-  def exp(x: SymDouble): SymDouble =
-    SymDouble(Math.exp(x.value), x.getProvenance())
+  def exp(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.exp(x.value), x.getProvenance())
 
   /** Returns `exp(x) - 1`.
     *  @group explog
@@ -328,8 +328,8 @@ object MathSym {
     *  @return the value `logₑ(x)` where `e` is Eulers number
     *  @group explog
     */
-  def log(x: SymDouble): SymDouble =
-    SymDouble(Math.log(x.value), x.getProvenance())
+  def log(x: TaintedDouble): TaintedDouble =
+    TaintedDouble(Math.log(x.value), x.getProvenance())
 
   /** Returns the natural logarithm of the sum of the given `Double` value and 1.
     *  @group explog
