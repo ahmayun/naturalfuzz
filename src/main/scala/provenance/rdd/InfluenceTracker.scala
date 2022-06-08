@@ -1,7 +1,7 @@
 package provenance.rdd
 
 import provenance.data.{DummyProvenance, Provenance, RoaringBitmapProvenance}
-import symbolicprimitives.{SymBase, SymInt}
+import taintedprimitives.{TaintedBase, TaintedInt}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -334,8 +334,8 @@ object InfluenceTrackerExample{
     heap2.init((5, RoaringBitmapProvenance.create(500)))
     println(heap.mergeTracker(heap2).computeProvenance())
     
-    val ct: ClassTag[SymInt] = scala.reflect.classTag[SymInt]
-    println(classOf[SymBase].isAssignableFrom(ct.runtimeClass))
+    val ct: ClassTag[TaintedInt] = scala.reflect.classTag[TaintedInt]
+    println(classOf[TaintedBase].isAssignableFrom(ct.runtimeClass))
     
     val filterTracker = FilterInfluenceTracker[Int](_ > 5)
     filterTracker.init((1, RoaringBitmapProvenance.create(1)))

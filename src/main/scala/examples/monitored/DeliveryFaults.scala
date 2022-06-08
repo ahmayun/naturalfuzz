@@ -4,8 +4,8 @@ import fuzzer.ProvInfo
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
-import symbolicprimitives.{SymFloat, SymInt, SymString}
-import symbolicprimitives.SymImplicits._
+import taintedprimitives.{TaintedFloat, TaintedInt, TaintedString}
+import taintedprimitives.SymImplicits._
 object DeliveryFaults {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
@@ -20,14 +20,14 @@ object DeliveryFaults {
     bad_triplets.map(processTriplets).collect().foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
-  def tripletRating(tup: (SymString, Iterable[(SymString, SymString, SymFloat)])): SymFloat = {
+  def tripletRating(tup: (TaintedString, Iterable[(TaintedString, TaintedString, TaintedFloat)])): TaintedFloat = {
     val (_, iter) = tup
     iter.foldLeft(0.0f)({
       case (acc, (_, _, rating)) =>
         rating + acc
     }) / iter.size
   }
-  def processTriplets(tup: (SymString, Iterable[(SymString, SymString, SymFloat)])): String = {
+  def processTriplets(tup: (TaintedString, Iterable[(TaintedString, TaintedString, TaintedFloat)])): String = {
     val (_, iter) = tup
     iter.foldLeft("")({
       case (acc, (_, vendor, _)) =>

@@ -6,7 +6,7 @@ import scala.reflect.runtime.universe._
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance.setProvenanceType
 import sparkwrapper.SparkContextWithDP
-import symbolicprimitives.Utils
+import taintedprimitives.Utils
 object CommuteType {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()

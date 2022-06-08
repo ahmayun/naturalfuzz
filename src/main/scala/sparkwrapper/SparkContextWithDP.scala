@@ -5,7 +5,7 @@ import org.apache.spark.rdd.RDD
 import provenance.data.Provenance
 import provenance.rdd.{FlatProvenanceDefaultRDD, ProvenanceRDD}
 //import sparkwrapper.SparkContextWithDP.{datasets, incrementOnce}
-import symbolicprimitives.{SymString, Utils}
+import taintedprimitives.{TaintedString, Utils}
 
 import scala.reflect.ClassTag
 
@@ -41,19 +41,19 @@ class SparkContextWithDP(sc: SparkContext) {
   }
   
   /** Text file with Symbolic strings (no provenance RDD) */
-  def textFileUDFProv(filepath: String): RDD[SymString] = {
-    textFileProvenanceCreator(filepath, SymString.apply)
+  def textFileUDFProv(filepath: String): RDD[TaintedString] = {
+    textFileProvenanceCreator(filepath, TaintedString.apply)
   }
 
   /** Text file with symbolic strings and provenance RDDs. */
-  def textFileSymbolic(filepath: String): ProvenanceRDD[SymString] = {
+  def textFileSymbolic(filepath: String): ProvenanceRDD[TaintedString] = {
     if(!Utils.getUDFAwareEnabledValue(None)) {
       // TODO jteoh: we might be able to remove this warning if we determine at collect-time that
       //  the output we are collecting is a symbolic type?
       println("WARNING: Did you mean to enable UDF Aware provenance since you are using " +
                 "textFileSymbolic?")
     }
-    val baseRDD = textFileProvenanceCreator(filepath, (str, prov) => (SymString(str, prov), prov))
+    val baseRDD = textFileProvenanceCreator(filepath, (str, prov) => (TaintedString(str, prov), prov))
     new FlatProvenanceDefaultRDD(baseRDD)
   }
   
@@ -66,7 +66,7 @@ class SparkContextWithDP(sc: SparkContext) {
   }
 
   private def textFileProvenanceCreator[T: ClassTag](filepath: String,
-                                                     followup: (Array[SymString], Provenance) => T,
+                                                     followup: (Array[TaintedString], Provenance) => T,
                                                      createCol: String => Array[String]
                                                     ): RDD[T] = {
     val rdd = sc.textFile(filepath)
@@ -81,12 +81,12 @@ class SparkContextWithDP(sc: SparkContext) {
     ret
   }
 
-  def textFileProv(filepath: String, createCol: String => Array[String]): ProvenanceRDD[Array[SymString]] = {
+  def textFileProv(filepath: String, createCol: String => Array[String]): ProvenanceRDD[Array[TaintedString]] = {
     // have to define this because predef identity was detecting as Nothing => Nothing
-    val identity = (s: Array[SymString], p: Provenance) => (s, p)
+    val identity = (s: Array[TaintedString], p: Provenance) => (s, p)
     val baseRDD = textFileProvenanceCreator(filepath, identity, createCol)
     Utils.setUDFAwareDefaultValue(true)
-    new FlatProvenanceDefaultRDD[Array[SymString]](baseRDD)
+    new FlatProvenanceDefaultRDD[Array[TaintedString]](baseRDD)
   }
 
 }

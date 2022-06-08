@@ -1,7 +1,7 @@
 package examples.benchmarks
 
 import org.apache.spark.{SparkConf, SparkContext}
-import symbolicprimitives.Utils
+import taintedprimitives.Utils
 
 object CommuteType {
 

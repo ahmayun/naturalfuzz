@@ -1,7 +1,7 @@
 //package refactor.testout
-//import org.apache.spark.{ SparkConf, SparkContext }, sparkwrapper.SparkContextWithDP, symbolicprimitives._, symbolicprimitives.SymImplicits._
+//import org.apache.spark.{ SparkConf, SparkContext }, sparkwrapper.SparkContextWithDP, taintedprimitives._, taintedprimitives.SymImplicits._
 //object fullTestCase1 {
-//  def main(args: Array[SymString]): Unit = {
+//  def main(args: Array[TaintedString]): Unit = {
 //    println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
 //    val sparkConf = new SparkConf()
 //    sparkConf.setMaster("local[6]")
@@ -33,7 +33,7 @@
 //    }).collect()
 //    _root_.monitoring.Monitors.finalizeProvenance()
 //  }
-//  def intersects(rect1: IndexedSeq[SymInt], rect2: IndexedSeq[SymInt]): Option[(SymInt, SymInt, SymInt, SymInt)] = {
+//  def intersects(rect1: IndexedSeq[TaintedInt], rect2: IndexedSeq[TaintedInt]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
 //    val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
 //    val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
 //    val endpointax = aSWx + aWidth

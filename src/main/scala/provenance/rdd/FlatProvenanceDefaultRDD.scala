@@ -2,7 +2,7 @@ package provenance.rdd
 
 import org.apache.spark.rdd.RDD
 import provenance.data.Provenance
-import symbolicprimitives.Utils
+import taintedprimitives.Utils
 
 import scala.reflect.ClassTag
 
@@ -49,9 +49,9 @@ class FlatProvenanceDefaultRDD[T: ClassTag](override val rdd: RDD[ProvenanceRow[
 //              resultTraversable.map{(_, prov)}
 //            else
 //              resultTraversable.map{
-//                case row : SymBase => (row,row.getProvenance())
+//                case row : TaintedBase => (row,row.getProvenance())
 //                case _ => throw new UnsupportedOperationException(
-//                  "UDFAwareProvenance is enables but the returned object is not SymBase")
+//                  "UDFAwareProvenance is enables but the returned object is not TaintedBase")
 //              }
 //        }
       //}

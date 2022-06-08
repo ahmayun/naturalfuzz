@@ -5,7 +5,7 @@ import org.apache.spark.serializer.Serializer
 import org.apache.spark.{HashPartitioner, Partitioner, SparkEnv}
 import provenance.data.InfluenceMarker._
 import provenance.data.{DummyProvenance, Provenance}
-import symbolicprimitives.Utils
+import taintedprimitives.Utils
 import org.apache.spark.util.collection.CompactBuffer
 
 import java.nio.ByteBuffer
@@ -237,7 +237,7 @@ class PairProvenanceDefaultRDD[K, V](override val rdd: RDD[(K, ProvenanceRow[V])
         resultSerializer
         )
       // The output should contain a symobj, so rely on that to identify provenance
-      // v.asInstanceOf[SymBase].getProvenance()
+      // v.asInstanceOf[TaintedBase].getProvenance()
       // WARNING - if there is no provenance to infer, this can actually be terribly expensive.
       val extractedSymBaseProv = combinerResult.mapValues(v => (v, Utils.inferProvenance(v)))
       new PairProvenanceDefaultRDD[K,C](extractedSymBaseProv)

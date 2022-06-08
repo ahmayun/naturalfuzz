@@ -1,4 +1,4 @@
-package symbolicprimitives
+package taintedprimitives
 
 import provenance.data.{DummyProvenance, Provenance}
 
@@ -8,7 +8,7 @@ import scala.reflect.runtime.universe._
 /**
   * Created by malig on 4/25/19.
   */
-case class SymDouble(i: Double, p: Provenance) extends SymAny(i, p) {
+case class TaintedDouble(i: Double, p: Provenance) extends TaintedAny(i, p) {
   def this(value: Double) = {
     this(value, DummyProvenance.create())
   }
@@ -16,46 +16,46 @@ case class SymDouble(i: Double, p: Provenance) extends SymAny(i, p) {
     * Overloading operators from here onwards
     */
 
-  def +(x: Double): SymDouble = {
-    SymDouble(value + x, getProvenance())
+  def +(x: Double): TaintedDouble = {
+    TaintedDouble(value + x, getProvenance())
   }
 
-  def -(x: Double): SymDouble = {
-    SymDouble(value - x, getProvenance())
+  def -(x: Double): TaintedDouble = {
+    TaintedDouble(value - x, getProvenance())
   }
 
-  def *(x: Double): SymDouble = {
-    SymDouble(value * x, getProvenance())
+  def *(x: Double): TaintedDouble = {
+    TaintedDouble(value * x, getProvenance())
 
   }
 
-  def *(x: Float): SymDouble = {
-    SymDouble(value * x, getProvenance())
+  def *(x: Float): TaintedDouble = {
+    TaintedDouble(value * x, getProvenance())
   }
 
-  def /(x: Double): SymDouble = {
-    SymDouble(value / x, getProvenance())
+  def /(x: Double): TaintedDouble = {
+    TaintedDouble(value / x, getProvenance())
   }
 
-  def +(x: SymDouble): SymDouble = {
-    SymDouble(value + x.value, newProvenance(x.getProvenance()))
+  def +(x: TaintedDouble): TaintedDouble = {
+    TaintedDouble(value + x.value, newProvenance(x.getProvenance()))
   }
 
-  def -(x: SymDouble): SymDouble = {
-    SymDouble(value - x.value, newProvenance(x.getProvenance()))
+  def -(x: TaintedDouble): TaintedDouble = {
+    TaintedDouble(value - x.value, newProvenance(x.getProvenance()))
   }
 
-  def *(x: SymDouble): SymDouble = {
-    SymDouble(value * x.value, newProvenance(x.getProvenance()))
+  def *(x: TaintedDouble): TaintedDouble = {
+    TaintedDouble(value * x.value, newProvenance(x.getProvenance()))
   }
 
-  def /(x: SymDouble): SymDouble = {
-    SymDouble(value / x.value, newProvenance(x.getProvenance()))
+  def /(x: TaintedDouble): TaintedDouble = {
+    TaintedDouble(value / x.value, newProvenance(x.getProvenance()))
   }
 
   // TODO: Following are control flow provenance that, in my opinion, should be configurable. [Gulzar]
   // JT: agreed - for now, I've disabled since they don't return a new data type.
-  def <(x: SymDouble): Boolean = {
+  def <(x: TaintedDouble): Boolean = {
     // mergeProvenance(x.getProvenance()) // see above note on configurable
     return value < x.value
   }
@@ -64,7 +64,7 @@ case class SymDouble(i: Double, p: Provenance) extends SymAny(i, p) {
     return value < x
   }
   
-  def >(x: SymDouble): Boolean = {
+  def >(x: TaintedDouble): Boolean = {
     // mergeProvenance(x.getProvenance()) // see above note on configurable
     return value > x.value
   }
@@ -73,11 +73,11 @@ case class SymDouble(i: Double, p: Provenance) extends SymAny(i, p) {
     return value > x
   }
 
-  def >=(x: SymDouble): Boolean = {
+  def >=(x: TaintedDouble): Boolean = {
     // mergeProvenance(x.getProvenance()) // see above note on configurable
     value >= x.value
   }
-  def <=(x: SymDouble): Boolean = {
+  def <=(x: TaintedDouble): Boolean = {
     // mergeProvenance(x.getProvenance()) // see above note on configurable
     value <= x.value
   }
@@ -302,10 +302,10 @@ case class SymDouble(i: Double, p: Provenance) extends SymAny(i, p) {
   //  def %(x: Double): Double = value % x
 }
 
-object SymDouble {
-  implicit def ordering: Ordering[SymDouble] = Ordering.by(_.value)
+object TaintedDouble {
+  implicit def ordering: Ordering[TaintedDouble] = Ordering.by(_.value)
 
-  implicit def lift = Liftable[SymDouble] { si =>
-    q"(_root_.symbolicprimitives.SymDouble(${si.value}, ${si.p}))"
+  implicit def lift = Liftable[TaintedDouble] { si =>
+    q"(_root_.taintedprimitives.TaintedDouble(${si.value}, ${si.p}))"
   }
 }

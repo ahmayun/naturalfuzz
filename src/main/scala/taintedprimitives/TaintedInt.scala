@@ -1,15 +1,16 @@
-package symbolicprimitives
+package taintedprimitives
 
 /**
   * Created by malig on 4/25/19.
   */
 
 import provenance.data.{DummyProvenance, Provenance}
+import symbolicexecution.{SymbolicExpression, SymbolicInteger}
 
 import scala.reflect.runtime.universe._
 
-case class SymInt(override val value: Int, p : Provenance) extends SymAny(value, p) {
-
+case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAny(value, p) {
+  val symbolicExpression = new SymbolicExpression(new SymbolicInteger(value))
   def this(value: Int) = {
     this(value, DummyProvenance.create())
   }
@@ -17,61 +18,64 @@ case class SymInt(override val value: Int, p : Provenance) extends SymAny(value,
   /**
     * Overloading operators from here onwards
     */
-  def +(x: Int): SymInt = {
+  def +(x: Int): TaintedInt = {
     val d = value + x
-    SymInt(d, getProvenance())
+    TaintedInt(d, getProvenance())
   }
 
-  def -(x: Int): SymInt = {
+  def -(x: Int): TaintedInt = {
     val d = value - x
-    SymInt(d, getProvenance())
+    TaintedInt(d, getProvenance())
   }
 
-  def *(x: Int): SymInt = {
+  def *(x: Int): TaintedInt = {
     val d = value * x
-    SymInt(d, getProvenance())
+    TaintedInt(d, getProvenance())
   }
 
-  def *(x: Float): SymFloat = {
+  def *(x: Float): TaintedFloat = {
     val d = value * x
-    SymFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance())
   }
 
 
-  def /(x: Int): SymDouble= {
+  def /(x: Int): TaintedDouble= {
     val d = value / x
-    SymDouble(d, getProvenance() )
+    TaintedDouble(d, getProvenance() )
   }
 
-  def /(x: Long): SymDouble= {
+  def /(x: Long): TaintedDouble= {
     val d = value / x
-    SymDouble(d, getProvenance())
+    TaintedDouble(d, getProvenance())
   }
 
-  def +(x: SymInt): SymInt = {
-    SymInt(value + x.value, newProvenance(x.getProvenance()))
+  def +(x: TaintedInt): TaintedInt = {
+    TaintedInt(value + x.value, newProvenance(x.getProvenance()))
   }
 
-  def -(x: SymInt): SymInt = {
-    SymInt(value - x.value, newProvenance(x.getProvenance()))
+  def -(x: TaintedInt): TaintedInt = {
+    TaintedInt(value - x.value, newProvenance(x.getProvenance()))
   }
 
-  def *(x: SymInt): SymInt = {
-    SymInt(value * x.value, newProvenance(x.getProvenance()))
+  def *(x: TaintedInt): TaintedInt = {
+    TaintedInt(value * x.value, newProvenance(x.getProvenance()))
   }
 
-  def /(x: SymInt): SymInt = {
-    SymInt(value / x.value, newProvenance(x.getProvenance()))
+  def /(x: TaintedInt): TaintedInt = {
+    TaintedInt(value / x.value, newProvenance(x.getProvenance()))
   }
 
-  def %(x: Int): SymInt = {
-    SymInt(value % x, p)
+  def %(x: Int): TaintedInt = {
+    TaintedInt(value % x, p)
   }
   
   // Implementing on a need-to-use basis
-  def toInt: SymInt = this
-  def toDouble: SymDouble = SymDouble(value.toDouble, getProvenance())
-  
+  def toInt: TaintedInt = this
+  def toDouble: TaintedDouble = TaintedDouble(value.toDouble, getProvenance())
+
+  def > (i:TaintedInt) : Boolean = {
+    this.value > i
+  }
   /**
     * Operators not supported yet
     */
@@ -88,7 +92,7 @@ case class SymInt(override val value: Int, p : Provenance) extends SymAny(value,
 
   def toLong: Long = value.toLong
 
-  def toFloat: SymFloat = new SymFloat(value.toFloat, p)
+  def toFloat: TaintedFloat = new TaintedFloat(value.toFloat, p)
 
   //def toDouble: Double = value.toDouble
 
@@ -282,10 +286,10 @@ case class SymInt(override val value: Int, p : Provenance) extends SymAny(value,
 
 }
 
-object SymInt {
-  implicit def lift = Liftable[SymInt] { si =>
-    q"(_root_.symbolicprimitives.SymInt(${si.value}, ${si.p}))"
+object TaintedInt {
+  implicit def lift = Liftable[TaintedInt] { si =>
+    q"(_root_.taintedprimitives.TaintedInt(${si.value}, ${si.p}))"
   }
 
-  implicit def ordering: Ordering[SymInt] = Ordering.by(_.value)
+  implicit def ordering: Ordering[TaintedInt] = Ordering.by(_.value)
 }

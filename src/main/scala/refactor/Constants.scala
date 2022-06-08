@@ -18,8 +18,8 @@ object Constants extends Enumeration {
   ).mapValues(s => s"$MONITOR_CLASS.$s")
 
   val MAP_PRIM2SYM = Map(
-    "Int" -> "SymInt",
-    "String" -> "SymString",
-    "Float" -> "SymFloat"
+    "Int" -> "TaintedInt",
+    "String" -> "TaintedString",
+    "Float" -> "TaintedFloat"
   )
 }

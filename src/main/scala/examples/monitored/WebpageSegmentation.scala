@@ -7,8 +7,8 @@ import org.apache.spark.{SparkConf, SparkContext}
 import sparkwrapper.SparkContextWithDP
 import provenance.data.Provenance
 import provenance.rdd.ProvenanceRDD.toPairRDD
-import symbolicprimitives.{SymInt, SymString}
-import symbolicprimitives.SymImplicits._
+import taintedprimitives.{TaintedInt, TaintedString}
+import taintedprimitives.SymImplicits._
 
 object WebpageSegmentation {
   def main(args: Array[String]): ProvInfo = {
@@ -23,13 +23,13 @@ object WebpageSegmentation {
     Provenance.setProvenanceType("dual")
     val before = ctx.textFileProv(before_data, _.split(','))
     val after = ctx.textFileProv(after_data, _.split(','))
-    val boxes_before = toPairRDD[SymString, (SymString, Vector[SymInt])](before.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
-    val boxes_after = toPairRDD[SymString, (SymString, Vector[SymInt])](after.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
+    val boxes_before = toPairRDD[TaintedString, (TaintedString, Vector[TaintedInt])](before.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
+    val boxes_after = toPairRDD[TaintedString, (TaintedString, Vector[TaintedInt])](after.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
     val boxes_after_by_site_ungrouped = after.map(r => (r(0), (r.slice(1, r.length - 2).map(_.toInt).toVector, r(r.length - 2), r.last)))
     val boxes_after_by_site = _root_.monitoring.Monitors.monitorGroupByKey(boxes_after_by_site_ungrouped, 0)
 
     val pairs = _root_.monitoring.Monitors.monitorJoin(boxes_before, boxes_after, 1)
-    val changed = toPairRDD[SymString, (Vector[SymInt], SymString, SymString)](pairs.filter({
+    val changed = toPairRDD[TaintedString, (Vector[TaintedInt], TaintedString, TaintedString)](pairs.filter({
       case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
     }).map({
       case (k, (_, (url, a))) =>
@@ -45,7 +45,7 @@ object WebpageSegmentation {
     }.collect()//.foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
-  def intersects(rect1: IndexedSeq[SymInt], rect2: IndexedSeq[SymInt]): Option[(SymInt, SymInt, SymInt, SymInt)] = {
+  def intersects(rect1: IndexedSeq[TaintedInt], rect2: IndexedSeq[TaintedInt]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
     val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
     val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
     val endpointax = aSWx + aWidth
@@ -71,7 +71,7 @@ object WebpageSegmentation {
     if (_root_.monitoring.Monitors.monitorPredicate(startpointay > endpointby, (List[Any](startpointay, endpointby), List[Any]()), 4)) {
       return None
     }
-    var iSWx, iSWy, iWidth, iHeight = new SymInt(0)
+    var iSWx, iSWy, iWidth, iHeight = new TaintedInt(0)
     if (_root_.monitoring.Monitors.monitorPredicate(startpointax <= startpointbx && endpointbx <= endpointax, (List[Any](startpointax, startpointbx, endpointbx, endpointax), List[Any]()), 5)) {
       iSWx = startpointbx
       iSWy = if (_root_.monitoring.Monitors.monitorPredicate(startpointay < startpointby, (List[Any](startpointay, startpointby), List[Any](startpointax, startpointbx, endpointbx, endpointax)), 6)) startpointby else startpointay
