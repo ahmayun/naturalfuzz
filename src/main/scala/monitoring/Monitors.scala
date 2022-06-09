@@ -7,6 +7,7 @@ import org.roaringbitmap.RoaringBitmap
 import provenance.data.DualRBProvenance
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import runners.Config
+import symbolicexecution.{SymbolicBoolean, SymbolicExpression}
 import taintedprimitives.TaintedBase
 
 import scala.collection.mutable.HashMap
@@ -65,6 +66,10 @@ object Monitors {
 
       updateMap(id, this_branch_prov, prev_branch_prov)
     }
+    bool
+  }
+
+  def symbolicPathMonitor(bool: SymbolicBoolean, pathExpression: SymbolicExpression, id: Int): SymbolicBoolean = {
     bool
   }
 

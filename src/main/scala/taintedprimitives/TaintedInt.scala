@@ -73,9 +73,6 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
   def toInt: TaintedInt = this
   def toDouble: TaintedDouble = TaintedDouble(value.toDouble, getProvenance())
 
-  def > (i:TaintedInt) : Boolean = {
-    this.value > i
-  }
   /**
     * Operators not supported yet
     */

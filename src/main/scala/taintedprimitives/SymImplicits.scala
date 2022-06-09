@@ -1,11 +1,15 @@
 package taintedprimitives
 
 import provenance.data.Provenance
+import symbolicexecution.SymbolicBoolean
 
 object SymImplicits {
 
   //TODO: Using zero as default provenance here. We need to chain this disconnect through dependency analysis
 
+  implicit def symbolicBooleantoBoolean(b: SymbolicBoolean): Boolean = {
+    b.toBoolean
+  }
   implicit def int2SymInt(s: Int): TaintedInt = TaintedInt(s, Provenance.create())
   implicit def float2SymFloat(s: Float): TaintedFloat = TaintedFloat(s, Provenance.create())
   implicit def double2SymDouble(s: Double): TaintedDouble = TaintedDouble(s, Provenance.create())

@@ -10,7 +10,7 @@ import utils.TimingUtils.timeFunction
 
 import java.io.File
 
-object RunBigFuzz {
+object RunRIGFuzz {
 
   def main(args: Array[String]): Unit = {
 

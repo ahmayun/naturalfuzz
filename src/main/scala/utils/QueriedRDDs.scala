@@ -1,6 +1,6 @@
 package utils
 
 class QueriedRDDs {
-  def mixMatch():  = ???
+  def mixMatch() = ???
 
 }
