@@ -10,7 +10,6 @@ import symbolicexecution.{SymbolicExpression, SymbolicInteger}
 import scala.reflect.runtime.universe._
 
 case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAny(value, p) {
-  val symbolicExpression = new SymbolicExpression(new SymbolicInteger(value))
   def this(value: Int) = {
     this(value, DummyProvenance.create())
   }
