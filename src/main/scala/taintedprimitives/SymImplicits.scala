@@ -7,10 +7,14 @@ object SymImplicits {
 
   //TODO: Using zero as default provenance here. We need to chain this disconnect through dependency analysis
 
+<<<<<<< HEAD
   implicit def symbolicBooleantoBoolean(b: SymbolicBoolean): Boolean = {
     b.toBoolean
   }
   implicit def int2SymInt(s: Int): TaintedInt = TaintedInt(s, Provenance.create())
+=======
+  implicit def int2SymInt(s: Int): TaintedInt = new TaintedInt(s, Provenance.create())
+>>>>>>> 1032ba3521abec33f676c7414f228a5c1d605e9a
   implicit def float2SymFloat(s: Float): TaintedFloat = TaintedFloat(s, Provenance.create())
   implicit def double2SymDouble(s: Double): TaintedDouble = TaintedDouble(s, Provenance.create())
 
@@ -24,34 +28,33 @@ object SymImplicits {
   implicit def symFloat2SymInt(s: TaintedFloat): TaintedInt = TaintedInt(s.value.toInt, s.getProvenance())
   implicit def symFloat2SymDouble(s: TaintedFloat): TaintedDouble = TaintedDouble(s.value.toDouble, s.getProvenance())
   implicit def symInt2SymDouble(s: TaintedInt): TaintedDouble = TaintedDouble(s.value.toDouble, s.getProvenance())
-
+  implicit def taintedBooleanToBoolean(s: TaintedBoolean): Boolean = s.value
   // A few common tuple options - these implicitly rely on the conversions defined above.
   type SymLong = TaintedInt //TODO we don't have a SymLong type yet, so for simplicity we use TaintedInt. This is *not* accurate.
+
   implicit def long2SymLong(s: Long): SymLong = TaintedInt(s.toInt, Provenance.create())
-  
   // There are 16 definitions for pairs: 4 x 4.
   implicit def intIntTupleToSyms(tuple: (Int, Int)): (TaintedInt, TaintedInt) = (tuple._1, tuple._2)
   implicit def intLongTupleToSyms(tuple: (Int, Long)): (TaintedInt, SymLong) = (tuple._1, tuple._2)
   implicit def intDoubleTupleToSyms(tuple: (Int, Double)): (TaintedInt, TaintedDouble) = (tuple._1, tuple._2)
+
   implicit def intFloatTupleToSyms(tuple: (Int, Float)): (TaintedInt, TaintedFloat) = (tuple._1, tuple._2)
-  
   implicit def longIntTupleToSyms(tuple: (Long, Int)): (SymLong, TaintedInt) = (tuple._1, tuple._2)
   implicit def longLongTupleToSyms(tuple: (Long, Long)): (SymLong, SymLong) = (tuple._1, tuple._2)
   implicit def longDoubleTupleToSyms(tuple: (Long, Double)): (SymLong, TaintedDouble) = (tuple._1, tuple._2)
+
   implicit def longFloatTupleToSyms(tuple: (Long, Float)): (SymLong, TaintedFloat) = (tuple._1, tuple._2)
-  
   implicit def doubleIntTupleToSyms(tuple: (Double, Int)): (TaintedDouble, TaintedInt) = (tuple._1, tuple._2)
   implicit def doubleLongTupleToSyms(tuple: (Double, Long)): (TaintedDouble, SymLong) = (tuple._1, tuple._2)
   implicit def doubleDoubleTupleToSyms(tuple: (Double, Double)): (TaintedDouble, TaintedDouble) = (tuple._1, tuple._2)
+
   implicit def doubleFloatTupleToSyms(tuple: (Double, Float)): (TaintedDouble, TaintedFloat) = (tuple._1, tuple._2)
-  
   implicit def floatIntTupleToSyms(tuple: (Float, Int)): (TaintedFloat, TaintedInt) = (tuple._1, tuple._2)
   implicit def floatLongTupleToSyms(tuple: (Float, Long)): (TaintedFloat, SymLong) = (tuple._1, tuple._2)
   implicit def floatDoubleTupleToSyms(tuple: (Float, Double)): (TaintedFloat, TaintedDouble) = (tuple._1, tuple._2)
+
   implicit def floatFloatTupleToSyms(tuple: (Float, Float)): (TaintedFloat, TaintedFloat) = (tuple._1, tuple._2)
 
-
-  
   // Implicits are applied in order of priority, so these should be defined last so we try to use
   // symbolics as much as possible.
   implicit def symValToVal[T<: AnyVal](s: TaintedAny[T]): T = s.value

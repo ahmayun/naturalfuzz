@@ -141,7 +141,7 @@ object MathSym {
 
   /** @group abs */
   def abs(x: TaintedInt): TaintedInt =
-    TaintedInt(Math.abs(x.value), x.getProvenance())
+    new TaintedInt(Math.abs(x.value), x.getProvenance())
 
   /** @group abs */
   def abs(x: Long): Long = java.lang.Math.abs(x)

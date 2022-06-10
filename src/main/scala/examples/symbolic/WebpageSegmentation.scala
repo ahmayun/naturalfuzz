@@ -1,22 +1,21 @@
-package examples.monitored
-
-import fuzzer.ProvInfo
+package examples.symbolic
 
 import org.apache.spark.{SparkConf, SparkContext}
-import sparkwrapper.SparkContextWithDP
 import provenance.data.Provenance
 import provenance.rdd.ProvenanceRDD.toPairRDD
-import taintedprimitives.{TaintedInt, TaintedString}
+import runners.Config
+import sparkwrapper.SparkContextWithDP
 import taintedprimitives.SymImplicits._
+import taintedprimitives.{TaintedInt, TaintedString}
 
 object WebpageSegmentation {
-  def main(args: Array[String]): ProvInfo = {
+  def main(args: Array[String]): Unit = {
     println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
     sparkConf.setMaster("local[6]")
     sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
-    val before_data = args(0)
-    val after_data = args(1)
+    val before_data = Config.mapInputFilesFull("WebpageSegmentation")(0) // args(0)
+    val after_data = Config.mapInputFilesFull("WebpageSegmentation")(1)
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
     ctx.setLogLevel("ERROR")
     Provenance.setProvenanceType("dual")
@@ -55,6 +54,22 @@ object WebpageSegmentation {
     val startpointbx = bSWx
     val endpointby = bSWy + bHeight
     val startpointby = bSWy
+
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointax < startpointbx && startpointax < startpointbx, (List[Any](endpointax, startpointbx, startpointax, startpointbx), List[Any]()), 0)) {
+      return None
+    }
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointbx < startpointax && startpointbx < startpointax, (List[Any](endpointbx, startpointax, startpointbx, startpointax), List[Any]()), 1)) {
+      return None
+    }
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointby < startpointay && startpointby < startpointay, (List[Any](endpointby, startpointay, startpointby, startpointay), List[Any]()), 2)) {
+      return None
+    }
+    if (_root_.monitoring.Monitors.monitorPredicate(endpointay < startpointby && startpointay < startpointby, (List[Any](endpointay, startpointby, startpointay, startpointby), List[Any]()), 3)) {
+      return None
+    }
+    if (_root_.monitoring.Monitors.monitorPredicate(startpointay > endpointby, (List[Any](startpointay, endpointby), List[Any]()), 4)) {
+      return None
+    }
     var iSWx, iSWy, iWidth, iHeight = new TaintedInt(0)
 
     if (_root_.monitoring.Monitors.monitorPredicate(startpointax <= startpointbx && endpointbx <= endpointax, (List[Any](startpointax, startpointbx, endpointbx, endpointax), List[Any]()), 5)) {
@@ -92,8 +107,6 @@ object WebpageSegmentation {
       iSWy = endpointby
       iWidth = aWidth
       iHeight = 0
-    } else {
-      return None
     }
     Some((iSWx, iSWy, iHeight, iWidth))
   }

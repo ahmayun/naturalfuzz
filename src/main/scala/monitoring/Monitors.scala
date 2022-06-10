@@ -1,14 +1,14 @@
 package monitoring
 
 import fuzzer.ProvInfo
-import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.roaringbitmap.RoaringBitmap
 import provenance.data.DualRBProvenance
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import runners.Config
-import symbolicexecution.{SymbolicBoolean, SymbolicExpression}
-import taintedprimitives.TaintedBase
+import symbolicexecution.{SymbolicExpression, SymbolicTree}
+import taintedprimitives.{TaintedBase, TaintedBoolean}
+import taintedprimitives.SymImplicits._
 
 import scala.collection.mutable.HashMap
 import scala.reflect.ClassTag
@@ -69,7 +69,25 @@ object Monitors {
     bool
   }
 
-  def symbolicPathMonitor(bool: SymbolicBoolean, pathExpression: SymbolicExpression, id: Int): SymbolicBoolean = {
+  def monitorPredicate(bool: TaintedBoolean, prov: (List[Any], List[Any]), id: Int, currentPathConstraint: SymbolicExpression = SymbolicExpression(new SymbolicTree())): Boolean = {
+    if (bool) {
+      val this_branch_prov = new RoaringBitmap()
+      val prev_branch_prov = new RoaringBitmap()
+
+      prov._1.foreach {
+        case v: TaintedBase => this_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+        case _ =>
+      }
+
+      prov._2.foreach {
+        case v: TaintedBase => prev_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+        case _ =>
+      }
+
+      updateMap(id, this_branch_prov, prev_branch_prov)
+    }
+    val pc = if(!currentPathConstraint.isEmpty) currentPathConstraint.and(bool.symbolicExpression) else bool.symbolicExpression
+    println(s"PC for branch $id: $pc")
     bool
   }
 

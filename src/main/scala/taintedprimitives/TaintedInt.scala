@@ -5,13 +5,17 @@ package taintedprimitives
   */
 
 import provenance.data.{DummyProvenance, Provenance}
-import symbolicexecution.{SymbolicExpression, SymbolicInteger}
+import symbolicexecution.{SymbolicExpression, SymbolicInteger, SymbolicTree}
 
 import scala.reflect.runtime.universe._
 
-case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAny(value, p) {
+case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExpression = new SymbolicExpression(new SymbolicTree())) extends TaintedAny(value, p) {
   def this(value: Int) = {
-    this(value, DummyProvenance.create())
+    this(value, DummyProvenance.create(), new SymbolicInteger(value))
+  }
+
+  def this(value: Int, p: Provenance) = {
+    this(value, p, new SymbolicInteger(value))
   }
   
   /**
@@ -19,17 +23,17 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
     */
   def +(x: Int): TaintedInt = {
     val d = value + x
-    TaintedInt(d, getProvenance())
+    TaintedInt(d, getProvenance(), expr + x)
   }
 
   def -(x: Int): TaintedInt = {
     val d = value - x
-    TaintedInt(d, getProvenance())
+    TaintedInt(d, getProvenance(), expr - x)
   }
 
   def *(x: Int): TaintedInt = {
     val d = value * x
-    TaintedInt(d, getProvenance())
+    TaintedInt(d, getProvenance(), expr * x)
   }
 
   def *(x: Float): TaintedFloat = {
@@ -37,10 +41,9 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
     TaintedFloat(d, getProvenance())
   }
 
-
-  def /(x: Int): TaintedDouble= {
+  def /(x: Int): TaintedDouble = {
     val d = value / x
-    TaintedDouble(d, getProvenance() )
+    TaintedDouble(d, getProvenance())
   }
 
   def /(x: Long): TaintedDouble= {
@@ -48,24 +51,26 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
     TaintedDouble(d, getProvenance())
   }
 
+  def /(x: TaintedInt): TaintedInt = {
+    val d = value / x.value
+    new TaintedInt(d, getProvenance())
+  }
+
+
   def +(x: TaintedInt): TaintedInt = {
-    TaintedInt(value + x.value, newProvenance(x.getProvenance()))
+    TaintedInt(value + x.value, newProvenance(x.getProvenance()), expr + x.expr)
   }
 
   def -(x: TaintedInt): TaintedInt = {
-    TaintedInt(value - x.value, newProvenance(x.getProvenance()))
+    TaintedInt(value - x.value, newProvenance(x.getProvenance()), expr - x.expr)
   }
 
   def *(x: TaintedInt): TaintedInt = {
-    TaintedInt(value * x.value, newProvenance(x.getProvenance()))
-  }
-
-  def /(x: TaintedInt): TaintedInt = {
-    TaintedInt(value / x.value, newProvenance(x.getProvenance()))
+    TaintedInt(value * x.value, newProvenance(x.getProvenance()), expr * x.expr)
   }
 
   def %(x: Int): TaintedInt = {
-    TaintedInt(value % x, p)
+    new TaintedInt(value % x, getProvenance())
   }
   
   // Implementing on a need-to-use basis
@@ -145,6 +150,9 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
   def <(x: Char): Boolean = value < x
 
   def <(x: Int): Boolean = value < x
+  def <(x: TaintedInt): TaintedBoolean = {
+    TaintedBoolean(value < x.value, newProvenance(x.getProvenance()), expr < x.expr)
+  }
 
   def <(x: Long): Boolean = value < x
 
@@ -159,6 +167,9 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
   def <=(x: Char): Boolean = value <= x
 
   def <=(x: Int): Boolean = value <= x
+  def <=(x: TaintedInt): TaintedBoolean = {
+    TaintedBoolean(value <= x.value, newProvenance(x.getProvenance()), expr <= x.expr)
+  }
 
   def <=(x: Long): Boolean = value <= x
 
@@ -173,6 +184,9 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
   def >(x: Char): Boolean = value > x
 
   def >(x: Int): Boolean = value > x
+  def >(x: TaintedInt): TaintedBoolean = {
+    TaintedBoolean(value > x.value, newProvenance(x.getProvenance()), expr > x.expr)
+  }
 
   def >(x: Long): Boolean = value > x
 
@@ -187,6 +201,9 @@ case class TaintedInt(override val value: Int, p : Provenance) extends TaintedAn
   def >=(x: Char): Boolean = value >= x
 
   def >=(x: Int): Boolean = value >= x
+  def >=(x: TaintedInt): TaintedBoolean = {
+    TaintedBoolean(value >= x.value, newProvenance(x.getProvenance()), expr >= x.expr)
+  }
 
   def >=(x: Long): Boolean = value >= x
 
