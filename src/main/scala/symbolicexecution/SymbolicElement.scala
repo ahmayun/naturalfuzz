@@ -1,5 +1,0 @@
-package symbolicexecution
-
-trait SymbolicElement {
-
-}

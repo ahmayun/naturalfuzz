@@ -1,12 +1,13 @@
 package symbolicexecution
 
-class SymbolicInteger(val concrete: Option[Int]) extends SymbolicElement {
+class SymbolicInteger(override val expr: SymbolicTree, val concrete: Option[Int]) extends SymbolicExpression(expr) {
 
   def this() = {
-    this(None)
+    this(SymbolicTree(null, "SymInt", null), None)
   }
 
   def this(i: Int) = {
-    this(Some(i))
+    this(SymbolicTree(null, s"SymInt:${i.toString}", null), Some(i))
   }
+
 }
