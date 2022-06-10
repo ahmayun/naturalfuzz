@@ -7,14 +7,7 @@ object SymImplicits {
 
   //TODO: Using zero as default provenance here. We need to chain this disconnect through dependency analysis
 
-<<<<<<< HEAD
-  implicit def symbolicBooleantoBoolean(b: SymbolicBoolean): Boolean = {
-    b.toBoolean
-  }
-  implicit def int2SymInt(s: Int): TaintedInt = TaintedInt(s, Provenance.create())
-=======
   implicit def int2SymInt(s: Int): TaintedInt = new TaintedInt(s, Provenance.create())
->>>>>>> 1032ba3521abec33f676c7414f228a5c1d605e9a
   implicit def float2SymFloat(s: Float): TaintedFloat = TaintedFloat(s, Provenance.create())
   implicit def double2SymDouble(s: Double): TaintedDouble = TaintedDouble(s, Provenance.create())
 
