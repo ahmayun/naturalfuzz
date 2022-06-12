@@ -28,14 +28,23 @@ object WebpageSegmentation {
         case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
       }
       .map{
-        case (k, (_, (url, a))) =>
+        case (k, ((_, a), (url, _))) =>
           val Array(_, cid, ctype) = k.split('*')
           (url, (a, cid, ctype))
       }
 
+    println("changed")
+    changed.collect().foreach(println)
+
+    println("boxes_after_by_site")
+    boxes_after_by_site.collect().foreach(println)
+
+
     val inter = changed.join(boxes_after_by_site)
+    println("inter")
+    inter.collect().foreach(println)
     inter.map{
-      case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
+      case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(box2 => intersects(box1, box2)))
     }.collect().foreach(println)
 
   }
@@ -55,6 +64,8 @@ object WebpageSegmentation {
     val startpointby = bSWy
 
 
+    println("-------")
+    println(s"A(${rect1.toVector}) B(${rect2.toVector})")
 
     if ((endpointax < startpointbx) && (startpointax < startpointbx) ){
       return None
@@ -78,6 +89,7 @@ object WebpageSegmentation {
     var iSWx, iSWy, iWidth, iHeight  = 0
 
     if ((startpointax <= startpointbx) && (endpointbx <= endpointax)) {
+      println("if 1")
       iSWx  = startpointbx
       iSWy = if (startpointay < startpointby) startpointby else startpointay
       iWidth = bWidth
@@ -85,6 +97,7 @@ object WebpageSegmentation {
       iHeight = top - iSWy
     }
     else if ((startpointbx <= startpointax) && (endpointax <= endpointbx)) {
+      println("if 2")
       iSWx  = startpointax
       iSWy = if (startpointay < startpointby) startpointby else startpointay
       iWidth = aWidth
@@ -92,6 +105,7 @@ object WebpageSegmentation {
       iHeight = top - iSWy
     }
     else if ((startpointax >= startpointbx) && (startpointax <= endpointbx)) {
+      println("if 3")
       iSWx  = startpointax
       iSWy = if (startpointay > startpointby) startpointay else startpointby
       iWidth = endpointbx - startpointax
@@ -99,6 +113,7 @@ object WebpageSegmentation {
       iHeight = top - iSWy
     }
     else if ((startpointbx >= startpointax) && (startpointbx <= endpointax)) {
+      println("if 4")
       iSWx  = startpointbx
       iSWy = if (startpointay > startpointby) startpointay else startpointby
       iWidth = endpointax - startpointbx
@@ -106,6 +121,7 @@ object WebpageSegmentation {
       iHeight = top - iSWy
     }
 
+    println("-------")
     Some((iSWx, iSWy, iHeight, iWidth))
   }
 

@@ -17,11 +17,10 @@ object RunNormal {
     val benchmark_name = Config.benchmarkName
     val Some(input_files) = Config.mapInputFiles.get(benchmark_name)
     val Some(fun_fuzzable) = Config.mapFunFuzzables.get(benchmark_name)
-    val Some(schema) = Config.mapSchemas.get(benchmark_name)
     val benchmark_class = Config.benchmarkClass
     // ========================================================
 
-    val guidance = new NoGuidance(input_files, schema, runs)
+    val guidance = new NoGuidance(input_files, null, runs)
     val benchmark_path = s"src/main/scala/${benchmark_class.split('.').mkString("/")}.scala"
     val output_dir = Config.scoverageResultsDir
     val program = new Program(benchmark_name,

@@ -82,6 +82,7 @@ object Fuzzer {
       Global.maxErrorsMap = stats.failureMap
       Global.maxErrors = stats.failureMap.keySet.size
     }
+    println("inputs: " + guidance.getInput().mkString(", "))
     (stats, t_start, System.currentTimeMillis())
   }
 

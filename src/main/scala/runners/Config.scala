@@ -6,13 +6,17 @@ import schemas.BenchmarkSchemas
 
 object Config {
 
+  // RIGFuzz params
+  val keepColProb = 0.2f
+  val dropMixProb = 0.5f
+
   val maxRepeats = 1
-  val iterations = 1000
+  val iterations = 10
   val scoverageResultsDir = "target/scoverage-results"
-  val benchmarkName = "WebpageSegmentation"
+  val benchmarkName = "RIGTest"
   val faultTest = false
   val deepFaults = false
-  val seedType = "weak" //either full, reduced or weak
+  val seedType = "mixmatch" //either full, reduced or weak
   val benchmarkClass = s"examples.${if (faultTest) "faulty" else "fuzzable"}.$benchmarkName"
   val delimiter = ","
   val mutateProbs = Array( // 0:M1, 1:M2 ... 5:M6
@@ -51,10 +55,15 @@ object Config {
     "Delays" -> Array("seeds/reduceddata/delays/station1", "seeds/reduceddata/delays/station2")
   )
 
+  val mapInputFilesMixMatch = Map(
+    "RIGTest" -> Array("mixmatch-data/rig-test/boxes")
+  )
+
   val Some(mapInputFiles) = Map(
     "weak" -> mapInputFilesWeak,
     "reduced" -> mapInputFilesReduced,
-    "full" -> mapInputFilesFull
+    "full" -> mapInputFilesFull,
+    "mixmatch" -> mapInputFilesMixMatch
   ).get(seedType)
 
 
@@ -68,7 +77,8 @@ object Config {
     "CommuteType" -> Switch(fuzzable.CommuteType.main, faulty.CommuteType.main, faultTest),
     "Delays" -> Switch(fuzzable.Delays.main, faulty.Delays.main, faultTest),
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
-    "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest)
+    "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
+    "RIGTest" -> fuzzable.RIGTest.main
   )
 
   val mapFunSpark = Map[String, Array[String] => Unit](elems =
@@ -95,7 +105,8 @@ object Config {
     "CommuteType" -> BenchmarkSchemas.COMMUTE,
     "Delays" -> BenchmarkSchemas.DELAYS,
     "Customers" -> BenchmarkSchemas.CUSTOMERS,
-    "DeliveryFaults" -> BenchmarkSchemas.FAULTS
+    "DeliveryFaults" -> BenchmarkSchemas.FAULTS,
+    "RIGTest" -> BenchmarkSchemas.RIGTEST
   )
 
   val mapErrorCountAll = Map[String, Int](elems =

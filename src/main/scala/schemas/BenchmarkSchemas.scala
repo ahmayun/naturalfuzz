@@ -138,4 +138,17 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_NUMERICAL, (0, 10))
     )
   )
+
+  val RIGTEST = Array[Array[Schema[Any]]](
+    // http://www.youtube.com,1000,100,100,920,2,advertisement
+    Array(
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_OTHER)
+    )
+  )
 }

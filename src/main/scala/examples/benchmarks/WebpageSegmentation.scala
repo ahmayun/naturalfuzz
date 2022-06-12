@@ -28,7 +28,7 @@ object WebpageSegmentation {
         case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
       }
       .map{
-        case (k, (_, (url, a))) =>
+        case (k, ((_, a), (url, _))) =>
           val Array(_, cid, ctype) = k.split('*')
           (url, (a, cid, ctype))
       }

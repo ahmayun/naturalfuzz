@@ -1,8 +1,8 @@
 package guidance
 
-import fuzzer.{Global, Guidance, ProvInfo, Schema}
+import fuzzer.{Global, Guidance, Schema}
 import scoverage.Coverage
-import utils.{InputMetaData, QueriedRDDs}
+import utils.QueriedRDDs
 
 class RIGGuidance(
                    val inputFiles: Array[String],
@@ -14,7 +14,14 @@ class RIGGuidance(
   var runs = 0
 
   def mutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
-    qrdds.mixMatch().filterQueryRDDs.map(_.data)
+    val mm = qrdds.mixMatch(inputDatasets).filterQueryRDDs.map(_.data)
+    println("original")
+    inputDatasets(0).foreach(println)
+    println("")
+    println("mutated")
+    mm(0).foreach(println)
+    println("")
+    mm
   }
 
   override def getInput(): Array[String] = {

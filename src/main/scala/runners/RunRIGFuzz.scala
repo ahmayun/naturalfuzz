@@ -2,10 +2,11 @@ package runners
 
 import fuzzer.{Fuzzer, Program}
 import guidance.RIGGuidance
+import runners.RunNormal.limitDP
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
 import symbolicexecution.SymbolicExecutor
-import utils.RIGUtils
+import utils.{QueriedRDDs, RIGUtils}
 import utils.TimingUtils.timeFunction
 
 import java.io.File
@@ -36,7 +37,7 @@ object RunRIGFuzz {
     val (pathExpressions, _) = timeFunction(() => SymbolicExecutor.execute(program))
     val (filterQueries, _) = timeFunction(() => RIGUtils.createFilterQueries(pathExpressions))
     val (queryRDDs, _) = timeFunction(() => filterQueries.getRows(program.args))
-    val guidance = new RIGGuidance(inputFiles, schema, runs, queryRDDs)
+    val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(queryRDDs))
 
     val (stats, _, _) = Fuzzer.Fuzz(program, guidance, coverageOutDir)
 
@@ -47,7 +48,13 @@ object RunRIGFuzz {
 
     coverage.apply(measurements)
     new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverageOutDir)).write(coverage)
-
+    println("=== qrdds ====")
+    queryRDDs.foreach{
+      q =>
+        println("===")
+        println(q.toString)
+    }
+    println(s"Coverage: ${limitDP(coverage.statementCoveragePercent, 2)}% (gathered from ${measurementFiles.length} measurement files)")
 
   }
 
