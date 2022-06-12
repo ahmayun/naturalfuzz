@@ -14,6 +14,7 @@ object Config {
   val deepFaults = false
   val seedType = "weak" //either full, reduced or weak
   val benchmarkClass = s"examples.${if (faultTest) "faulty" else "fuzzable"}.$benchmarkName"
+  val delimiter = ","
   val mutateProbs = Array( // 0:M1, 1:M2 ... 5:M6
     0.9f, // Data
     0.02f, // Data

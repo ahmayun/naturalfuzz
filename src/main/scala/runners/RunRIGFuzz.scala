@@ -1,7 +1,7 @@
 package runners
 
 import fuzzer.{Fuzzer, Program}
-import guidance.BigFuzzGuidance
+import guidance.RIGGuidance
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
 import symbolicexecution.SymbolicExecutor
@@ -24,7 +24,6 @@ object RunRIGFuzz {
     val benchmarkClass = Config.benchmarkClass
     // ========================================================
 
-    val guidance = new BigFuzzGuidance(inputFiles, schema, runs)
     val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
     val coverageOutDir = Config.scoverageResultsDir
     val program = new Program(benchmarkName,
@@ -34,10 +33,12 @@ object RunRIGFuzz {
       inputFiles)
 
     // Preprocessing and Fuzzing
-    val (pathExpressions, timeSymbolicExecution) = timeFunction(() => SymbolicExecutor.execute(program))
-    val (filterQueries, timeQueryConstruction) = timeFunction(() => RIGUtils.createFilterQueries(pathExpressions))
-    val (queryRDDs, timeFilter) = timeFunction(() => filterQueries.getRows(program.args))
-    val (generatedInput, timeMixMatch) = timeFunction(() => queryRDDs.mixMatch())
+    val (pathExpressions, _) = timeFunction(() => SymbolicExecutor.execute(program))
+    val (filterQueries, _) = timeFunction(() => RIGUtils.createFilterQueries(pathExpressions))
+    val (queryRDDs, _) = timeFunction(() => filterQueries.getRows(program.args))
+    val guidance = new RIGGuidance(inputFiles, schema, runs, queryRDDs)
+
+    val (stats, _, _) = Fuzzer.Fuzz(program, guidance, coverageOutDir)
 
 
     val coverage = Serializer.deserialize(new File(s"$coverageOutDir/scoverage.coverage"))
