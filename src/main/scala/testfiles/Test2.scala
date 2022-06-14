@@ -5,6 +5,7 @@ import generators.GenSegmentationData.deleteDir
 import runners.Config
 
 import java.io.{BufferedWriter, File, FileWriter}
+import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 object Test2 {
@@ -39,8 +40,8 @@ object Test2 {
     )
 
     val provInfo = new ProvInfo(
-        Array(
-          Array(0,1).flatMap(d => Array(0,5,6).map(c => (d, c, 0)))
+        ListBuffer(
+          ListBuffer(0,1).flatMap(d => ListBuffer(0,5,6).map(c => (d, c, 0)))
         )
     )
 

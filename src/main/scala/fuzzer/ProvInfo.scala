@@ -1,16 +1,22 @@
 package fuzzer
 
+import provenance.data.Provenance
 import runners.Config
+
+import scala.collection.mutable.ListBuffer
 
 
 //depsInfo: [[(ds, col, row), (ds, col, row)], [(ds, col, row)] .... [(ds, col, row)]]
-class ProvInfo(val depsInfo: Array[Array[(Int,Int,Int)]]) {
-
-  def this() = {
-    this(Array())
+class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
+  def update(id: Int, provenances: ListBuffer[Provenance]): Unit = {
+    depsInfo.append(provenances.flatMap(_.convertToTuples))
   }
 
-  def getLocs(): Array[Array[(Int,Int,Int)]] = { depsInfo }
+  def this() = {
+    this(ListBuffer())
+  }
+
+  def getLocs(): ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }
 
   def updateRowSet(newLocs: Map[(Int, Int), (Int, Int)]): ProvInfo = {
     new ProvInfo(depsInfo.map(
@@ -27,7 +33,7 @@ class ProvInfo(val depsInfo: Array[Array[(Int,Int,Int)]]) {
   }
 
   def merge(): ProvInfo = {
-    new ProvInfo(Array(depsInfo.flatten))
+    new ProvInfo(ListBuffer(depsInfo.flatten))
   }
 
   def append(other: ProvInfo): ProvInfo = {
@@ -35,16 +41,16 @@ class ProvInfo(val depsInfo: Array[Array[(Int,Int,Int)]]) {
   }
 
   def getRandom(): ProvInfo = {
-    new ProvInfo(Array(depsInfo.last)) // TODO IMPORTANT: MAKE RANDOM
+    new ProvInfo(ListBuffer(depsInfo.last)) // TODO IMPORTANT: MAKE RANDOM
   }
 
-  def getCoDependentRegions(): Array[Array[(Int,Int,Int)]] = { depsInfo }
+  def getCoDependentRegions(): ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }
 
   def simplify(): ProvInfo = {
     new ProvInfo(Config.benchmarkName match {
       case "WebpageSegmentation" =>
-        Array(
-          Array(0,1).flatMap(d => Array(0,5,6).map(c => (d, c, 0)))
+        ListBuffer(
+          ListBuffer(0,1).flatMap(d => ListBuffer(0,5,6).map(c => (d, c, 0)))
         )
       case _ => depsInfo
     })

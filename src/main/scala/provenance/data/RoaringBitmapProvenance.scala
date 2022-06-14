@@ -3,6 +3,7 @@ package provenance.data
 import org.roaringbitmap.RoaringBitmap
 
 import java.io.{IOException, ObjectInputStream, ObjectOutputStream}
+import scala.collection.mutable.ListBuffer
 //import org.roaringbitmap.longlong.Roaring64NavigableMap
 
 import scala.collection.mutable.ArrayBuffer
@@ -73,10 +74,12 @@ class RoaringBitmapProvenance(var bitmap: RoaringBitmap) extends DataStructurePr
     other match {
       case rbp: RoaringBitmapProvenance =>
         bitmap.contains(rbp.bitmap)
-      case dummy: DummyProvenance => true
+      case _ : DummyProvenance => true
       case other => throw new NotImplementedError(s"Unsupported RoaringBitmap containsAll check: $other")
     }
   }
+
+  override def convertToTuples: ListBuffer[(Int, Int, Int)] = ???
 }
 
 object RoaringBitmapProvenance extends ProvenanceFactory {

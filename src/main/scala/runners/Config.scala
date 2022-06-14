@@ -7,7 +7,7 @@ import schemas.BenchmarkSchemas
 object Config {
 
   val maxRepeats = 1
-  val iterations = 1000
+  val iterations = 10
   val scoverageResultsDir = "target/scoverage-results"
   val benchmarkName = "WebpageSegmentation"
   val faultTest = false

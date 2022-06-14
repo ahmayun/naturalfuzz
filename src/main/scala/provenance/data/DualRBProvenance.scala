@@ -3,6 +3,7 @@ package provenance.data
 import org.roaringbitmap.RoaringBitmap
 
 import java.io.{IOException, ObjectInputStream, ObjectOutputStream}
+import scala.collection.mutable.ListBuffer
 //import org.roaringbitmap.longlong.Roaring64NavigableMap
 
 import scala.collection.mutable.ArrayBuffer
@@ -83,6 +84,10 @@ class DualRBProvenance(var bitmap: RoaringBitmap) extends DataStructureProvenanc
       case _: DummyProvenance => true
       case other => throw new NotImplementedError(s"Unsupported RoaringBitmap containsAll check: $other")
     }
+  }
+
+  override def convertToTuples: ListBuffer[(Int, Int, Int)] = {
+    ListBuffer(0,1).flatMap(d => ListBuffer(0,5,6).map(c => (d, c, 0)))
   }
 }
 

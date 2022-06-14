@@ -6,6 +6,7 @@ import scoverage.Coverage
 import utils.MutationUtils._
 import utils.{FileUtils, MutationUtils}
 
+import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 
@@ -100,7 +101,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
     probabalisticApply(this.mutations(to_apply), v, c, d)
   }
 
-  def mutateRow(row: String, row_id: Int, dataset: Int, same_mut_locations: Array[Array[(Int, Int, Int)]]): String = {
+  def mutateRow(row: String, row_id: Int, dataset: Int, same_mut_locations: ListBuffer[ListBuffer[(Int, Int, Int)]]): String = {
     val nop_cols = same_mut_locations.flatten.filter{case (d, _, _) => d == dataset}.map{case (_, c, r) => Vector(c,r)}
     probabalisticApply(M3, row.split(',').zipWithIndex.map{
       case (e, i) if !nop_cols.contains(Vector(i,row_id)) =>
@@ -110,14 +111,14 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
     }.mkString(","), prob=0.0f)
   }
 
-  def mutate(dataset: Seq[String], d: Int, same_mut_locations: Array[Array[(Int, Int, Int)]]): Seq[String] = {
+  def mutate(dataset: Seq[String], d: Int, same_mut_locations: ListBuffer[ListBuffer[(Int,Int,Int)]]): Seq[String] = {
 //   dataset.map(mutateRow(_, d, same_mut_locations))
     randomDuplications(dataset, this.max_row_dups, this.row_dup_prob).zipWithIndex
       .map{case (row, i) => mutateRow(randomDuplications(row.split(','), this.max_col_dups, this.col_dup_prob).mkString(","), i, d, same_mut_locations)}
   }
 
-  def applyNormMutations(datasets: Array[Seq[String]], same_mut_locations: Array[Array[(Int, Int, Int)]]): Array[Seq[String]] = {
-    datasets.zipWithIndex.map{case (d, i) => mutate(d, i, same_mut_locations)}
+  def applyNormMutations(datasets: Array[Seq[String]], locs: ListBuffer[ListBuffer[(Int, Int, Int)]]): Array[Seq[String]] = {
+    datasets.zipWithIndex.map{case (d, i) => mutate(d, i, locs)}
   }
   def mutator(data: Seq[String], d: Int, c: Int, r: Int, seed: Long): Seq[String] = {
     val rand = new Random(seed)
@@ -173,7 +174,8 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
       .groupBy(_._1._1) // group by dataset
       .map(e => (e._1, e._2.map(_._2))) // (loc, List[(loc,mutator)]) -> (loc, List[mutator])
       .toArray
-      .sortBy(_._1).map(_._2) // sort by dataset and return only mutators
+      .sortBy(_._1)
+      .map(_._2.toArray) // sort by dataset and return only mutators
   }
 
   def applyStagedMutations(dataset: Seq[String], stagedMutations: Array[Seq[String] => Seq[String]]): Seq[String] = {
@@ -323,11 +325,11 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
     Global.iteration >= this.maxRuns
   }
 
-  override def updateCoverage(coverage: Coverage, crashed: Boolean = true): Boolean = {
+  override def updateCoverage(cov: Coverage, crashed: Boolean = true): Boolean = {
     if(Global.iteration != 0 && coverage.statementCoveragePercent <= this.coverage.statementCoveragePercent && !crashed) {
       return true
     }
-    this.coverage = coverage
+    this.coverage = cov
     true
   }
 }
