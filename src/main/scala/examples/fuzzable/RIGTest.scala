@@ -26,7 +26,7 @@ object RIGTest {
     println("-------")
     println(s"RECT (${rect1.toVector})")
 
-    if(aSWx < aSWy && aHeight > aWidth) {
+    if(aSWx < aSWy && aHeight < aWidth) {
       println("if 1")
     } else if(aSWx > aSWy && aHeight > aWidth) {
       println("if 2")
