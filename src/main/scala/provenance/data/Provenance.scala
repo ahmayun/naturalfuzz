@@ -1,8 +1,11 @@
 package provenance.data
 
+import scala.collection.GenTraversableOnce
+import scala.collection.mutable.ListBuffer
 import scala.reflect.runtime.universe._
 
 trait Provenance extends Serializable {
+  def convertToTuples: ListBuffer[(Int,Int,Int)]
 
   def cloneProvenance(): Provenance
   /** Merges two provenance instances, returning a (potentially) new instance after merging. This

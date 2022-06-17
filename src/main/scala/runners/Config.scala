@@ -9,15 +9,18 @@ object Config {
   // RIGFuzz params
   val keepColProb = 0.2f
   val dropMixProb = 0.5f
-
+  val maxSamples = 100
   val maxRepeats = 1
   val iterations = 10
   val scoverageResultsDir = "target/scoverage-results"
   val benchmarkName = "RIGTest"
+
+
   val faultTest = false
   val deepFaults = false
   val seedType = "mixmatch" //either full, reduced or weak
   val benchmarkClass = s"examples.${if (faultTest) "faulty" else "fuzzable"}.$benchmarkName"
+
   val delimiter = ","
   val mutateProbs = Array( // 0:M1, 1:M2 ... 5:M6
     0.9f, // Data
@@ -28,7 +31,7 @@ object Config {
     0.02f) // Format
 
 
-  val mapInputFilesWeak = Map(
+  val mapInputFilesWeak: Map[String, Array[String]] = Map(
     "FlightDistance" -> Array("seeds/weak_seed/FlightDistance/flights", "seeds/weak_seed/FlightDistance/airports_data"),
     "WebpageSegmentation" -> Array("seeds/weak_seed/webpage_segmentation/before", "seeds/weak_seed/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/weak_seed/commute/trips"),
@@ -37,7 +40,7 @@ object Config {
     "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries")
   )
 
-  val mapInputFilesFull = Map(
+  val mapInputFilesFull: Map[String, Array[String]] = Map(
     "WebpageSegmentation" -> Array("seeds/full_data/webpage_segmentation/before", "seeds/full_data/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/full_data/trips"),
     "Customers" -> Array("seeds/full_data/customers/customers", "seeds/full_data/customers/orders"),
@@ -46,7 +49,7 @@ object Config {
     "Delays" -> Array("seeds/full_data/delays/station1", "seeds/full_data/delays/station2")
   )
 
-  val mapInputFilesReduced = Map(
+  val mapInputFilesReduced: Map[String, Array[String]] = Map(
     "WebpageSegmentation" -> Array("seeds/reduceddata/webpage_segmentation/before", "seeds/reduceddata/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/reduceddata/trips"),
     "Customers" -> Array("seeds/reduceddata/customers/customers", "seeds/reduceddata/customers/orders"),
@@ -71,7 +74,7 @@ object Config {
     if (switch) faulty else normal
   }
 
-  val mapFunFuzzables = Map[String, Array[String] => Unit](elems =
+  val mapFunFuzzables: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](elems =
     "FlightDistance" -> Switch(fuzzable.FlightDistance.main, faulty.FlightDistance.main, faultTest),
     "WebpageSegmentation" -> Switch(fuzzable.WebpageSegmentation.main, faulty.WebpageSegmentation.main, faultTest),
     "CommuteType" -> Switch(fuzzable.CommuteType.main, faulty.CommuteType.main, faultTest),
@@ -81,7 +84,7 @@ object Config {
     "RIGTest" -> fuzzable.RIGTest.main
   )
 
-  val mapFunSpark = Map[String, Array[String] => Unit](elems =
+  val mapFunSpark: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](elems =
     "FlightDistance" -> benchmarks.FlightDistance.main,
     "WebpageSegmentation" -> benchmarks.WebpageSegmentation.main,
     "CommuteType" -> benchmarks.CommuteType.main,
@@ -90,7 +93,7 @@ object Config {
     "DeliveryFaults" -> benchmarks.DeliveryFaults.main
   )
 
-  val mapFunProbeAble = Map[String, Array[String] => ProvInfo](elems =
+  val mapFunProbeAble: Map[String, Array[String] => ProvInfo] = Map[String, Array[String] => ProvInfo](elems =
     "FlightDistance" -> monitored.FlightDistance.main,
     "WebpageSegmentation" -> monitored.WebpageSegmentation.main,
     "CommuteType" -> monitored.CommuteType.main,
@@ -99,7 +102,7 @@ object Config {
     "DeliveryFaults" -> monitored.DeliveryFaults.main
   )
 
-  val mapSchemas = Map[String, Array[Array[Schema[Any]]]](elems =
+  val mapSchemas: Map[String, Array[Array[Schema[Any]]]] = Map[String, Array[Array[Schema[Any]]]](elems =
     "FlightDistance" -> BenchmarkSchemas.SYNTHETIC3,
     "WebpageSegmentation" -> BenchmarkSchemas.SEGMENTATION,
     "CommuteType" -> BenchmarkSchemas.COMMUTE,
@@ -109,7 +112,7 @@ object Config {
     "RIGTest" -> BenchmarkSchemas.RIGTEST
   )
 
-  val mapErrorCountAll = Map[String, Int](elems =
+  val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =
     "FlightDistance" -> 7,
     "WebpageSegmentation" -> 10,
     "CommuteType" -> 6,
@@ -118,7 +121,7 @@ object Config {
     "DeliveryFaults" -> 7
   )
 
-  val mapErrorCountDeep = Map[String, Int](elems =
+  val mapErrorCountDeep: Map[String, Int] = Map[String, Int](elems =
     "FlightDistance" -> 3,
     "WebpageSegmentation" -> 5,
     "CommuteType" -> 3,

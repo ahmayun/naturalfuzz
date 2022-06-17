@@ -8,7 +8,7 @@ import scala.reflect.ClassTag
 
 /** Trait to ensure consistent base API between Pair and non-Pair */
 trait ProvenanceRDD[T] extends Serializable {
-  def foreach(f: ((T, Provenance)) => Unit): Unit
+  def foreach(f: (T) => Unit): Unit
 
   def map[U: ClassTag](f: T => U, enableUDFAwareProv: Option[Boolean] = None): ProvenanceRDD[U]
   
@@ -19,6 +19,8 @@ trait ProvenanceRDD[T] extends Serializable {
   def filter(f: T => Boolean): ProvenanceRDD[T]
 
   def sortBy[K](f: (T) => K, ascending: Boolean = true)(implicit ord: Ordering[K], ctag: ClassTag[K]): ProvenanceRDD[T]
+
+  def sample(withReplacement: Boolean, fraction: Double): ProvenanceRDD[T]
 //
 //  def count(): Long
 //

@@ -1,4 +1,5 @@
 package provenance.data
+import scala.collection.mutable.ListBuffer
 
 class DummyProvenance private extends Provenance {
 
@@ -28,6 +29,8 @@ class DummyProvenance private extends Provenance {
   override def getProvenanceAsSeq(): List[Int] = {
     List(1,2,3)
   }
+
+  override def convertToTuples: ListBuffer[(Int, Int, Int)] = ???
 }
 
 

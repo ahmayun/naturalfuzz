@@ -3,110 +3,98 @@ package monitoring
 import fuzzer.ProvInfo
 import org.apache.spark.rdd.RDD
 import org.roaringbitmap.RoaringBitmap
-import provenance.data.DualRBProvenance
+import provenance.data.{DualRBProvenance, Provenance}
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import runners.Config
 import symbolicexecution.{SymbolicExpression, SymbolicTree}
 import taintedprimitives.{TaintedBase, TaintedBoolean}
 import taintedprimitives.SymImplicits._
 
-import scala.collection.mutable.HashMap
+import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 object Monitors {
 
-  val mapPredicateProvenance = new HashMap[Int, (RoaringBitmap, RoaringBitmap)]()
-  val mapJoinProvenance = new HashMap[Int, (RoaringBitmap, RoaringBitmap)]
-  val reduce_map = new HashMap[Int, RoaringBitmap]
-  val gbk_map = new HashMap[Int, RoaringBitmap]
-  val agg_samples = 100
-  val max_samples = 5
 
-  def updateMap(id: Int, prov1: RoaringBitmap, prov2: RoaringBitmap): Unit = {
-    val (p1, p2) = mapPredicateProvenance.getOrElseUpdate(id, (new RoaringBitmap, new RoaringBitmap))
-    p1.or(prov1)
-    p2.or(prov2)
-  }
+  val provInfo: ProvInfo = new ProvInfo()
+
 
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
                                                  d2: PairProvenanceDefaultRDD[K,V2],
                                                  id: Int): PairProvenanceRDD[K,(V1,V2)] = {
-    val d1j = d1.join(d2)
-    val d2j = d2.join(d1)
-    d1j.map(r => r._1).take(agg_samples).foreach (
-      sample => {
-        val (old, _) = mapJoinProvenance.getOrElseUpdate(id, (new RoaringBitmap, new RoaringBitmap))
-        old.or(sample.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
-      }
-    )
 
-    d2j.map(r => r._1).take(agg_samples).foreach (
-      sample => {
-        val (_, old) = mapJoinProvenance.getOrElseUpdate(id, (new RoaringBitmap, new RoaringBitmap))
-        old.or(sample.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+    val joint = d1.join(d2.map{case (k, v) => (k, (k, v))})
+    val count = joint.count()
+    count match {
+      case 0 =>
+        val buffer1 = d1.sample(false, 0.5*Config.maxSamples/d1.count()).map {
+          case (k1, _) =>
+            k1.getProvenance()
+        }.collect().to[ListBuffer]
+        val buffer2 = d2.sample(false, 0.5*Config.maxSamples/d2.count()).map {
+          case (k2, _) =>
+            k2.getProvenance()
+        }.collect().to[ListBuffer]
+        buffer1
+          .zip(buffer2)
+          .foreach { case (p1, p2) => this.provInfo.update(id, ListBuffer(p1, p2)) }
+      case _ =>
+        joint.sample(false, Config.maxSamples/count).foreach {
+        case (k1, (_, (k2, _))) =>
+          this.provInfo.update(id, ListBuffer(k1.getProvenance(), k2.getProvenance()))
       }
-    )
-    d1j
+    }
+
+    joint.map{
+      case (k1, (v1, (k2, v2))) =>
+        k1.setProvenance(k1.getProvenance().merge(k2.getProvenance()))
+        (k1, (v1, v2))
+    }
   }
 
   def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
     if (bool) {
-      val this_branch_prov = new RoaringBitmap()
-      val prev_branch_prov = new RoaringBitmap()
-
       prov._1.foreach {
-        case v: TaintedBase => this_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+        case v: TaintedBase => // this.provInfo.update(id, ListBuffer(v.getProvenance()))
         case _ =>
       }
-
-      prov._2.foreach {
-        case v: TaintedBase => prev_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
-        case _ =>
-      }
-
-      updateMap(id, this_branch_prov, prev_branch_prov)
     }
     bool
   }
 
-  def monitorPredicate(bool: TaintedBoolean, prov: (List[Any], List[Any]), id: Int, currentPathConstraint: SymbolicExpression = SymbolicExpression(new SymbolicTree())): Boolean = {
-    if (bool) {
-      val this_branch_prov = new RoaringBitmap()
-      val prev_branch_prov = new RoaringBitmap()
-
-      prov._1.foreach {
-        case v: TaintedBase => this_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
-        case _ =>
-      }
-
-      prov._2.foreach {
-        case v: TaintedBase => prev_branch_prov.or(v.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
-        case _ =>
-      }
-
-      updateMap(id, this_branch_prov, prev_branch_prov)
-    }
-    val pc = if(!currentPathConstraint.isEmpty) currentPathConstraint.and(bool.symbolicExpression) else bool.symbolicExpression
-    println(s"PC for branch $id: $pc")
-    bool
-  }
+//  def monitorPredicate(bool: TaintedBoolean, prov: (List[Any], List[Any]), id: Int, currentPathConstraint: SymbolicExpression = SymbolicExpression(new SymbolicTree())): Boolean = {
+//    if (bool) {
+//      prov._1.foreach {
+//        case v: TaintedBase => this.provInfo.update(id, ListBuffer(v.getProvenance()))
+//        case _ =>
+//      }
+//    }
+//
+//    val pc = if(!currentPathConstraint.isEmpty)
+//      currentPathConstraint.and(bool.symbolicExpression)
+//    else
+//      bool.symbolicExpression
+//
+//    println(s"PC for branch $id: $pc")
+//    bool
+//  }
 
   def monitorGroupByKey[K<:TaintedBase:ClassTag,V:ClassTag](dataset: PairProvenanceDefaultRDD[K,V], id: Int): PairProvenanceDefaultRDD[K, Iterable[V]] = {
-    val prov = dataset.take(agg_samples)(0)._1.getProvenance().asInstanceOf[DualRBProvenance].bitmap
-    gbk_map.update(id, prov)
+    dataset
+      .sample(false, Config.maxSamples/dataset.count())
+      .foreach {
+        case (k, _) => this.provInfo.update(id, ListBuffer(k.getProvenance()))
+      }
     dataset.groupByKey()
   }
 
   def monitorReduceByKey[K<:TaintedBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
-    val reduced = dataset.reduceByKey(func)
-
-    reduced.map(r => r._1).take(agg_samples).foreach (
-      sample => {
-        val old = reduce_map.getOrElseUpdate(id, new RoaringBitmap)
-        old.or(sample.getProvenance().asInstanceOf[DualRBProvenance].bitmap)
+    dataset
+      .sample(false, Config.maxSamples/dataset.count())
+      .foreach {
+        case (k, _) => this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
-    )
-    reduced
+    dataset.reduceByKey(func)
   }
 
   def monitorFilter[T](rdd: RDD[T], f: T => Boolean): RDD[T] = {
@@ -114,6 +102,12 @@ object Monitors {
   }
 
   // called at the end of main function
+  def finalizeProvenance(): ProvInfo = {
+    provInfo.simplify()
+  }
+}
+
+/*
   def finalizeProvenance(): ProvInfo = {
     //    val min_data: Array[Seq[String]] = Array.fill(2)(Seq())
     //    val join_relations = postProcessDependencies(this.mapJoinProvenance.map {
@@ -129,8 +123,8 @@ object Monitors {
     //        val (this_ds, rev_ds) = (this_ds_cols.keySet.toVector(0), rev_ds_cols.keySet.toVector(0))
     //        val this_rownums = Utils.retrieveRowNumbers(new DualRBProvenance(originalOrder), this_ds_cols.keySet.toVector(0)).collect().take(this.max_samples)
     //        val rev_rownums = Utils.retrieveRowNumbers(new DualRBProvenance(revOrder), rev_ds_cols.keySet.toVector(0)).collect().take(this.max_samples)
-    //        val this_rows = Utils.retrieveProvenance(new DualRBProvenance(originalOrder), this_ds).collect().take(this.agg_samples)
-    //        val rev_rows = Utils.retrieveProvenance(new DualRBProvenance(revOrder), rev_ds).collect().take(this.agg_samples)
+    //        val this_rows = Utils.retrieveProvenance(new DualRBProvenance(originalOrder), this_ds).collect().take(this.nSamples)
+    //        val rev_rows = Utils.retrieveProvenance(new DualRBProvenance(revOrder), rev_ds).collect().take(this.nSamples)
     //        min_data(this_ds) ++= this_rows.toSeq
     //        min_data(rev_ds) ++= rev_rows.toSeq
     //        min_data.foreach(s => s.foreach(println))
@@ -188,4 +182,4 @@ object Monitors {
       }
     ).simplify()
   }
-}
+ */

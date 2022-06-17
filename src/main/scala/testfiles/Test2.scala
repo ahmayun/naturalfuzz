@@ -5,6 +5,7 @@ import generators.GenSegmentationData.deleteDir
 import runners.Config
 
 import java.io.{BufferedWriter, File, FileWriter}
+import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 object Test2 {
@@ -39,13 +40,13 @@ object Test2 {
     )
 
     val provInfo = new ProvInfo(
-        Array(
-          Array(0,1).flatMap(d => Array(0,5,6).map(c => (d, c, 0)))
+        ListBuffer(
+          ListBuffer(0,1).flatMap(d => ListBuffer(0,5,6).map(c => (d, c, 0)))
         )
     )
 
     val (m, n) = (3,3)
-    val provInfoRand = provInfo.getRandom()
+    val provInfoRand = provInfo.getRandom
     val (duplicated, newInfo) = (0 until m).foldLeft((datasets, provInfo))
     {case ((accD, accP), _) => provenanceAwareDupication(accD, accP, provInfoRand, n)}
 

@@ -94,7 +94,11 @@ class FlatProvenanceDefaultRDD[T: ClassTag](override val rdd: RDD[ProvenanceRow[
     new provenance.rdd.FlatProvenanceDefaultRDD(rdd.sortBy(wrapper, ascending))
   }
 
-  override def foreach(f: ((T, Provenance)) => Unit): Unit = rdd.foreach(f)
+  override def foreach(f: T => Unit): Unit = rdd.foreach{case (t, _) => f(t)}
+
+  def sample(withReplacement: Boolean, fraction: Double): FlatProvenanceDefaultRDD[T]  = {
+    new FlatProvenanceDefaultRDD(rdd.sample(withReplacement, fraction))
+  }
 }
 
 object FlatProvenanceDefaultRDD {
@@ -127,6 +131,7 @@ object FlatProvenanceDefaultRDD {
     new FlatProvenanceDefaultRDD[(K, V)](pairRdd.rdd.map({
       case (k: K, (v: V, prov: Provenance)) => ((k, v), prov)
       })
-                                         )
+    )
   }
+
 }

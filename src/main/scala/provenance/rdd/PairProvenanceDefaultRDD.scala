@@ -10,6 +10,7 @@ import org.apache.spark.util.collection.CompactBuffer
 
 import java.nio.ByteBuffer
 import scala.collection.mutable.ArrayBuffer
+import scala.math
 import scala.reflect.ClassTag
 
 class PairProvenanceDefaultRDD[K, V](override val rdd: RDD[(K, ProvenanceRow[V])])(
@@ -485,5 +486,10 @@ class PairProvenanceDefaultRDD[K, V](override val rdd: RDD[(K, ProvenanceRow[V])
     new PairProvenanceDefaultRDD(rdd.sortBy(wrapper, ascending))
   }
 
-  override def foreach(f: (((K, V), Provenance)) => Unit): Unit = rdd.foreach{case (k, (v, p)) => f(((k,v), p))}
+  override def foreach(f: ((K, V)) => Unit): Unit = rdd.foreach{case (k, (v, _)) => f((k,v))}
+
+  def sample(withReplacement: Boolean, fraction: Double): PairProvenanceDefaultRDD[K,V]  = {
+    new PairProvenanceDefaultRDD(rdd.sample(withReplacement, math.min(fraction, 1.0)))
+  }
+
 }
