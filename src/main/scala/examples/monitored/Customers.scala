@@ -7,6 +7,8 @@ import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.{TaintedInt, TaintedString}
+import taintedprimitives.SymImplicits._
+
 object Customers {
   def main(args: Array[String]): ProvInfo = {
     val sparkConf = new SparkConf()

@@ -1,7 +1,7 @@
 package taintedprimitives
 
-import provenance.data.Provenance
-import symbolicexecution.SymbolicBoolean
+import provenance.data.{DummyProvenance, Provenance}
+import symbolicexecution.{SymbolicBoolean, SymbolicExpression, SymbolicTree}
 
 object SymImplicits {
 
@@ -22,6 +22,7 @@ object SymImplicits {
   implicit def symFloat2SymDouble(s: TaintedFloat): TaintedDouble = TaintedDouble(s.value.toDouble, s.getProvenance())
   implicit def symInt2SymDouble(s: TaintedInt): TaintedDouble = TaintedDouble(s.value.toDouble, s.getProvenance())
   implicit def taintedBooleanToBoolean(s: TaintedBoolean): Boolean = s.value
+  implicit def booleanToTaintedBoolean(s: Boolean): TaintedBoolean = TaintedBoolean(s, DummyProvenance.create(), SymbolicExpression(new SymbolicTree()))
   // A few common tuple options - these implicitly rely on the conversions defined above.
   type SymLong = TaintedInt //TODO we don't have a SymLong type yet, so for simplicity we use TaintedInt. This is *not* accurate.
 

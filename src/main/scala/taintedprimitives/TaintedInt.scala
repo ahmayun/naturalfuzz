@@ -183,7 +183,9 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
 
   def >(x: Char): Boolean = value > x
 
-  def >(x: Int): Boolean = value > x
+  def >(x: Int): TaintedBoolean = {
+    TaintedBoolean(value > x, getProvenance(), expr)
+  }
   def >(x: TaintedInt): TaintedBoolean = {
     TaintedBoolean(value > x.value, newProvenance(x.getProvenance()), expr > x.expr)
   }
