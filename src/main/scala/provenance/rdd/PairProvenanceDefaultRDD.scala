@@ -489,7 +489,6 @@ class PairProvenanceDefaultRDD[K, V](override val rdd: RDD[(K, ProvenanceRow[V])
   override def foreach(f: ((K, V)) => Unit): Unit = rdd.foreach{case (k, (v, _)) => f((k,v))}
 
   def sample(withReplacement: Boolean, fraction: Double): PairProvenanceDefaultRDD[K,V]  = {
-    println(s"Fraction: $fraction")
     new PairProvenanceDefaultRDD(rdd.sample(withReplacement, math.min(fraction, 1.0)))
   }
 

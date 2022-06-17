@@ -103,12 +103,9 @@ object Utils {
       count+=1
     }
     if (datasets.iterator.hasNext) {
-//      (datasets.iterator.next(), set.toList)
-//      (datasets.toList, set.toList)
       tup.toList
     } else {
       List()
-//      (List(0), List())
     }
   }
 

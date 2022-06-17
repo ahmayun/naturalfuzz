@@ -6,10 +6,11 @@ import schemas.BenchmarkSchemas
 
 object Config {
 
+  val maxSamples = 5
   val maxRepeats = 1
   val iterations = 10
   val scoverageResultsDir = "target/scoverage-results"
-  val benchmarkName = "WebpageSegmentation"
+  val benchmarkName = "FlightDistance"
   val faultTest = false
   val deepFaults = false
   val seedType = "weak" //either full, reduced or weak

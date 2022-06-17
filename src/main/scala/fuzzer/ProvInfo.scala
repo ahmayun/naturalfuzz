@@ -4,6 +4,7 @@ import provenance.data.Provenance
 import runners.Config
 
 import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 
 //depsInfo: [[(ds, col, row), (ds, col, row)], [(ds, col, row)] .... [(ds, col, row)]]
@@ -40,24 +41,46 @@ class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
     new ProvInfo(depsInfo ++ other.depsInfo)
   }
 
-  def getRandom(): ProvInfo = {
-    new ProvInfo(ListBuffer(depsInfo.last)) // TODO IMPORTANT: MAKE RANDOM
+  def getRandom: ProvInfo = {
+    new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head)) // TODO IMPORTANT: MAKE RANDOM
   }
 
-  def getCoDependentRegions(): ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }
+  def getCoDependentRegions: ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }
+
+
+  def _mergeSubsets(buffer: ListBuffer[ListBuffer[(Int, Int, Int)]]): ListBuffer[ListBuffer[(Int, Int, Int)]] = {
+    buffer.foldLeft(ListBuffer[ListBuffer[(Int, Int, Int)]]()){
+      case (acc, e) =>
+        val keep = !buffer.filter(_.length > e.length).exists(s => e.toSet.subsetOf(s.toSet))
+        if(keep) acc :+ e else acc
+    }
+  }
+
+  def _mergeOverlapping(buffer: ListBuffer[ListBuffer[(Int, Int, Int)]]): ListBuffer[ListBuffer[(Int, Int, Int)]] = {
+    buffer.foldLeft(ListBuffer[ListBuffer[(Int, Int, Int)]]()){
+      case (acc, e) =>
+        val (merged, ne) = buffer.find(s => !e.equals(s) && e.toSet.intersect(s.toSet).nonEmpty) match {
+          case Some(x) => (true, (acc :+ e.toSet.union(x.toSet).to[ListBuffer]).map(_.sorted).distinct)
+          case None => (false, ListBuffer(e))
+        }
+        if(!merged) acc :+ e else ne
+    }
+  }
+
+  def _simplify(deps: ListBuffer[ListBuffer[(Int,Int,Int)]]): ListBuffer[ListBuffer[(Int,Int,Int)]] = {
+    _mergeOverlapping(_mergeSubsets(deps.map(_.distinct).distinct))
+  }
 
   def simplify(): ProvInfo = {
-    new ProvInfo(Config.benchmarkName match {
-      case "WebpageSegmentation" =>
-        ListBuffer(
-          ListBuffer(0,1).flatMap(d => ListBuffer(0,5,6).map(c => (d, c, 0)))
-        )
-      case _ => depsInfo
-    })
-
+    new ProvInfo(_simplify(depsInfo))
   }
 
   override def toString: String = {
-    depsInfo.map(_.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")).mkString("\n----------------------------\n")
+    depsInfo
+      .map{
+        deps =>
+          val row = deps.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")
+          s"$row"
+      }.mkString("\n----------------------------\n")
   }
 }

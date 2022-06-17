@@ -269,6 +269,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
 //  }
 
   def applyCoDependentMutations(inputDatasets: Array[Seq[String]], provInfo: ProvInfo): Array[Seq[String]] = {
+    println(provInfo)
     val stagedMutations = stageMutations(provInfo)
     inputDatasets.zipWithIndex.map{case (d, i) => applyStagedMutations(d, stagedMutations(i))}
   }
@@ -302,14 +303,14 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
     // perform co-dependent mutations
     // apply focused mutations (possibly same as above)
     val (m,n) = (3,3)
-    val provInfoRand = provInfo.getRandom()
+    val provInfoRand = provInfo.getRandom
     val (duplicated, provInfoDuplicated) = (0 until m)
       .foldLeft((inputDatasets, provInfo)){
         case ((accD, accP), _) =>
           provenanceAwareDupication(accD, accP, provInfoRand, n)
       }
     val mutated = applyCoDependentMutations(duplicated, provInfoDuplicated)
-    applyNormMutations(mutated, provInfoDuplicated.depsInfo)
+    applyNormMutations(mutated, provInfoDuplicated.getCoDependentRegions)
   }
 
   def mutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
