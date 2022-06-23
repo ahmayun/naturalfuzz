@@ -5,7 +5,7 @@ import symbolicexecution.SymExResult
 
 class FilterQueries(val symExResult: SymExResult) {
 
-  val filterQueries = symExResult.getPathQueriesFromPathExpression
+  val filterQueries = symExResult.getPathQueries
   def getRows(datasets: Array[String]): List[QueryResult] = {
     val sc = new SparkContext(null)
     val rdds = datasets.map(sc.textFile)

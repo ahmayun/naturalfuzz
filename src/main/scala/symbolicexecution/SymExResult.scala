@@ -5,18 +5,18 @@ import fuzzer.Program
 import runners.Config
 import utils.{Query, RDDLocations}
 
-class SymExResult(val program: Program) {
-  def getPathQueriesFromPathExpression: List[Query] = {
+import scala.collection.mutable.ListBuffer
 
-    val schema = Config.mapSchemas.get(Config.benchmarkName)
+class SymExResult(val program: Program, val pathExpressions: ListBuffer[SymbolicExpression]) {
+  def getPathQueries: List[Query] = {
 
-    // TODO: Hard-code query instances here for WebpageSegmentation.scala
-    List(
-      new Query(fq1a, new RDDLocations(Array((0, 1, 0), (0, 2, 0)))),
-      new Query(fq1b, new RDDLocations(Array((0, 3, 0), (0, 4, 0)))),
-      new Query(fq2a, new RDDLocations(Array((0, 1, 0), (0, 2, 0)))),
-      new Query(fq2b, new RDDLocations(Array((0, 3, 0), (0, 4, 0))))
-    )
+    pathExpressions.flatMap(_.toCNF.toQueries).toList
+//    List(
+//      new Query(fq1a, new RDDLocations(Array((0, 1, 0), (0, 2, 0)))),
+//      new Query(fq1b, new RDDLocations(Array((0, 3, 0), (0, 4, 0)))),
+//      new Query(fq2a, new RDDLocations(Array((0, 1, 0), (0, 2, 0)))),
+//      new Query(fq2b, new RDDLocations(Array((0, 3, 0), (0, 4, 0))))
+//    )
   }
 
 

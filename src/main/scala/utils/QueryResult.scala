@@ -7,10 +7,14 @@ import utils.MutationUtils.flipCoin
 class QueryResult(val filterQueryRDDs: Array[BaseRDD[String]], val query: Seq[Query], val locs: RDDLocations) {
 
   def replaceCols(cols: Array[String], rdd: BaseRDD[String], locs: RDDLocations, ds: Int): Array[String] = {
-    if (flipCoin(Config.dropMixProb)) return cols
+    if (flipCoin(Config.dropMixProb))
+      return cols
+
     val colsRep = rdd.takeSample(false, 1).head.split(Config.delimiter)
     val colsIdx = locs.getCols(ds)
-    cols.zipWithIndex.map{case (c, i) => if(colsIdx.contains(i) && !flipCoin(Config.keepColProb)) colsRep(i) else c}
+    cols
+      .zipWithIndex
+      .map{case (c, i) => if(colsIdx.contains(i) && !flipCoin(Config.keepColProb)) colsRep(i) else c}
   }
 
   def mixMatchRDD(rdd1: BaseRDD[String], rddAndLocs: (BaseRDD[String], RDDLocations), ds: Int): BaseRDD[String] = {

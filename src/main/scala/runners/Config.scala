@@ -3,6 +3,7 @@ package runners
 import examples.{benchmarks, faulty, fuzzable, monitored}
 import fuzzer.{ProvInfo, Schema}
 import schemas.BenchmarkSchemas
+import symbolicexecution.SymExResult
 
 object Config {
 
@@ -82,6 +83,10 @@ object Config {
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
     "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
     "RIGTest" -> fuzzable.RIGTest.main
+  )
+
+  val mapFunSymEx: Map[String, Array[String] => SymExResult] = Map[String, Array[String] => SymExResult](elems =
+    "RIGTest" -> examples.symbolic.RIGTest.main
   )
 
   val mapFunSpark: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](elems =

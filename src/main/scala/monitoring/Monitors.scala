@@ -5,11 +5,12 @@ import org.apache.spark.rdd.RDD
 import org.roaringbitmap.RoaringBitmap
 import provenance.data.{DualRBProvenance, Provenance}
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
-import runners.Config
-import symbolicexecution.{SymbolicExpression, SymbolicTree}
+import runners.{Config, RunRIGFuzz}
+import symbolicexecution.{SymExResult, SymbolicExpression, SymbolicTree}
 import taintedprimitives.{TaintedBase, TaintedBoolean}
 import taintedprimitives.SymImplicits._
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
@@ -17,6 +18,8 @@ object Monitors {
 
 
   val provInfo: ProvInfo = new ProvInfo()
+  val constraints: ListBuffer[SymbolicExpression] = ListBuffer()
+  val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
 
 
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
@@ -70,12 +73,16 @@ object Monitors {
       }
     }
 
-    val pc = if(!currentPathConstraint.isEmpty)
-      currentPathConstraint.and(bool.symbolicExpression)
-    else
-      bool.symbolicExpression
+    if(!cache.contains(id)) {
+      val pc = if(!currentPathConstraint.isEmpty)
+        currentPathConstraint.and(bool.symbolicExpression)
+      else
+        bool.symbolicExpression
 
-    println(s"PC for branch $id: $pc")
+      println(s"PC for branch $id: $pc => ${bool.value}")
+      constraints.append(pc)
+      cache(id) = true
+    }
     bool
   }
 
@@ -104,5 +111,9 @@ object Monitors {
   // called at the end of main function
   def finalizeProvenance(): ProvInfo = {
     provInfo.simplify()
+  }
+
+  def finalizeSymEx(): SymExResult = {
+    new SymExResult(null, constraints)
   }
 }

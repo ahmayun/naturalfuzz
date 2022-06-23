@@ -5,13 +5,13 @@ package taintedprimitives
   */
 
 import provenance.data.{DummyProvenance, Provenance}
-import symbolicexecution.{SymbolicExpression, SymbolicTree}
+import symbolicexecution.{ConcreteValueNode, SymbolicExpression, SymbolicTree}
 
 import scala.reflect.runtime.universe._
 
 case class TaintedBoolean(override val value: Boolean, p : Provenance, symbolicExpression: SymbolicExpression) extends TaintedAny(value, p) {
   def this(value: Boolean) = {
-    this(value, DummyProvenance.create(), new SymbolicExpression(new SymbolicTree(value.toString)))
+    this(value, DummyProvenance.create(), SymbolicExpression(new SymbolicTree(new ConcreteValueNode("SymBool", value))))
   }
   
   /**

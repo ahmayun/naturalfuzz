@@ -1,6 +1,6 @@
 package runners
 
-import fuzzer.{Fuzzer, Program}
+import fuzzer.{Fuzzer, Program, SymbolicProgram}
 import guidance.RIGGuidance
 import runners.RunNormal.limitDP
 import scoverage.report.ScoverageHtmlWriter
@@ -21,20 +21,29 @@ object RunRIGFuzz {
     val benchmarkName = Config.benchmarkName
     val Some(inputFiles) = Config.mapInputFiles.get(benchmarkName)
     val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
+    val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = Config.benchmarkClass
     // ========================================================
 
     val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
     val coverageOutDir = Config.scoverageResultsDir
-    val program = new Program(benchmarkName,
+    val program = new Program(
+      benchmarkName,
       benchmarkClass,
       benchmarkPath,
       funFuzzable,
       inputFiles)
 
+    val symProgram = new SymbolicProgram(
+      benchmarkName,
+      benchmarkClass,
+      benchmarkPath,
+      funSymEx,
+      inputFiles)
+
     // Preprocessing and Fuzzing
-    val (pathExpressions, _) = timeFunction(() => SymbolicExecutor.execute(program))
+    val (pathExpressions, _) = timeFunction(() => SymbolicExecutor.execute(symProgram))
     val (filterQueries, _) = timeFunction(() => RIGUtils.createFilterQueries(pathExpressions))
     val (queryRDDs, _) = timeFunction(() => filterQueries.getRows(program.args))
     val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(queryRDDs))

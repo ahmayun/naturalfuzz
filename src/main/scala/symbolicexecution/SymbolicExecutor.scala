@@ -1,10 +1,12 @@
 package symbolicexecution
 
-import fuzzer.Program
+import fuzzer.SymbolicProgram
+
+import scala.collection.mutable.ListBuffer
 
 object SymbolicExecutor {
 
-  def execute(program: Program): SymExResult = {
-    new SymExResult(program)
+  def execute(program: SymbolicProgram): SymExResult = {
+    program.main(program.args)
   }
 }
