@@ -13,4 +13,6 @@ class RDDLocations(val locs: Array[(Int, Int, Int)]) {
       .toArray
   }
 
+  override def toString: String = locs.map{case (ds,col,row) => s"($ds,$col,$row)"}.mkString("|")
+
 }

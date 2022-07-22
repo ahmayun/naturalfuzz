@@ -6,7 +6,7 @@ import runners.RunNormal.limitDP
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
 import symbolicexecution.SymbolicExecutor
-import utils.{QueriedRDDs, RIGUtils}
+import utils.{QueriedRDDs, QueryResult, RIGUtils}
 import utils.TimingUtils.timeFunction
 
 import java.io.File
@@ -43,14 +43,19 @@ object RunRIGFuzz {
       inputFiles)
 
     // Preprocessing and Fuzzing
-    val (pathExpressions, _) = timeFunction(() => SymbolicExecutor.execute(symProgram))
-    val (filterQueries, _) = timeFunction(() => RIGUtils.createFilterQueries(pathExpressions))
-    val (queryRDDs, _) = timeFunction(() => filterQueries.getRows(program.args))
-    val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(queryRDDs))
+    val pathExpressions= SymbolicExecutor.execute(symProgram)
+    val filterQueries = RIGUtils.createFilterQueries(pathExpressions)
+    filterQueries.filterQueries.zipWithIndex.foreach{case (q, i) => println(i, q.tree)}
+    val satRDDs = filterQueries.createSatVectors(program.args) // create RDD with bit vector and bit counts
+    val minSatRDDs = satRDDs.getRandMinimumSatSet()
+    val brokenRDDs: List[QueryResult] = minSatRDDs.breakIntoQueryRDDs() // not ideal, but allows me to leverage my own existing code
+
+
+//    val (queryRDDs, _) = timeFunction(() => filterQueries.getRows(program.args))
+    val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(brokenRDDs))
 
     val (stats, _, _) = Fuzzer.Fuzz(program, guidance, coverageOutDir)
-
-
+    
     val coverage = Serializer.deserialize(new File(s"$coverageOutDir/scoverage.coverage"))
     val measurementFiles = IOUtils.findMeasurementFiles(coverageOutDir)
     val measurements = IOUtils.invoked(measurementFiles)
@@ -58,7 +63,7 @@ object RunRIGFuzz {
     coverage.apply(measurements)
     new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverageOutDir)).write(coverage)
     println("=== qrdds ====")
-    queryRDDs.foreach{
+    brokenRDDs.foreach{
       q =>
         println("===")
         println(q.toString)

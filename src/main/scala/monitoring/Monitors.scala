@@ -21,7 +21,6 @@ object Monitors {
   val constraints: ListBuffer[SymbolicExpression] = ListBuffer()
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
 
-
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
                                                  d2: PairProvenanceDefaultRDD[K,V2],
                                                  id: Int): PairProvenanceRDD[K,(V1,V2)] = {
@@ -114,6 +113,10 @@ object Monitors {
   }
 
   def finalizeSymEx(): SymExResult = {
+    println("=== PC ===")
+    constraints.foreach(println)
+    println("=== PC ===")
+
     new SymExResult(null, constraints)
   }
 }

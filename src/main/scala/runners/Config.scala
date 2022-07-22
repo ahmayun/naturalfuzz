@@ -14,7 +14,7 @@ object Config {
   val maxRepeats = 1
   val iterations = 10
   val scoverageResultsDir = "target/scoverage-results"
-  val benchmarkName = "RIGTest"
+  val benchmarkName = "CommuteType"
 
 
   val faultTest = false
@@ -60,7 +60,8 @@ object Config {
   )
 
   val mapInputFilesMixMatch = Map(
-    "RIGTest" -> Array("mixmatch-data/rig-test/boxes")
+    "RIGTest" -> Array("mixmatch-data/rig-test/boxes"),
+    "CommuteType" -> Array("seeds/weak_seed/commute/trips")
   )
 
   val Some(mapInputFiles) = Map(
@@ -86,7 +87,8 @@ object Config {
   )
 
   val mapFunSymEx: Map[String, Array[String] => SymExResult] = Map[String, Array[String] => SymExResult](elems =
-    "RIGTest" -> examples.symbolic.RIGTest.main
+    "RIGTest" -> examples.symbolic.RIGTest.main,
+    "CommuteType" -> examples.symbolic.CommuteType.main
   )
 
   val mapFunSpark: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](elems =

@@ -42,7 +42,8 @@ class QueryResult(val filterQueryRDDs: Array[BaseRDD[String]], val query: Seq[Qu
   }
 
   override def toString: String = {
+    println("locs", locs)
+    println("length of query", query.length)
     filterQueryRDDs.mkString("\n===============\n")
   }
-
 }

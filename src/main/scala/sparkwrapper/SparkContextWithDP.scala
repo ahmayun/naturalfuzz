@@ -4,6 +4,8 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import provenance.data.Provenance
 import provenance.rdd.{FlatProvenanceDefaultRDD, ProvenanceRDD}
+
+import scala.collection.mutable
 //import sparkwrapper.SparkContextWithDP.{datasets, incrementOnce}
 import taintedprimitives.{TaintedString, Utils}
 
@@ -15,6 +17,7 @@ import scala.reflect.ClassTag
 class SparkContextWithDP(sc: SparkContext) {
 
   var datasets = 0
+
   Provenance.setProvenanceType("dual")
 
   def textFile(filepath: String): RDD[String] ={

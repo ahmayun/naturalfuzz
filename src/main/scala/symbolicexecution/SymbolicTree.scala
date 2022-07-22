@@ -83,22 +83,24 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
     if (isAtomic)
       List(this)
     else
-      List(left, right)
+      left.breakIntoAtomic ++ right.breakIntoAtomic
   }
 
   def isMultiDatasetQuery: Boolean = {
-    false
+    false // TODO: implement this check
   }
 
   def isMultiColumnQuery: Boolean = {
-    false
+    false // TODO: implement this check
   }
 
   def eval(row: Array[String], ds: Int): Any = {
     if(height == 0) {
       return node match {
         case n: ConcreteValueNode => n.s
-        case n: ProvValueNode if n.getDS == ds => row(n.getCol).toInt //TODO: Remove hardcoded type conversion
+        case n: ProvValueNode if n.getDS == ds =>
+          // TODO: Add a callback to
+          row(n.getCol).toInt //TODO: Remove hardcoded type conversion. Lookup using schema?
         case _ => true
       }
     }
@@ -117,7 +119,8 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case (l: Int, r: Int, ">=") => l >= r
       case (l: Int, r: Int, "==") => l == r
       case (l: Int, r: Int, "+") => l + r
-      case (l: Int, r: Int, "-") => l + r
+      case (l: Int, r: Int, "-") => l - r
+      case (l: Int, r: Int, "/") => l / r
     }
   }
 
@@ -155,7 +158,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       filterdrdds
     }
 
-    new Query(fq, new RDDLocations((left.getProv ++ right.getProv).toArray))
+    new Query(fq, new RDDLocations(getProv.toArray), this)
   }
 
   def isEmpty: Boolean = this match {

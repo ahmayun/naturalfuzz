@@ -52,8 +52,7 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
   }
 
   def /(x: TaintedInt): TaintedInt = {
-    val d = value / x.value
-    new TaintedInt(d, getProvenance())
+    TaintedInt(value / x.value, newProvenance(x.getProvenance()), expr / x.expr)
   }
 
 
@@ -184,7 +183,7 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
   def >(x: Char): Boolean = value > x
 
   def >(x: Int): TaintedBoolean = {
-    TaintedBoolean(value > x, getProvenance(), expr)
+    TaintedBoolean(value > x, getProvenance(), expr > new SymbolicInteger(x))
   }
   def >(x: TaintedInt): TaintedBoolean = {
     TaintedBoolean(value > x.value, newProvenance(x.getProvenance()), expr > x.expr)

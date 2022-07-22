@@ -79,6 +79,7 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
   }
 
    def toInt: TaintedInt ={
+     println("toInt")
     TaintedInt(value.toInt, getProvenance(), new SymbolicInteger(value.toInt, getProvenance()))
   }
 

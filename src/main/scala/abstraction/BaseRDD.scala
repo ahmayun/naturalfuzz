@@ -4,6 +4,8 @@ import scala.reflect.ClassTag
 import scala.util.Random
 
 class BaseRDD[T:ClassTag](val data: Seq[T]) extends RDD[T]{
+  def zipWithIndex = new BaseRDD(data.zipWithIndex)
+
   def takeSample(bool: Boolean, n: Int): Array[T] = {
     new Random().shuffle(data).take(n).toArray
   }
@@ -28,7 +30,7 @@ class BaseRDD[T:ClassTag](val data: Seq[T]) extends RDD[T]{
   override def setName(name: String): BaseRDD.this.type = ???
 
   override def sortBy[K](f: T => K, ascending: Boolean)
-                        (implicit ord: Ordering[K], ctag: ClassTag[K]): RDD[T] =
+                        (implicit ord: Ordering[K], ctag: ClassTag[K]): BaseRDD[T] =
     new BaseRDD(data.sortBy(f))
 
   override def toString(): String = {

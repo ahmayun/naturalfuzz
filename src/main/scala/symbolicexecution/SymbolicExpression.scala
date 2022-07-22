@@ -39,11 +39,11 @@ case class SymbolicExpression (expr: SymbolicTree) {
   }
 
   def /(x: SymbolicExpression): SymbolicExpression = {
-    SymbolicExpression(SymbolicTree(expr, new OperationNode("+"), x.expr))
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("/"), x.expr))
   }
 
   def /(x: Int): SymbolicExpression = {
-    SymbolicExpression(SymbolicTree(expr, new OperationNode("+"), new SymbolicInteger(x).expr))
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("/"), new SymbolicInteger(x).expr))
   }
 
   def <(x: SymbolicExpression): SymbolicExpression = {
