@@ -46,7 +46,7 @@ object Test2 {
     )
 
     val (m, n) = (3,3)
-    val provInfoRand = provInfo.getRandom()
+    val provInfoRand = provInfo.getRandom
     val (duplicated, newInfo) = (0 until m).foldLeft((datasets, provInfo))
     {case ((accD, accP), _) => provenanceAwareDupication(accD, accP, provInfoRand, n)}
 

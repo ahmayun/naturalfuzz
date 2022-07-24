@@ -11,3 +11,13 @@ libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-compiler" % "2.11.8",
   "org.scala-lang" % "scala-reflect" % "2.11.8"
 )
+
+
+libraryDependencies += "com.code-intelligence" % "jazzer-api" % "0.11.0"
+
+
+ThisBuild / assemblyMergeStrategy := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
+

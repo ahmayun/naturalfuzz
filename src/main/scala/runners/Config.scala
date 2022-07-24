@@ -10,7 +10,7 @@ object Config {
   val maxRepeats = 1
   val iterations = 10
   val scoverageResultsDir = "target/scoverage-results"
-  val benchmarkName = "FlightDistance"
+  val benchmarkName = "WebpageSegmentation"
   val faultTest = false
   val deepFaults = false
   val seedType = "weak" //either full, reduced or weak
