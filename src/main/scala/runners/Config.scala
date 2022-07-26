@@ -9,7 +9,7 @@ object Config {
   val maxSamples = 5
   val maxRepeats = 1
   val iterations = 10
-  val scoverageResultsDir = "target/scoverage-results"
+  val scoverageResultsDir = "./target/scoverage-results"
   val benchmarkName = "WebpageSegmentation"
   val faultTest = false
   val deepFaults = false

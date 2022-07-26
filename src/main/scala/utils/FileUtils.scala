@@ -33,7 +33,7 @@ object FileUtils {
 
   def writeToFile(data: Seq[String], path: String): Unit = {
     val file = new File(path)
-    file.getParentFile().mkdirs()
+    file.getParentFile.mkdirs()
     val bw = new BufferedWriter(new FileWriter(file))
     data.foreach(r => bw.write(s"${r}\n"))
     bw.close()
