@@ -5,6 +5,10 @@ import examples.fuzzable.CommuteType
 
 object JazzerTargetCommuteType {
 
+  def fuzzerInitialize(args: Array[String]): Unit = {
+    args.foreach{s => println(s"arg: $s")}
+  }
+
   def fuzzerTestOneInput(data: FuzzedDataProvider): Unit = {
     val datasets: Array[String] = Array[String]("/seeds/weak_seed/commute/trips")
     val newDatasets: Array[String] = SharedJazzerLogic.createMutatedDatasets(data, datasets)

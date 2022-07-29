@@ -26,7 +26,8 @@ object RunProvFuzz {
     val outputDir = Config.scoverageResultsDir
 
     val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
-    val program = new Program(benchmarkName,
+    val program = new Program(
+      benchmarkName,
       benchmarkClass,
       benchmarkPath,
       funFuzzable,
