@@ -30,11 +30,11 @@ object Fuzzer {
     output_dir
   }
 
-  def Fuzz(program: Program, guidance: Guidance, coverage_out_dir: String, testCaseOutDir: String = "target/fuzz-output"): (FuzzStats, Long, Long) = {
+  def Fuzz(program: Program, guidance: Guidance, coverageOutDir: String, testCaseOutDir: String = "target/fuzz-output"): (FuzzStats, Long, Long) = {
     new Directory(new File(testCaseOutDir)).deleteRecursively()
     val stats = new FuzzStats(program.name)
     var crashed = false
-    CompileWithScoverage(program.classpath, coverage_out_dir)
+    CompileWithScoverage(program.classpath, coverageOutDir)
     val t_start = System.currentTimeMillis()
     while(!guidance.isDone()) {
       val outDir = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
@@ -67,14 +67,14 @@ object Fuzzer {
 
         case _ =>
       }
-      val coverage = getCoverage(coverage_out_dir, fuzzer.Global.iteration)
+      val coverage = getCoverage(coverageOutDir, fuzzer.Global.iteration)
       stats.add_plot_point(fuzzer.Global.iteration, coverage.statementCoveragePercent)
 
       if(!guidance.updateCoverage(coverage, crashed)){
         new Directory(new File(outDir)).deleteRecursively()
       }
 
-      new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverage_out_dir)).write(coverage)
+      new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverageOutDir)).write(coverage)
       fuzzer.Global.iteration += 1
     }
 

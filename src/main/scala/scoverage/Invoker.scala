@@ -86,7 +86,7 @@ object Invoker {
       .getOrElse("")
 
   def measurementFile(dataDir: File): File = measurementFile(
-    dataDir.getAbsolutePath()
+    dataDir.getAbsolutePath
   )
   def measurementFile(dataDir: String): File = new File(
     dataDir,
@@ -99,7 +99,7 @@ object Invoker {
   def findMeasurementFiles(dataDir: File): Array[File] =
     dataDir.listFiles(new FileFilter {
       override def accept(pathname: File): Boolean =
-        pathname.getName().startsWith(MeasurementsPrefix)
+        pathname.getName.startsWith(MeasurementsPrefix)
     })
 
   // loads all the invoked statement ids from the given files
@@ -108,7 +108,7 @@ object Invoker {
     files.foreach { file =>
       val reader = Source.fromFile(file)
       for (line <- reader.getLines()) {
-        if (!line.isEmpty) {
+        if (line.nonEmpty) {
           acc += line.toInt
         }
       }
