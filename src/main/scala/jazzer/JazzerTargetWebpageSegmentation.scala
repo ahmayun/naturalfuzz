@@ -5,8 +5,13 @@ import examples.fuzzable.WebpageSegmentation
 
 object JazzerTargetWebpageSegmentation {
 
+  def fuzzerInitialize(args: Array[String]): Unit = {
+    println(s"JAZZER ARGS: ${args.mkString(", ")}")
+    SharedJazzerLogic.createMeasurementDir(args(0))
+  }
+
   def fuzzerTestOneInput(data: FuzzedDataProvider): Unit = {
-    val datasets: Array[String] = Array("seeds/weak_seed/webpage_segmentation/before", "seeds/weak_seed/webpage_segmentation/after")
+    val datasets: Array[String] = Array("/seeds/weak_seed/webpage_segmentation/before", "/seeds/weak_seed/webpage_segmentation/after")
     val newDatasets: Array[String] = SharedJazzerLogic.createMutatedDatasets(data, datasets)
     WebpageSegmentation.main(newDatasets)
     // Might need to manipulate scoverage measurement files produced by execution

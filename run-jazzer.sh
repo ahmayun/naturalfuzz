@@ -11,20 +11,20 @@
 
 # Temporarily hard-coded, should be parsed from args
 NAME=WebpageSegmentation
-CLASS_TARGET=jazzer.$NAME
-CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
+CLASS_TARGET=jazzer.JazzerTarget$NAME
+#CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/fuzzable/$NAME.scala"
 PATH_INSTRUMENTED_CLASSES="examples/fuzzable/$NAME*"
-DIR_JAZZER_OUT="target/jazzer-output/$CLASS_TARGET"
+DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 
 rm -rf $DIR_JAZZER_OUT
-mkdir -p $DIR_JAZZER_OUT/{measurements,report}
+mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes}
 
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
-          $DIR_JAZZER_OUT/measurements
+          $DIR_JAZZER_OUT/measurements # path to shared volumn from inside jazzer docker container
 
 pushd target/scala-2.11/classes || exit
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
@@ -36,13 +36,27 @@ popd
 #          seeds/weak_seed/webpage_segmentation/*
 
 sudo docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
-                -v "$(pwd)"/seeds:/seeds cifuzz/jazzer \
+                -v "$(pwd)"/seeds:/seeds \
+                -v "$(pwd)"/$DIR_JAZZER_OUT/reproducers:/reproducers \
+                -v "$(pwd)"/$DIR_JAZZER_OUT/log:/log \
+                cifuzz/jazzer \
                 --cp=/fuzzing/ProvFuzz-assembly-1.0.jar \
-                --target_class=$CLASS_TARGET
+                --target_class=$CLASS_TARGET \
+                --reproducer_path=/reproducers \
+                --log_dir=/log \
+                --target_args=$DIR_JAZZER_OUT/measurements
 
-#java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
-#          utils.CoverageMeasurementConsolidator \
-#          target/jazzer-output/$CLASS_TARGET/measurements \
-#          src/main/scala \
-#          $DIR_JAZZER_OUT/report
+sudo chown -R $(whoami):$(whoami) target/scala-2.11/target
+sudo chown $(whoami):$(whoami) target/scala-2.11/crash*
+
+mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
+mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
+
+rm -rf target/scala-2.11/target
+
+java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
+          utils.CoverageMeasurementConsolidator \
+          $DIR_JAZZER_OUT/measurements \
+          src/main/scala \
+          $DIR_JAZZER_OUT/report
 
