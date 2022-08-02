@@ -64,7 +64,7 @@ object ScoverageCompiler {
     s"./scalac-scoverage-runtime/jvm/target/scala-2.11/classes"
   )
 
-  private def findScalaJar(artifactId: String): File =
+  private def findScalaJar(artifactId: String): File = {
     findIvyJar("org.scala-lang", artifactId, ScalaVersion)
       .orElse(findCoursierJar(artifactId, ScalaVersion))
       .getOrElse {
@@ -72,6 +72,7 @@ object ScoverageCompiler {
           s"Could not locate $artifactId/$ScalaVersion"
         )
       }
+  }
 
   private def findCoursierJar(
                                artifactId: String,
