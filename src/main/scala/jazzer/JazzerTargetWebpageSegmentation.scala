@@ -2,23 +2,40 @@ package jazzer
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider
 import examples.fuzzable.WebpageSegmentation
+import schemas.BenchmarkSchemas
 
 object JazzerTargetWebpageSegmentation {
 
+  val datasets: Array[String] = Array(
+    "/inputs/ds1",
+    "/inputs/ds2"
+  )
+
+  var mode: String = ""
+  var measurementsDir: String = ""
+
   def fuzzerInitialize(args: Array[String]): Unit = {
+    mode = if(args.length > 1) args(1) else ""
+    measurementsDir = args(0)
+
     println(s"JAZZER ARGS: ${args.mkString(", ")}")
-    SharedJazzerLogic.createMeasurementDir(args(0))
+    SharedJazzerLogic.createMeasurementDir(measurementsDir)
   }
 
   def fuzzerTestOneInput(data: FuzzedDataProvider): Unit = {
-    val datasets: Array[String] = Array("/seeds/weak_seed/webpage_segmentation/before", "/seeds/weak_seed/webpage_segmentation/after")
-    val newDatasets: Array[String] = SharedJazzerLogic.createMutatedDatasets(data, datasets)
-    WebpageSegmentation.main(newDatasets)
     // Might need to manipulate scoverage measurement files produced by execution
-    // since the old one will be overridden on next call or to indicate sequence
+    // since the old one will be overridden (P.S. not true) on next call or to indicate sequence
     // maybe attach iteration number to it
 
-    throw new Exception() // How to change the termination condition (jazzer stops when it finds a bug)
+    // Schema ds1 & ds2: string,int,int,int,int,int,string
+    val newDatasets: Array[String] = if (mode.equals("use_schema"))
+      SharedJazzerLogic.createMutatedDatasets(data, datasets, BenchmarkSchemas.SEGMENTATION)
+    else
+      SharedJazzerLogic.createMutatedDatasets(data, datasets, Array())
+
+    WebpageSegmentation.main(newDatasets)
+
+    SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
   }
 
   def main(args: Array[String]): Unit = {
