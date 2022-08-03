@@ -30,7 +30,7 @@ object SharedJazzerLogic {
     try {
       f(newDatasets)
     } catch {
-      case e => throwable = e
+      case e: Throwable => throwable = e
     } finally {
       SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
       SharedJazzerLogic.trackCumulativeCoverage(measurementsDir)
@@ -59,7 +59,7 @@ object SharedJazzerLogic {
     coverage.apply(measurements)
     if(coverage.statementCoveragePercent > prevCov) {
       new FileWriter(new File(s"$measurementsDir/cumulative"), true)
-          .append(s"$i,${coverage.statementCoveragePercent.toString}")
+          .append(s"$i,${coverage.statementCoveragePercent}")
           .append("\n")
           .flush()
       prevCov = coverage.statementCoveragePercent

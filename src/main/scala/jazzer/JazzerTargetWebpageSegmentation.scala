@@ -3,6 +3,9 @@ package jazzer
 import com.code_intelligence.jazzer.api.FuzzedDataProvider
 import examples.fuzzable.WebpageSegmentation
 import schemas.BenchmarkSchemas
+import scoverage.Platform.FileWriter
+
+import java.io.File
 
 object JazzerTargetWebpageSegmentation {
 
@@ -31,7 +34,10 @@ object JazzerTargetWebpageSegmentation {
     SharedJazzerLogic.fuzzTestOneInput(data, WebpageSegmentation.main, mode, measurementsDir, datasets, BenchmarkSchemas.SEGMENTATION)
   }
 
-  def main(args: Array[String]): Unit = {
-    System.out.println("<=== JazzerTargetCommuteType.main() ===>")
+  def fuzzerTearDown(): Unit = {
+    new FileWriter(new File(s"$measurementsDir/cumulative"), true)
+      .append(s"${SharedJazzerLogic.i},${SharedJazzerLogic.prevCov}")
+      .append("\n")
+      .flush()
   }
 }
