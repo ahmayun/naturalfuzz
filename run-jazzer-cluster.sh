@@ -23,7 +23,7 @@ rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
 
-sbt assembly
+sbt assembly || exit 1
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \

@@ -13,6 +13,13 @@ object SharedJazzerLogic {
   var i = 0
   var prevCov = 0.0
 
+  def updateIteration(measurementsDir: String) {
+    i+=1
+    new FileWriter(new File(s"$measurementsDir/iter"))
+    .append(s"$i")
+    .flush()
+  }
+
   def fuzzTestOneInput(
                         data: FuzzedDataProvider,
                         f: Array[String] => Unit,
@@ -26,7 +33,8 @@ object SharedJazzerLogic {
     else
       SharedJazzerLogic.createMutatedDatasets(data, datasets, Array())
 
-    i+=1
+    updateIteration(measurementsDir)
+    
     var throwable: Throwable = null
     try { f(newDatasets) } 
     catch { case e: Throwable => throwable = e } 
