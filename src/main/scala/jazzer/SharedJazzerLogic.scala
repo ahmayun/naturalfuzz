@@ -12,6 +12,35 @@ object SharedJazzerLogic {
 
   var i = 0
   var prevCov = 0.0
+
+  def fuzzTestOneInput(
+                        data: FuzzedDataProvider,
+                        f: Array[String] => Unit,
+                        mode: String,
+                        measurementsDir: String,
+                        datasets: Array[String],
+                        schema: Array[Array[Schema[Any]]]): Unit = {
+
+    val newDatasets: Array[String] = if (mode.equals("use_schema"))
+      SharedJazzerLogic.createMutatedDatasets(data, datasets, schema)
+    else
+      SharedJazzerLogic.createMutatedDatasets(data, datasets, Array())
+
+    var throwable: Throwable = null
+    try {
+      f(newDatasets)
+    } catch {
+      case e => throwable = e
+    } finally {
+      SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
+      SharedJazzerLogic.trackCumulativeCoverage(measurementsDir)
+    }
+
+    if (throwable == null) {
+      throw throwable
+    }
+  }
+
   def renameMeasurementsFile(measurementsDir: String): Unit = {
 //    val dir = new File(measurementsDir)
 //    val file = dir
@@ -28,9 +57,7 @@ object SharedJazzerLogic {
     val measurementFiles = IOUtils.findMeasurementFiles(measurementsDir)
     val measurements = scoverage.IOUtils.invoked(measurementFiles)
     coverage.apply(measurements)
-    println(s"CHECKING: ${coverage.statementCoveragePercent}")
     if(coverage.statementCoveragePercent > prevCov) {
-      println(s"WRITING: ${coverage.statementCoveragePercent}")
       new FileWriter(new File(s"$measurementsDir/cumulative"), true)
           .append(s"$i,${coverage.statementCoveragePercent.toString}")
           .append("\n")
