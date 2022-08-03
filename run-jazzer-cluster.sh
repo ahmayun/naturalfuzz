@@ -31,6 +31,9 @@ java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           || exit 1
 
 
+mkdir -p target/scala-2.11/$DIR_JAZZER_OUT/measurements
+cp $DIR_JAZZER_OUT/measurements/scoverage.coverage target/scala-2.11/$DIR_JAZZER_OUT/measurements || exit 1
+
 pushd target/scala-2.11/classes || exit
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
         $PATH_INSTRUMENTED_CLASSES \
