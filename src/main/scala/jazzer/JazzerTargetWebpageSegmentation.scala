@@ -40,6 +40,7 @@ object JazzerTargetWebpageSegmentation {
       case e => throwable = e
     } finally {
       SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
+      SharedJazzerLogic.trackCumulativeCoverage(measurementsDir)
     }
 
     if (throwable == null) {

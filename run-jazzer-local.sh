@@ -30,6 +30,8 @@ java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           $DIR_JAZZER_OUT/measurements \
           || exit 1
 
+mkdir -p target/scala-2.11/$DIR_JAZZER_OUT/measurements
+cp $DIR_JAZZER_OUT/measurements/scoverage.coverage target/scala-2.11/$DIR_JAZZER_OUT/measurements || exit 1
 
 pushd target/scala-2.11/classes || exit
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
@@ -53,14 +55,13 @@ sudo timeout $DURATION sudo docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --reproducer_path=/reproducers \
                 --log_dir=/log \
                 --target_args="$DIR_JAZZER_OUT/measurements $MODE" \
-                --keep_going=100
+                --keep_going=1
 
 sudo chown -R $(whoami):$(whoami) target/scala-2.11/target
 sudo chown $(whoami):$(whoami) target/scala-2.11/crash*
 
 mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
 mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
-
 rm -rf target/scala-2.11/target
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
