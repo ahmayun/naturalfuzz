@@ -33,9 +33,18 @@ object JazzerTargetWebpageSegmentation {
     else
       SharedJazzerLogic.createMutatedDatasets(data, datasets, Array())
 
-    WebpageSegmentation.main(newDatasets)
+    var throwable: Throwable = null
+    try {
+      WebpageSegmentation.main(newDatasets)
+    } catch {
+      case e => throwable = e
+    } finally {
+      SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
+    }
 
-    SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
+    if (throwable == null) {
+      throw throwable
+    }
   }
 
   def main(args: Array[String]): Unit = {

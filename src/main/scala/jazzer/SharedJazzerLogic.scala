@@ -8,12 +8,16 @@ import java.io.File
 
 object SharedJazzerLogic {
 
-//  var i = 0
+  var i = 0
   def renameMeasurementsFile(measurementsDir: String): Unit = {
-//    val dir = new File(measurementsDir)
-//    val file = dir.listFiles.filter(_.isFile).filter(_.toString.contains("scoverage.measurements.0"))(0).toString
-//    new File(file).renameTo(new File(s"scoverage.measurements.$i"))
-//    i+=1
+    val dir = new File(measurementsDir)
+    val file = dir
+      .listFiles
+      .filter(_.isFile)
+      .filter(_.toString.contains("scoverage.measurements.0"))(0)
+
+    new File(file.toString).renameTo(new File(s"${file.getParentFile}/scoverage.measurements.$i"))
+    i+=1
   }
 
   def createMeasurementDir(path: String): Unit = {
@@ -37,9 +41,9 @@ object SharedJazzerLogic {
 
   def createMutatedDatasetSchemaAware(provider: FuzzedDataProvider, path: String, schema: Array[Schema[Any]]): String = {
     val data = provider.consumeRemainingAsAsciiString().split("\n")
-    println(s"==DATA: $path==")
-    println(data.mkString("\n"))
-    println("================")
+//    println(s"==DATA: $path==")
+//    println(data.mkString("\n"))
+//    println("================")
     FileUtils.writeToFile(data.toSeq, s"$path/part-00000")
     path
   }
