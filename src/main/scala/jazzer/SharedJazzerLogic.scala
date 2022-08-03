@@ -26,27 +26,16 @@ object SharedJazzerLogic {
     else
       SharedJazzerLogic.createMutatedDatasets(data, datasets, Array())
 
+    i+=1
     var throwable: Throwable = null
     try { f(newDatasets) } 
     catch { case e: Throwable => throwable = e } 
     finally {
-      SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
       SharedJazzerLogic.trackCumulativeCoverage(measurementsDir)
     }
 
     if (throwable == null)
       throw throwable
-  }
-
-  def renameMeasurementsFile(measurementsDir: String): Unit = {
-//    val dir = new File(measurementsDir)
-//    val file = dir
-//      .listFiles
-//      .filter(_.isFile)
-//      .filter(_.toString.contains("scoverage.measurements.0"))(0)
-//
-//    new File(file.toString).renameTo(new File(s"${file.getParentFile}/scoverage.measurements.$i"))
-    i+=1
   }
 
   def trackCumulativeCoverage(measurementsDir: String): Unit = {
@@ -61,7 +50,6 @@ object SharedJazzerLogic {
           .flush()
       prevCov = coverage.statementCoveragePercent
     }
-
   }
 
   def createMeasurementDir(path: String): Unit = {
