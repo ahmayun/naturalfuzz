@@ -27,18 +27,15 @@ object SharedJazzerLogic {
       SharedJazzerLogic.createMutatedDatasets(data, datasets, Array())
 
     var throwable: Throwable = null
-    try {
-      f(newDatasets)
-    } catch {
-      case e: Throwable => throwable = e
-    } finally {
+    try { f(newDatasets) } 
+    catch { case e: Throwable => throwable = e } 
+    finally {
       SharedJazzerLogic.renameMeasurementsFile(measurementsDir)
       SharedJazzerLogic.trackCumulativeCoverage(measurementsDir)
     }
 
-    if (throwable == null) {
+    if (throwable == null)
       throw throwable
-    }
   }
 
   def renameMeasurementsFile(measurementsDir: String): Unit = {
@@ -58,7 +55,7 @@ object SharedJazzerLogic {
     val measurements = scoverage.IOUtils.invoked(measurementFiles)
     coverage.apply(measurements)
     if(coverage.statementCoveragePercent > prevCov) {
-      new FileWriter(new File(s"$measurementsDir/cumulative"), true)
+      new FileWriter(new File(s"$measurementsDir/cumulative.csv"), true)
           .append(s"$i,${coverage.statementCoveragePercent}")
           .append("\n")
           .flush()
@@ -68,17 +65,11 @@ object SharedJazzerLogic {
   }
 
   def createMeasurementDir(path: String): Unit = {
-    val success = new File(path).mkdirs()
-    if(success)
-      println(s"successfully created $path")
-    else
-      println(s"failed to create $path")
+    new File(path).mkdirs()
   }
 
 
   def createMutatedDatasets(provider: FuzzedDataProvider, datasets: Array[String], schemas: Array[Array[Schema[Any]]]): Array[String] = {
-    println(s"createMutatedDatasets() - nBytes: ${provider.remainingBytes()}")
-
     if (schemas.nonEmpty) {
       datasets.zip(schemas).map{ case (path, schema) => createMutatedDatasetSchemaAware(provider, path, schema) }
     } else {
@@ -88,9 +79,6 @@ object SharedJazzerLogic {
 
   def createMutatedDatasetSchemaAware(provider: FuzzedDataProvider, path: String, schema: Array[Schema[Any]]): String = {
     val data = provider.consumeRemainingAsAsciiString().split("\n")
-//    println(s"==DATA: $path==")
-//    println(data.mkString("\n"))
-//    println("================")
     FileUtils.writeToFile(data.toSeq, s"$path/part-00000")
     path
   }

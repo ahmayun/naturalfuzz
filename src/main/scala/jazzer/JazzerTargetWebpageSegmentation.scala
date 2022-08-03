@@ -9,13 +9,12 @@ import java.io.File
 
 object JazzerTargetWebpageSegmentation {
 
+  var mode: String = ""
+  var measurementsDir: String = ""
   val datasets: Array[String] = Array(
     "/inputs/ds1",
     "/inputs/ds2"
   )
-
-  var mode: String = ""
-  var measurementsDir: String = ""
 
   def fuzzerInitialize(args: Array[String]): Unit = {
     mode = if(args.length > 1) args(1) else ""
@@ -34,10 +33,5 @@ object JazzerTargetWebpageSegmentation {
     SharedJazzerLogic.fuzzTestOneInput(data, WebpageSegmentation.main, mode, measurementsDir, datasets, BenchmarkSchemas.SEGMENTATION)
   }
 
-  def fuzzerTearDown(): Unit = {
-    new FileWriter(new File(s"$measurementsDir/cumulative"), true)
-      .append(s"${SharedJazzerLogic.i},${SharedJazzerLogic.prevCov}")
-      .append("\n")
-      .flush()
-  }
+
 }
