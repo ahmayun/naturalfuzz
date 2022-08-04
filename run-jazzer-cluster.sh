@@ -60,7 +60,7 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --target_class=$CLASS_TARGET \
                 --reproducer_path=/reproducers \
                 --log_dir=/log \
-                --target_args="$DIR_JAZZER_OUT/measurements $MODE" \
+                --target_args="$DIR_JAZZER_OUT/measurements $MODE $PACKAGE" \
                 --keep_going=200
 
 chown -R $(whoami):$(whoami) target/scala-2.11/target
