@@ -13,10 +13,11 @@
 NAME=$1
 MODE=$2
 DURATION=$3
+PACKAGE=$4
 CLASS_TARGET=jazzer.JazzerTarget$NAME
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
-PATH_SCALA_SRC="src/main/scala/examples/fuzzable/$NAME.scala"
-PATH_INSTRUMENTED_CLASSES="examples/fuzzable/$NAME*"
+PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
+PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
 DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 
 rm -rf $DIR_JAZZER_OUT
