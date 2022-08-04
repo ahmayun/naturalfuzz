@@ -62,7 +62,6 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --target_args="$DIR_JAZZER_OUT/measurements $MODE" \
                 --keep_going=200
 
-kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
 
 mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
 mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
@@ -75,3 +74,15 @@ java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           src/main/scala \
           $DIR_JAZZER_OUT/report
 
+
+kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
+
+# to reproduce errors
+#sudo docker run \
+#            -v "$(pwd)"/target/scala-2.11:/fuzzing \
+#            -v "$(pwd)"/target/inputs:/inputs \
+#            cifuzz/jazzer \
+#            --cp=/fuzzing/ProvFuzz-assembly-1.0.jar \
+#            --target_args="/temp reproduce" \
+#            --target_class=jazzer.JazzerTargetWebpageSegmentation \
+#            /fuzzing/jazzer-output/WebpageSegmentation/crashes/crash-2ade69a127345e94a05b99f6c37b6160df010806
