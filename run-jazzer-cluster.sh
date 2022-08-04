@@ -12,8 +12,9 @@
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
 MODE=$2
-DURATION=$3
-PACKAGE=$4
+PACKAGE=$3
+DURATION=$4
+
 CLASS_TARGET=jazzer.JazzerTarget$NAME
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
