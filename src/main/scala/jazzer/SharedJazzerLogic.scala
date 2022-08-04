@@ -42,7 +42,7 @@ object SharedJazzerLogic {
       SharedJazzerLogic.trackCumulativeCoverage(measurementsDir)
     }
 
-    if (throwable == null)
+    if (throwable != null)
       throw throwable
   }
 

@@ -5,12 +5,12 @@ import abstraction.{SparkConf, SparkContext}
 object WebpageSegmentation {
 
   def main(args: Array[String]): Unit = {
-    println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
+    println(s"WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
     sparkConf.setMaster("local[6]")
     sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
-    val before_data = args(0) // "datasets/fuzzing_seeds/webpage_segmentation/before"
-    val after_data = args(1) // "datasets/fuzzing_seeds/webpage_segmentation/after"
+    val before_data = args(0) // "seeds/weak_seed/webpage_segmentation/before"
+    val after_data = args(1) // "seeds/weak_seed/webpage_segmentation/after"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage
     ctx.setLogLevel("ERROR")
     val before = ctx.textFile(before_data).map(_.split(','))
@@ -33,14 +33,11 @@ object WebpageSegmentation {
           (url, (a, cid, ctype))
       }
 
-    println("-------")
     val inter = changed.join(boxes_after_by_site)
     inter.map{
       case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
     }.collect().foreach(println)
 
-//    val iRects =  pairs.map{ case (id, (rect1, rect2)) => (id, intersects(rect1, rect2))}
-//    iRects.collect().foreach(println)
   }
 
   def intersects(rect1: IndexedSeq[Int],
