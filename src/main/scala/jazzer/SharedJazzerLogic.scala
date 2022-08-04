@@ -1,7 +1,6 @@
 package jazzer
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider
-import fuzzer.Schema
 import scoverage.Platform.FileWriter
 import scoverage.Serializer
 import utils.{FileUtils, IOUtils}
@@ -23,15 +22,10 @@ object SharedJazzerLogic {
   def fuzzTestOneInput(
                         data: FuzzedDataProvider,
                         f: Array[String] => Unit,
-                        mode: String,
                         measurementsDir: String,
-                        datasets: Array[String],
-                        schema: Array[Array[Schema[Any]]]): Unit = {
+                        datasets: Array[String]): Unit = {
 
-    val newDatasets: Array[String] = if (mode.equals("use_schema"))
-      createMutatedDatasets(data, datasets, schema)
-    else
-      createMutatedDatasets(data, datasets, Array())
+    val newDatasets = createMutatedDatasets(data, datasets)
 
     updateIteration(measurementsDir)
     
@@ -55,8 +49,7 @@ object SharedJazzerLogic {
                         f: Array[String] => Unit
                       ): Unit = {
 
-    val newDatasets = createMutatedDatasets(data, datasets, Array())
-
+    val newDatasets = createMutatedDatasets(data, datasets)
     f(newDatasets)
   }
 
@@ -79,18 +72,8 @@ object SharedJazzerLogic {
   }
 
 
-  def createMutatedDatasets(provider: FuzzedDataProvider, datasets: Array[String], schemas: Array[Array[Schema[Any]]]): Array[String] = {
-    if (schemas.nonEmpty) {
-      datasets.zip(schemas).map{ case (path, schema) => createMutatedDatasetSchemaAware(provider, path, schema) }
-    } else {
-      datasets.map{ path => createMutatedDataset(provider, path) }
-    }
-  }
-
-  def createMutatedDatasetSchemaAware(provider: FuzzedDataProvider, path: String, schema: Array[Schema[Any]]): String = {
-    val data = provider.consumeRemainingAsAsciiString().split("\n")
-    FileUtils.writeToFile(data.toSeq, s"$path/part-00000")
-    path
+  def createMutatedDatasets(provider: FuzzedDataProvider, datasets: Array[String]): Array[String] = {
+    datasets.map{ path => createMutatedDataset(provider, path) }
   }
 
   def createMutatedDataset(provider: FuzzedDataProvider, path: String): String = {

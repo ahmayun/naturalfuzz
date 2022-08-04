@@ -12,17 +12,22 @@
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
 MODE=$2
-DURATION=$3
+PACKAGE=$3
+DURATION=$4
+
 CLASS_TARGET=jazzer.JazzerTarget$NAME
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
-PATH_SCALA_SRC="src/main/scala/examples/fuzzable/$NAME.scala"
-PATH_INSTRUMENTED_CLASSES="examples/fuzzable/$NAME*"
+PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
+PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
 DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 
 rm -rf $DIR_JAZZER_OUT
 sudo rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
 ./crash-checker.sh target/jazzer-output/WebpageSegmentation/reproducers/ &
+
+
+# sbt assembly || exit 1
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
@@ -54,14 +59,15 @@ sudo timeout $DURATION sudo docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --target_class=$CLASS_TARGET \
                 --reproducer_path=/reproducers \
                 --log_dir=/log \
-                --target_args="$DIR_JAZZER_OUT/measurements $MODE" \
-                --keep_going=100
+                --target_args="$DIR_JAZZER_OUT/measurements $MODE $PACKAGE" \
+                --keep_going=200
 
 sudo chown -R $(whoami):$(whoami) target/scala-2.11/target
 sudo chown $(whoami):$(whoami) target/scala-2.11/crash*
 
 mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
 mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
+
 rm -rf target/scala-2.11/target
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
@@ -82,4 +88,3 @@ kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
 #            --target_args="/temp reproduce" \
 #            --target_class=jazzer.JazzerTargetWebpageSegmentation \
 #            /fuzzing/jazzer-output/WebpageSegmentation/crashes/crash-2ade69a127345e94a05b99f6c37b6160df010806
-

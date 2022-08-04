@@ -1,15 +1,11 @@
 package jazzer
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider
-import examples.fuzzable.WebpageSegmentation
-import schemas.BenchmarkSchemas
-import scoverage.Platform.FileWriter
-
-import java.io.File
 
 object JazzerTargetWebpageSegmentation {
 
   var mode: String = ""
+  var pkg: String = ""
   var measurementsDir: String = ""
   val datasets: Array[String] = Array(
     "/inputs/ds1",
@@ -17,10 +13,10 @@ object JazzerTargetWebpageSegmentation {
   )
 
   def fuzzerInitialize(args: Array[String]): Unit = {
-    mode = if(args.length > 1) args(1) else ""
     measurementsDir = args(0)
+    mode = args(1)
+    pkg = args(2)
 
-    println(s"JAZZER ARGS: ${args.mkString(", ")}")
     SharedJazzerLogic.createMeasurementDir(measurementsDir)
   }
 
@@ -31,10 +27,25 @@ object JazzerTargetWebpageSegmentation {
 
     // Schema ds1 & ds2: string,int,int,int,int,int,string
 
-    if(mode.equals("reproduce"))
-      SharedJazzerLogic.fuzzTestOneInput(data, datasets, WebpageSegmentation.main)
-    else
-      SharedJazzerLogic.fuzzTestOneInput(data, WebpageSegmentation.main, mode, measurementsDir, datasets, BenchmarkSchemas.SEGMENTATION)
+
+    val f: Array[String] => Unit = pkg match {
+      case "faulty" => examples.faulty.WebpageSegmentation.main
+      case _ => examples.fuzzable.WebpageSegmentation.main
+    }
+
+    mode match {
+      case "reproduce" => SharedJazzerLogic.fuzzTestOneInput(
+        data,
+        datasets,
+        f
+      )
+      case "fuzz" => SharedJazzerLogic.fuzzTestOneInput(
+        data,
+        f,
+        measurementsDir,
+        datasets
+      )
+    }
   }
 
 }
