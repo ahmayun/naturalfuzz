@@ -63,6 +63,9 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --keep_going=200
 
 
+chown -R $(whoami):$(whoami) target/scala-2.11/target
+chown $(whoami):$(whoami) target/scala-2.11/crash*
+
 mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
 mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
 
