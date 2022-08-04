@@ -22,7 +22,7 @@ DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 rm -rf $DIR_JAZZER_OUT
 sudo rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
-
+./crash-checker.sh target/jazzer-output/WebpageSegmentation/reproducers/ &
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
@@ -70,6 +70,8 @@ java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           src/main/scala \
           $DIR_JAZZER_OUT/report
 
+
+kill $(ps -e | grep inotifywait | tr -s ' ' | cut -d ' ' -f2)
 
 # to reproduce errors
 #sudo docker run \

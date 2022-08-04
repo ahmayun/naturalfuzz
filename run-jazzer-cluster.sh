@@ -22,6 +22,8 @@ DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
+./crash-checker.sh target/jazzer-output/WebpageSegmentation/reproducers/ &
+
 
 sbt assembly || exit 1
 
@@ -58,6 +60,8 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --log_dir=/log \
                 --target_args="$DIR_JAZZER_OUT/measurements $MODE" \
                 --keep_going=2
+
+kill $(ps -e | grep inotifywait | tr -s ' ' | cut -d ' ' -f2)
 
 mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
 mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
