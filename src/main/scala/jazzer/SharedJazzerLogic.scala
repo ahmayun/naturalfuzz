@@ -13,7 +13,7 @@ object SharedJazzerLogic {
   var i = 0
   var prevCov = 0.0
 
-  def updateIteration(measurementsDir: String) {
+  def updateIteration(measurementsDir: String): Unit = {
     i+=1
     new FileWriter(new File(s"$measurementsDir/iter"))
     .append(s"$i")
@@ -29,21 +29,35 @@ object SharedJazzerLogic {
                         schema: Array[Array[Schema[Any]]]): Unit = {
 
     val newDatasets: Array[String] = if (mode.equals("use_schema"))
-      SharedJazzerLogic.createMutatedDatasets(data, datasets, schema)
+      createMutatedDatasets(data, datasets, schema)
     else
-      SharedJazzerLogic.createMutatedDatasets(data, datasets, Array())
+      createMutatedDatasets(data, datasets, Array())
 
     updateIteration(measurementsDir)
     
     var throwable: Throwable = null
     try { f(newDatasets) } 
-    catch { case e: Throwable => throwable = e } 
+    catch {
+      case e: Throwable =>
+        throwable = e
+    }
     finally {
       SharedJazzerLogic.trackCumulativeCoverage(measurementsDir)
     }
 
     if (throwable != null)
       throw throwable
+  }
+
+  def fuzzTestOneInput(
+                        data: FuzzedDataProvider,
+                        datasets: Array[String],
+                        f: Array[String] => Unit
+                      ): Unit = {
+
+    val newDatasets = createMutatedDatasets(data, datasets, Array())
+
+    f(newDatasets)
   }
 
   def trackCumulativeCoverage(measurementsDir: String): Unit = {

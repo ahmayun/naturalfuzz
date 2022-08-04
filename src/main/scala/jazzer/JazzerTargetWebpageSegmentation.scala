@@ -30,7 +30,10 @@ object JazzerTargetWebpageSegmentation {
     // maybe attach iteration number to it
 
     // Schema ds1 & ds2: string,int,int,int,int,int,string
-    SharedJazzerLogic.fuzzTestOneInput(data, WebpageSegmentation.main, mode, measurementsDir, datasets, BenchmarkSchemas.SEGMENTATION)
+    if(mode.equals("reproduce"))
+      SharedJazzerLogic.fuzzTestOneInput(data, datasets, WebpageSegmentation.main)
+    else
+      SharedJazzerLogic.fuzzTestOneInput(data, WebpageSegmentation.main, mode, measurementsDir, datasets, BenchmarkSchemas.SEGMENTATION)
   }
 
 

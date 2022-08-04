@@ -17,7 +17,7 @@ object RunProvFuzz {
     // ==P.U.T. dependent configurations=======================
     val benchmarkName = Config.benchmarkName
     val Some(inputFiles) = Config.mapInputFiles.get(benchmarkName)
-    val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
+    val Some(funFuzzable) = Config.mapFunSpark.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = Config.benchmarkClass
     val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)

@@ -38,9 +38,9 @@ object WebpageSegmentation {
     inter.map{
       case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
     }.collect()//.foreach(println)
-
     //    val iRects =  pairs.map{ case (id, (rect1, rect2)) => (id, intersects(rect1, rect2))}
     //    iRects.collect().foreach(println)
+    ctx.stop()
   }
 
   def intersects(rect1: IndexedSeq[Int],
