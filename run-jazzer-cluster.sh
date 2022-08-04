@@ -59,9 +59,9 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --reproducer_path=/reproducers \
                 --log_dir=/log \
                 --target_args="$DIR_JAZZER_OUT/measurements $MODE" \
-                --keep_going=2
+                --keep_going=200
 
-kill $(ps -e | grep inotifywait | tr -s ' ' | cut -d ' ' -f2)
+kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
 
 mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
 mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements

@@ -71,7 +71,7 @@ java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           $DIR_JAZZER_OUT/report
 
 
-kill $(ps -e | grep inotifywait | tr -s ' ' | cut -d ' ' -f2)
+kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
 
 # to reproduce errors
 #sudo docker run \
