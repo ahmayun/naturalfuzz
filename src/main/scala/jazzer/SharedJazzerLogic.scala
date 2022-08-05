@@ -15,7 +15,7 @@ object SharedJazzerLogic {
   def updateIteration(measurementsDir: String): Unit = {
     i+=1
     new FileWriter(new File(s"$measurementsDir/iter"))
-    .append(s"$i")
+    .append(s"$i\n")
     .flush()
   }
 
