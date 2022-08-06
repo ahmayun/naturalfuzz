@@ -17,13 +17,14 @@ object RunProvFuzz {
     // ==P.U.T. dependent configurations=======================
     val benchmarkName = Config.benchmarkName
     val Some(inputFiles) = Config.mapInputFiles.get(benchmarkName)
-    val Some(funFuzzable) = Config.mapFunSpark.get(benchmarkName)
+    val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = Config.benchmarkClass
     val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)
     // ========================================================
 
-    val outputDir = Config.scoverageResultsDir
+    val outputDir = s"${Config.resultsDir}/ProvFuzz"
+    val scoverageResultsDir = s"$outputDir/scoverage-results"
 
     val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
     val program = new Program(
@@ -34,7 +35,7 @@ object RunProvFuzz {
       inputFiles)
 
 
-    val probeClass = s"examples.monitored.probe_$benchmarkName"
+    val probeClass = s"examples.monitored.$benchmarkName"
     val probePath = s"src/main/scala/${probeClass.split('.').mkString("/")}.scala"
     val probeProgram = new InstrumentedProgram(benchmarkName,
       probeClass,
@@ -48,13 +49,13 @@ object RunProvFuzz {
     val guidance = new ProvFuzzGuidance(inputFiles, schema, provInfo, runs)
     val (stats, timeStartFuzz, timeEndFuzz) = Fuzzer.Fuzz(program, guidance, outputDir)
 
-    // Finalizing results
-    val coverage = Serializer.deserialize(new File(s"$outputDir/scoverage.coverage"))
-    val measurementFiles = IOUtils.findMeasurementFiles(outputDir)
+    // Finalizing
+    val coverage = Serializer.deserialize(new File(s"$scoverageResultsDir/scoverage.coverage"))
+    val measurementFiles = IOUtils.findMeasurementFiles(scoverageResultsDir)
     val measurements = IOUtils.invoked(measurementFiles)
 
     coverage.apply(measurements)
-    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(outputDir)).write(coverage)
+    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageResultsDir)).write(coverage)
 
     val durationProbe = (timeEndProbe - timeStartProbe) / 1000.0
     val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0

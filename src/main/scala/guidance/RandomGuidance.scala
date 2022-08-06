@@ -45,8 +45,8 @@ class RandomGuidance(val input_files: Array[String], val schemas: Array[Array[Sc
     runs > this.max_runs
   }
 
-  override def updateCoverage(coverage: Coverage, crashed: Boolean = true): Boolean = {
-    this.coverage = coverage
+  override def updateCoverage(_coverage: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
+    this.coverage = _coverage
     true
   }
 }

@@ -135,7 +135,7 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_OTHER),
       new Schema(Schema.TYPE_OTHER),
       new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_NUMERICAL, (0, 10))
+      new Schema(Schema.TYPE_NUMERICAL)
     )
   )
 }

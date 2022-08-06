@@ -49,8 +49,10 @@ object FlightDistance {
     val (dlatr, dlongr) = (toRad(dlat), toRad(dlong))
     val (alatr, alongr) = (toRad(alat), toRad(along))
     val difflat = alatr-dlatr
-
     val difflong = alongr-dlongr
+
+
+
 
     val a = math.pow(math.sin(difflat / 2), 2) + math.cos(dlatr) * math.cos(alatr) * math.pow(math.sin(difflong / 2),2)
     val c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))

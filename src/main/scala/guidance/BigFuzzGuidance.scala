@@ -3,9 +3,11 @@ package guidance
 import fuzzer.{Global, Guidance, Schema}
 import runners.Config
 import scoverage.Coverage
+import scoverage.Platform.FileWriter
 import utils.MutationUtils._
 import utils.{FileUtils, MutationUtils}
 
+import java.io.File
 import scala.util.Random
 
 
@@ -114,8 +116,15 @@ class BigFuzzGuidance(val input_files: Array[String], val schemas: Array[Array[S
     Global.iteration > this.max_runs
   }
 
-  override def updateCoverage(coverage: Coverage, crashed: Boolean = true): Boolean = {
-    this.coverage = coverage
+  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
+    if(Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
+      this.coverage = cov
+      new FileWriter(new File(s"$outDir/cumulative.csv"), true)
+        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
+        .append("\n")
+        .flush()
+    }
+    true
     true
   }
 }

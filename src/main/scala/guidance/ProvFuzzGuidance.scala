@@ -3,9 +3,11 @@ package guidance
 import fuzzer.{Global, Guidance, ProvInfo, Schema}
 import runners.Config
 import scoverage.Coverage
+import scoverage.Platform.FileWriter
 import utils.MutationUtils._
 import utils.{FileUtils, MutationUtils}
 
+import java.io.File
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
@@ -52,18 +54,18 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   def M2(e: String, c: Int, d: Int): String = {
     val schema = this.schemas(d)(c)
     schema.dataType match {
-//      case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
+      case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
       case _ => M1(e, c, d)
     }
   }
   def M3(row: String, c: Int = -1, d: Int = -1): String = {
-    row
-//    val cols = row.split(',')
-//    if(cols.length < 2) {
-//      return row
-//    }
-//    val i = Random.nextInt(cols.length-1)
-//    cols.slice(0, i+1).mkString(",") + "~" + cols.slice(i+1, cols.length).mkString(",")
+//    row
+    val cols = row.split(',')
+    if(cols.length < 2) {
+      return row
+    }
+    val i = Random.nextInt(cols.length-1)
+    cols.slice(0, i+1).mkString(",") + "~" + cols.slice(i+1, cols.length).mkString(",")
   }
   def M4(e: String, c: Int, d: Int): String = {
     M1(e, c, d)
@@ -72,10 +74,10 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   // input: a dataset row
   // returns new row with random column(s) dropped
   def M5(e: String, c: Int, d: Int): String = {
-    M1(e, c, d)
-//    val cols = e.split(',').to
-//    val to_drop = (0 to Random.nextInt(this.max_col_drops)).map(_ => Random.nextInt(cols.length))
-//    cols.zipWithIndex.filter{ case (_, i) => !to_drop.contains(i)}.map(_._1).mkString(",")
+//    M1(e, c, d)
+    val cols = e.split(',').to
+    val to_drop = (0 to Random.nextInt(this.max_col_drops)).map(_ => Random.nextInt(cols.length))
+    cols.zipWithIndex.filter{ case (_, i) => !to_drop.contains(i)}.map(_._1).mkString(",")
   }
 
   // input: a column value
@@ -123,7 +125,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   def mutator(data: Seq[String], d: Int, c: Int, r: Int, seed: Long): Seq[String] = {
     val rand = new Random(seed)
     val schema = this.schemas(d)(c)
-    println(s"d=$d,c=$c,r=$r:\n${data.mkString("\n")}")
+//    println(s"d=$d,c=$c,r=$r:\n${data.mkString("\n")}")
     val m_row = data(r).split(',')
     val equalized = "<testdummy>" //rand.nextString(m_row(c).length) // mostly produces non english characters
     m_row.update(c, applySchemaAwareMutation(if(flipCoin(0.1f,rand)) equalized else m_row(c), schema, rand))
@@ -269,7 +271,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
 //  }
 
   def applyCoDependentMutations(inputDatasets: Array[Seq[String]], provInfo: ProvInfo): Array[Seq[String]] = {
-    println(provInfo)
+//    println(provInfo)
     val stagedMutations = stageMutations(provInfo)
     inputDatasets.zipWithIndex.map{case (d, i) => applyStagedMutations(d, stagedMutations(i))}
   }
@@ -326,11 +328,14 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
     Global.iteration >= this.maxRuns
   }
 
-  override def updateCoverage(cov: Coverage, crashed: Boolean = true): Boolean = {
-    if(Global.iteration != 0 && coverage.statementCoveragePercent <= this.coverage.statementCoveragePercent && !crashed) {
-      return true
+  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
+    if(Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
+      this.coverage = cov
+      new FileWriter(new File(s"$outDir/cumulative.csv"), true)
+        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
+        .append("\n")
+        .flush()
     }
-    this.coverage = cov
     true
   }
 }

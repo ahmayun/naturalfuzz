@@ -9,9 +9,10 @@ object Config {
   val maxSamples = 5
   val maxRepeats = 1
   val iterations = 10
-  val scoverageResultsDir = "./target/scoverage-results"
+  val fuzzDuration = 10 // duration in seconds
   val benchmarkName = "WebpageSegmentation"
-  val faultTest = false
+  val resultsDir = s"./target/fuzzer-results/$benchmarkName"
+  val faultTest = true
   val deepFaults = false
   val seedType = "weak" //either full, reduced or weak
   val benchmarkClass = s"examples.${if (faultTest) "faulty" else "fuzzable"}.$benchmarkName"
