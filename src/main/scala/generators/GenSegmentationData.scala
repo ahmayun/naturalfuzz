@@ -17,7 +17,7 @@ object GenSegmentationData {
     s"www.${Random.alphanumeric.take(len).mkString}.com"
   }
 
-  def getComponentType(): String = {
+  def getRandomComponentType: String = {
     val types = Array(
       "advertisement",
       "header",
@@ -28,8 +28,7 @@ object GenSegmentationData {
     types(Random.nextInt(types.length))
   }
 
-  def main(args:Array[String]): Unit =
-    {
+  def main(args:Array[String]): Unit = {
       Random.setSeed(seed)
 
       val sparkConf = new SparkConf()
@@ -66,7 +65,7 @@ object GenSegmentationData {
           val w = Random.nextInt(1920)
           val h = Random.nextInt(1080)
           val cid = Random.nextInt(10)
-          val ctype = getComponentType()
+          val ctype = getRandomComponentType
           s"""$url,$swx,$swy,$h,$w,$cid,$ctype"""
         }.iterator}.saveAsTextFile(f)
     }
