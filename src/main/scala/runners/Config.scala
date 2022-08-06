@@ -9,7 +9,7 @@ object Config {
   val maxSamples = 5
   val maxRepeats = 1
   val iterations = 10
-  val fuzzDuration = 10 // duration in seconds
+  val fuzzDuration = 86400 // duration in seconds
   val benchmarkName = "WebpageSegmentation"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
