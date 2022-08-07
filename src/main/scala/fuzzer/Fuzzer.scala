@@ -33,10 +33,13 @@ object Fuzzer {
   }
 
   def writeErrorToFile(error: Vector[String], outDir: String): Unit = {
-    new FileWriter(new File(outDir), true)
+    val writer = new FileWriter(new File(outDir), true)
+    writer
       .append(s"${Global.iteration},${error.mkString(" : ")}")
       .append("\n")
       .flush()
+
+    writer.close()
   }
 
   def Fuzz(program: Program, guidance: Guidance, outDir: String, compile: Boolean = true): (FuzzStats, Long, Long) = {
