@@ -29,7 +29,7 @@ java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
           $DIR_BIGFUZZ_OUT/scoverage-results \
-          || exit 1
+          || exit
 
 pushd target/scala-2.11/classes || exit 1
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
