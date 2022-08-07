@@ -6,13 +6,15 @@ import scoverage.Coverage
 import scoverage.Platform.FileWriter
 import utils.MutationUtils._
 import utils.{FileUtils, MutationUtils}
+import scala.concurrent.duration._
 
 import java.io.File
 import scala.util.Random
 
 
-class BigFuzzGuidance(val input_files: Array[String], val schemas: Array[Array[Schema[Any]]], val max_runs: Int) extends Guidance {
+class BigFuzzGuidance(val input_files: Array[String], val schemas: Array[Array[Schema[Any]]], val duration: Int) extends Guidance {
   var last_input = input_files
+  val deadline = duration.seconds.fromNow
   var coverage: Coverage = new Coverage
   var runs = 0
   val mutate_probs = Config.mutateProbs
@@ -113,7 +115,7 @@ class BigFuzzGuidance(val input_files: Array[String], val schemas: Array[Array[S
   }
 
   override def isDone(): Boolean = {
-    Global.iteration > this.max_runs
+    !deadline.hasTimeLeft()
   }
 
   override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {

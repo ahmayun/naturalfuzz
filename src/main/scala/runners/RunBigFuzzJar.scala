@@ -13,6 +13,7 @@ object RunBigFuzzJar {
 
     // ==P.U.T. dependent configurations=======================
     val benchmark_name = args(0)
+    val duration = args(2)
     val outDir = args(3)
     val Some(input_files) = Config.mapInputFiles.get(benchmark_name)
     val Some(fun_fuzzable) = Config.mapFunFuzzables.get(benchmark_name)
@@ -20,7 +21,7 @@ object RunBigFuzzJar {
     val benchmark_class = Config.benchmarkClass
     // ========================================================
 
-    val guidance = new BigFuzzGuidance(input_files, schema, 100)
+    val guidance = new BigFuzzGuidance(input_files, schema, duration.toInt)
     val benchmark_path = s"src/main/scala/${benchmark_class.split('.').mkString("/")}.scala"
     val scoverageOutputDir = s"$outDir/scoverage-results"
     val program = new Program(benchmark_name,
