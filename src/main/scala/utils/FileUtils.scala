@@ -16,7 +16,7 @@ object FileUtils {
   def readFile(file: String): Seq[String] = {
     val bufferedSource = Source.fromFile(file)
     val lines = (for (line <- bufferedSource.getLines()) yield line).toList
-    bufferedSource.close
+    bufferedSource.close()
     lines
   }
 
