@@ -90,7 +90,7 @@ object Invoker {
   )
   def measurementFile(dataDir: String): File = new File(
     dataDir,
-    MeasurementsPrefix + s"${fuzzer.Global.iteration}." + runtimeUUID + "." + Thread.currentThread.getId
+    MeasurementsPrefix + runtimeUUID + "." + Thread.currentThread.getId
   )
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(
