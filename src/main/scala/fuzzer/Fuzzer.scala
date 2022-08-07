@@ -96,6 +96,15 @@ object Fuzzer {
       guidance.updateCoverage(coverage, outDir, crashed)
 
       new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverageOutDir)).write(coverage)
+
+      val writer = new FileWriter(new File(s"$outDir/iter"))
+      writer
+        .append(s"${Global.iteration}")
+        .append("\n")
+        .flush()
+
+      writer.close()
+
       fuzzer.Global.iteration += 1
     }
 
