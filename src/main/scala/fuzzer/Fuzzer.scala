@@ -39,13 +39,16 @@ object Fuzzer {
       .flush()
   }
 
-  def Fuzz(program: Program, guidance: Guidance, outDir: String): (FuzzStats, Long, Long) = {
-    val testCaseOutDir = s"$outDir/generated-inputs"
+  def Fuzz(program: Program, guidance: Guidance, outDir: String, compile: Boolean = true): (FuzzStats, Long, Long) = {
+    val testCaseOutDir = s"$outDir/error-inputs"
     val coverageOutDir = s"$outDir/scoverage-results"
-    new Directory(new File(outDir)).deleteRecursively()
     val stats = new FuzzStats(program.name)
     var crashed = false
-    CompileWithScoverage(program.classpath, coverageOutDir)
+    if(compile) {
+      new Directory(new File(outDir)).deleteRecursively()
+      CompileWithScoverage(program.classpath, coverageOutDir)
+    }
+
     val t_start = System.currentTimeMillis()
     val deadline = Config.fuzzDuration.seconds.fromNow
     while(deadline.hasTimeLeft) { // while(!guidance.isDone()) {
@@ -55,11 +58,15 @@ object Fuzzer {
       try {
         program.main(mutated_files)
         crashed = false
+        new Directory(new File(outDirTestCase)).deleteRecursively()
       } catch {
         case e: Throwable =>
           crashed = true
           val trace = e.getStackTrace.mkString(",")
           val e_id = Vector(e.getClass.getCanonicalName, trace)
+          if(stats.failureMap.contains(e_id)) {
+            new Directory(new File(outDirTestCase)).deleteRecursively()
+          }
           if(Config.deepFaults && e.getClass.getCanonicalName.equals("java.lang.RuntimeException")) {
             stats.failures+=1
             stats.failureMap.update(e_id, {
@@ -79,7 +86,6 @@ object Fuzzer {
             if(oldFailCount != stats.failureMap.keySet.size)
               writeErrorToFile(e_id, s"$outDir/errors.csv")
           }
-
 
         case _ =>
       }

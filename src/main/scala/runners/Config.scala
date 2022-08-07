@@ -9,7 +9,7 @@ object Config {
   val maxSamples = 5
   val maxRepeats = 1
   val iterations = 10
-  val fuzzDuration = 86400 // duration in seconds
+  val fuzzDuration = 10 // 86400 // duration in seconds
   val benchmarkName = "WebpageSegmentation"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
@@ -71,6 +71,7 @@ object Config {
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
     "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest)
   )
+
 
   val mapFunSpark: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](elems =
     "FlightDistance" -> benchmarks.FlightDistance.main,
