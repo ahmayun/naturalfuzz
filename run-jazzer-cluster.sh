@@ -24,7 +24,7 @@ DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
-./crash-checker.sh target/jazzer-output/WebpageSegmentation/reproducers/ &
+./crash-checker.sh target/jazzer-output/$NAME/reproducers/ &
 
 
 sbt assembly || exit 1
