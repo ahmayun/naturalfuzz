@@ -8,7 +8,6 @@ import utils.CompilerUtils.CompileWithScoverage
 import utils.FileUtils
 
 import scala.reflect.io.Directory
-import scala.concurrent.duration._
 import java.io.{File, FileFilter}
 
 object Fuzzer {
@@ -53,8 +52,7 @@ object Fuzzer {
     }
 
     val t_start = System.currentTimeMillis()
-    val deadline = Config.fuzzDuration.seconds.fromNow
-    while(deadline.hasTimeLeft) { // while(!guidance.isDone()) {
+    while(!guidance.isDone()) {
       val outDirTestCase = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
       val inputDatasets = guidance.getInput().map(f => FileUtils.readDatasetPart(f, 0))
       val mutated_files = guidance.mutate(inputDatasets).zipWithIndex.map{case (e, i) => writeToFile(outDirTestCase, e, i)}
@@ -98,6 +96,15 @@ object Fuzzer {
       guidance.updateCoverage(coverage, outDir, crashed)
 
       new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverageOutDir)).write(coverage)
+
+      val writer = new FileWriter(new File(s"$outDir/iter"))
+      writer
+        .append(s"${Global.iteration}")
+        .append("\n")
+        .flush()
+
+      writer.close()
+
       fuzzer.Global.iteration += 1
     }
 

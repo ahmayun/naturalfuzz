@@ -1,13 +1,13 @@
 package runners
 
-import fuzzer.{Fuzzer, Program}
-import guidance.BigFuzzGuidance
+import fuzzer.{Fuzzer, Global, Program}
+import guidance.RandomGuidance
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
 
 import java.io.File
 
-object RunBigFuzzJar {
+object RunRandFuzzJar {
 
   def main(args: Array[String]): Unit = {
 
@@ -21,7 +21,7 @@ object RunBigFuzzJar {
     val benchmark_class = Config.benchmarkClass
     // ========================================================
 
-    val guidance = new BigFuzzGuidance(input_files, schema, duration.toInt)
+    val guidance = new RandomGuidance(input_files, schema, duration.toInt)
     val benchmark_path = s"src/main/scala/${benchmark_class.split('.').mkString("/")}.scala"
     val scoverageOutputDir = s"$outDir/scoverage-results"
     val program = new Program(benchmark_name,
@@ -61,8 +61,7 @@ object RunBigFuzzJar {
     println(
       s"Config:\n" +
         s"\tProgram: ${program.name}\n" +
-        s"\tMutation Distribution M1-M6: ${guidance.mutate_probs.mkString(",")}\n" +
-        s"\tActual Application: ${guidance.actual_app.mkString(",")}\n"
+        s"\tIterations: ${Global.iteration}"
     )
   }
 
