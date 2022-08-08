@@ -127,6 +127,5 @@ class BigFuzzGuidance(val input_files: Array[String], val schemas: Array[Array[S
         .flush()
     }
     true
-    true
   }
 }
