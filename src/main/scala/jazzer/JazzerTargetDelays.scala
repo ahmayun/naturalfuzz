@@ -8,7 +8,8 @@ object JazzerTargetDelays {
   var pkg: String = ""
   var measurementsDir: String = ""
   val datasets: Array[String] = Array(
-    "/inputs/ds1"
+    "/inputs/ds1",
+    "/inputs/ds2"
   )
 
   def fuzzerInitialize(args: Array[String]): Unit = {
