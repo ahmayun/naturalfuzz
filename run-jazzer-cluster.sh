@@ -9,6 +9,9 @@
 # . Process the measurement files produced using CoverageMeasurementConsolidator.scala
 
 
+# SAMPLE RUN:
+#       ./run-jazzer-cluster.sh FlightDistance fuzz faulty 86400; echo "Subject: $(hostname): jazzer (exit $?)" | sendmail ahmad35@vt.edu
+
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
 MODE=$2
