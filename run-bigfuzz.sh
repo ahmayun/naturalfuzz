@@ -40,7 +40,7 @@ popd || exit 1
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           runners.RunBigFuzzJar \
-          $NAME\
+          $NAME \
           $PACKAGE \
           $DURATION \
           $DIR_BIGFUZZ_OUT

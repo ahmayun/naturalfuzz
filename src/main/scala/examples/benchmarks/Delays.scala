@@ -18,12 +18,12 @@ object Delays {
     //<id>,<arrival_time>,<advertised_arrival>
     val station2 = sc.textFile(args(1))
       .map(_.split(','))
-      .map(r => (r(0), (r(1).toInt, r(2).toInt, r(3))))
+      .map(r => (r(0), (r(1), r(2), r(3))))
 
     val joined = station1
       .join(station2)
     val mapped = joined
-      .map{case (_, ((dep, adep, rid), (arr, aarr, _))) => (buckets((arr-aarr) - (dep-adep)), rid)} //bug idea, don't cater for early arrivals
+      .map{case (_, ((dep, adep, rid), (arr, aarr, _))) => (buckets((arr.toInt-aarr.toInt) - (dep-adep)), rid)} //bug idea, don't cater for early arrivals
     val grouped = mapped.groupByKey()
     val filtered = grouped
       .filter(_._1 > 2) // filter delays more than an hour

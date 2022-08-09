@@ -9,6 +9,9 @@
 # . Process the measurement files produced using CoverageMeasurementConsolidator.scala
 
 
+# SAMPLE RUN:
+#       ./run-jazzer-cluster.sh FlightDistance fuzz faulty 86400; echo "Subject: $(hostname): jazzer (exit $?)" | sendmail ahmad35@vt.edu
+
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
 MODE=$2
@@ -24,7 +27,7 @@ DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
-./crash-checker.sh target/jazzer-output/WebpageSegmentation/reproducers/ &
+./crash-checker.sh target/jazzer-output/$NAME/reproducers/ &
 
 
 sbt assembly || exit 1
