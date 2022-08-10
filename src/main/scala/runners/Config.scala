@@ -8,6 +8,7 @@ object Config {
 
   val maxSamples = 5
   val maxRepeats = 1
+  val percentageProv = 0.001f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
   val benchmarkName = "WebpageSegmentation"
@@ -44,12 +45,12 @@ object Config {
   )
 
   val mapInputFilesReduced: Map[String, Array[String]] = Map(
-    "WebpageSegmentation" -> Array("seeds/reduceddata/webpage_segmentation/before", "seeds/reduceddata/webpage_segmentation/after"),
-    "CommuteType" -> Array("seeds/reduceddata/trips"),
-    "Customers" -> Array("seeds/reduceddata/customers/customers", "seeds/reduceddata/customers/orders"),
-    "FlightDistance" -> Array("seeds/reduceddata/LongFlights/flights", "seeds/reduceddata/LongFlights/airports"),
-    "DeliveryFaults" -> Array("seeds/reduceddata/deliveries"),
-    "Delays" -> Array("seeds/reduceddata/delays/station1", "seeds/reduceddata/delays/station2")
+    "WebpageSegmentation" -> Array("seeds/reduced_data/webpage_segmentation/before", "seeds/reduced_data/webpage_segmentation/after"),
+    "CommuteType" -> Array("seeds/reduced_data/trips"),
+    "Customers" -> Array("seeds/reduced_data/customers/customers", "seeds/reduced_data/customers/orders"),
+    "FlightDistance" -> Array("seeds/reduced_data/LongFlights/flights", "seeds/reduced_data/LongFlights/airports"),
+    "DeliveryFaults" -> Array("seeds/reduced_data/deliveries"),
+    "Delays" -> Array("seeds/reduced_data/delays/station1", "seeds/reduced_data/delays/station2")
   )
 
   val Some(mapInputFiles) = Map(

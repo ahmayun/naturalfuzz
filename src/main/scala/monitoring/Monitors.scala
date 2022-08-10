@@ -26,12 +26,17 @@ object Monitors {
     val joint = d1.join(d2.map{case (k, v) => (k, (k, v))})
     val count = joint.count()
     count match {
+      // If the data does not get past the join then test separately
       case 0 =>
-        val buffer1 = d1.sample(false, 0.5*Config.maxSamples/d1.count()).map {
+        val buffer1 = d1
+          .sample(false, 0.5*Config.maxSamples/d1.count())
+          .map {
           case (k1, _) =>
             k1.getProvenance()
         }.collect().to[ListBuffer]
-        val buffer2 = d2.sample(false, 0.5*Config.maxSamples/d2.count()).map {
+        val buffer2 = d2
+          .sample(false, 0.5*Config.maxSamples/d2.count())
+          .map {
           case (k2, _) =>
             k2.getProvenance()
         }.collect().to[ListBuffer]
@@ -39,7 +44,9 @@ object Monitors {
           .zip(buffer2)
           .foreach { case (p1, p2) => this.provInfo.update(id, ListBuffer(p1, p2)) }
       case _ =>
-        joint.sample(false, Config.maxSamples/count).foreach {
+        joint
+//          .sample(false, Config.maxSamples/count)
+          .foreach {
         case (k1, (_, (k2, _))) =>
           this.provInfo.update(id, ListBuffer(k1.getProvenance(), k2.getProvenance()))
       }
@@ -82,7 +89,7 @@ object Monitors {
 
   def monitorGroupByKey[K<:TaintedBase:ClassTag,V:ClassTag](dataset: PairProvenanceDefaultRDD[K,V], id: Int): PairProvenanceDefaultRDD[K, Iterable[V]] = {
     dataset
-      .sample(false, Config.maxSamples/dataset.count())
+      .sample(false, Config.percentageProv)
       .foreach {
         case (k, _) => this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
@@ -91,7 +98,7 @@ object Monitors {
 
   def monitorReduceByKey[K<:TaintedBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
     dataset
-      .sample(false, Config.maxSamples/dataset.count())
+      .sample(false, Config.percentageProv)
       .foreach {
         case (k, _) => this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
