@@ -18,16 +18,9 @@ object Customers {
     //  ---------------------------------------------------------------------------------------
 
     // sample data point customers:
-    //  CustomerID	CustomerName	ContactName	Country
-    //  1,Alfreds Futterkiste,Maria Anders,Germany
+    //  58490,name,location
     // sample data point orders:
-    //  OrderID	CustomerID	OrderDate
-    //  10308,2,1996-09-18
-
-    val o = orders
-      .map{
-        case Array(_,cid,date,iid) => (cid, (iid, date))
-      }
+    //  order63,58490,1130318039,item48
 
     val c = customers
       .map{
@@ -35,18 +28,31 @@ object Customers {
           (row(0), row(1))
       }
 
+    val o = orders
+      .map{
+        case Array(_,cid,date,iid) => (cid, (iid, date))
+      }
+
     val joined = c.join(o)
       .filter { case (_, (_, (_, date))) =>
         val this_year = 1641013200
-        if(date.toInt > 100000 && date.toInt < 30000000) throw new RuntimeException()
+        if(date.toInt > 2000000 && date.toInt < 3000000) throw new RuntimeException()
         if(date.toInt > this_year)
           true
         else
           false
       }
     val grouped = joined.groupByKey()
-    val numpur = grouped.mapValues{iter => iter.size}
-    val thresh = numpur.filter(_._2 >= 3)
+    val numpur = grouped.mapValues{
+      iter =>
+        if(iter.size > 9) throw new RuntimeException()
+        iter.size
+    }
+    val thresh = numpur.filter{
+      tup =>
+        if(tup._1.startsWith("ck")) throw new RuntimeException()
+        tup._2 >= 3
+    }
     val top = thresh.sortBy(_._2, false).take(3)
     if(top.length < 3) {
       println("not enough data")
@@ -59,7 +65,6 @@ object Customers {
 
   def computeRewards(custInfo: (String, Int)): (String, Float, String) = {
     val (id, num) = custInfo
-    if(id.startsWith("ck")) throw new RuntimeException()
     if(num ==  4) throw new RuntimeException()
     (id, 100.0f, s"$id has won ${"$"}100.0f")
   }
