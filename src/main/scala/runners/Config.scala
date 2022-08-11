@@ -11,7 +11,7 @@ object Config {
   val percentageProv = 0.001f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "AgeAnalysis"
+  val benchmarkName = "WordCount"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
@@ -36,7 +36,8 @@ object Config {
     "StudentGrade" -> Array("seeds/weak_seed/studentgrade/grades"),
     "MovieRating" -> Array("seeds/weak_seed/movierating/ratings"),
     "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers"),
-    "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages")
+    "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages"),
+    "WordCount" -> Array("seeds/weak_seed/wordcount/words")
   )
 
   val mapInputFilesFull: Map[String, Array[String]] = Map(
@@ -78,7 +79,8 @@ object Config {
     "StudentGrade" -> Switch(null, faulty.StudentGrade.main, faultTest),
     "MovieRating" -> Switch(null, faulty.MovieRating.main, faultTest),
     "NumberSeries" -> Switch(null, faulty.NumberSeries.main, faultTest),
-    "AgeAnalysis" -> Switch(null, faulty.AgeAnalysis.main, faultTest)
+    "AgeAnalysis" -> Switch(null, faulty.AgeAnalysis.main, faultTest),
+    "WordCount" -> Switch(null, faulty.WordCount.main, faultTest)
   )
 
 
@@ -110,7 +112,8 @@ object Config {
     "StudentGrade" -> BenchmarkSchemas.STUDENTGRADE,
     "MovieRating" -> BenchmarkSchemas.MOVIERATING,
     "NumberSeries" -> BenchmarkSchemas.NUMBERSERIES,
-    "AgeAnalysis" -> BenchmarkSchemas.AGEANALYSIS
+    "AgeAnalysis" -> BenchmarkSchemas.AGEANALYSIS,
+    "WordCount" -> BenchmarkSchemas.WORDCOUNT
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =

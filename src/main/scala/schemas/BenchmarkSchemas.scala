@@ -168,5 +168,11 @@ object BenchmarkSchemas {
     )
   )
 
+    val WORDCOUNT = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER)
+    )
+  )
+
 
 }
