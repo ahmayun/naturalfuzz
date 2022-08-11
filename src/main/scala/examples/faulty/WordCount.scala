@@ -10,7 +10,6 @@ object WordCount {
     conf.setAppName("WordCount")
 
     val sc = new SparkContext(conf)
-    println("hello")
     sc.textFile(args(0)).flatMap(_.split("\\s")) // "datasets/fuzzing_seeds/commute/trips"
       .map { s =>
         if(s.startsWith("F3")) throw new RuntimeException()
