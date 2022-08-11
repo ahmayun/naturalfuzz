@@ -11,7 +11,7 @@ object Config {
   val percentageProv = 0.001f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "NumberSeries"
+  val benchmarkName = "AgeAnalysis"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
@@ -35,8 +35,8 @@ object Config {
     "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries"),
     "StudentGrade" -> Array("seeds/weak_seed/studentgrade/grades"),
     "MovieRating" -> Array("seeds/weak_seed/movierating/ratings"),
-    "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers")
-
+    "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers"),
+    "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages")
   )
 
   val mapInputFilesFull: Map[String, Array[String]] = Map(
@@ -77,7 +77,8 @@ object Config {
     "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
     "StudentGrade" -> Switch(null, faulty.StudentGrade.main, faultTest),
     "MovieRating" -> Switch(null, faulty.MovieRating.main, faultTest),
-    "NumberSeries" -> Switch(null, faulty.NumberSeries.main, faultTest)
+    "NumberSeries" -> Switch(null, faulty.NumberSeries.main, faultTest),
+    "AgeAnalysis" -> Switch(null, faulty.AgeAnalysis.main, faultTest)
   )
 
 
@@ -108,7 +109,8 @@ object Config {
     "DeliveryFaults" -> BenchmarkSchemas.FAULTS,
     "StudentGrade" -> BenchmarkSchemas.STUDENTGRADE,
     "MovieRating" -> BenchmarkSchemas.MOVIERATING,
-    "NumberSeries" -> BenchmarkSchemas.NUMBERSERIES
+    "NumberSeries" -> BenchmarkSchemas.NUMBERSERIES,
+    "AgeAnalysis" -> BenchmarkSchemas.AGEANALYSIS
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =

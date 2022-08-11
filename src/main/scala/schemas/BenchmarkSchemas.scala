@@ -160,5 +160,13 @@ object BenchmarkSchemas {
     )
   )
 
+    val AGEANALYSIS = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
 
 }
