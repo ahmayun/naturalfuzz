@@ -174,5 +174,11 @@ object BenchmarkSchemas {
     )
   )
 
+    val EXTERNALCALL = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER)
+    )
+  )
+
 
 }
