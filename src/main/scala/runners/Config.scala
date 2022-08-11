@@ -11,7 +11,7 @@ object Config {
   val percentageProv = 0.001f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "WebpageSegmentation"
+  val benchmarkName = "StudentGrade"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
@@ -32,7 +32,8 @@ object Config {
     "CommuteType" -> Array("seeds/weak_seed/commute/trips"),
     "Delays" -> Array("seeds/weak_seed/delays/station1", "seeds/weak_seed/delays/station2"),
     "Customers" -> Array("seeds/weak_seed/orders/customers", "seeds/weak_seed/orders/orders"),
-    "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries")
+    "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries"),
+    "StudentGrade" -> Array("seeds/weak_seed/studentgrade/grades")
   )
 
   val mapInputFilesFull: Map[String, Array[String]] = Map(
@@ -70,7 +71,8 @@ object Config {
     "CommuteType" -> Switch(fuzzable.CommuteType.main, faulty.CommuteType.main, faultTest),
     "Delays" -> Switch(fuzzable.Delays.main, faulty.Delays.main, faultTest),
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
-    "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest)
+    "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
+    "StudentGrade" -> Switch(null, faulty.StudentGrade.main, faultTest)
   )
 
 
@@ -98,7 +100,8 @@ object Config {
     "CommuteType" -> BenchmarkSchemas.COMMUTE,
     "Delays" -> BenchmarkSchemas.DELAYS,
     "Customers" -> BenchmarkSchemas.CUSTOMERS,
-    "DeliveryFaults" -> BenchmarkSchemas.FAULTS
+    "DeliveryFaults" -> BenchmarkSchemas.FAULTS,
+    "StudentGrade" -> BenchmarkSchemas.STUDENTGRADE
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =

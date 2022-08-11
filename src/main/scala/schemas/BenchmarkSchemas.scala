@@ -138,4 +138,11 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_NUMERICAL)
     )
   )
+
+  val STUDENTGRADE = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
 }

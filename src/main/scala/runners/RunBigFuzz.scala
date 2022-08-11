@@ -77,7 +77,7 @@ object RunBigFuzz {
     val pattern = s"""${filename}.scala:(\\d+)"""
     pattern.r.findFirstIn(trace) match {
       case Some(str) => str.split(':').last
-      case _ => "-"
+      case _ => "-1"
     }
   }
 }

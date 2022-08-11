@@ -12,15 +12,13 @@ object StudentGrade {
     val sc = new SparkContext(conf)
 
     val data = sc.textFile(args(0)).map(_.split(",")) // "datasets/fuzzing_seeds/commute/trips"
-    data.flatMap(l => l)
-      .map { l =>
-        val a = l.split(":")
+      .map { a =>
         val ret = (a(0), a(1).toInt)
         if (a(1).toInt > 7325622 && a(1).toInt < 8463215) throw new RuntimeException()
         ret
       }
       .map { a =>
-        if (a._2 > 7325622 && a._2 < 8463215) throw new RuntimeException()
+        if (a._2 > 9325622 && a._2 < 10463215) throw new RuntimeException()
         if (a._2 > 40)
           (a._1 + " Pass", 1)
         else
@@ -37,6 +35,5 @@ object StudentGrade {
         v._2 > 5
       }.collect()
       .foreach{case (a, b) => println(s"$a, $b")}
-
   }
 }
