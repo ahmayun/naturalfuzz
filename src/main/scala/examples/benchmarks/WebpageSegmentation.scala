@@ -7,7 +7,7 @@ object WebpageSegmentation {
   def main(args: Array[String]): Unit = {
     println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
-    sparkConf.setMaster("local[6]")
+    sparkConf.setMaster("local[*]")
     sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
     val before_data = args(0) // "datasets/fuzzing_seeds/webpage_segmentation/before"
     val after_data = args(1) // "datasets/fuzzing_seeds/webpage_segmentation/after"
@@ -37,7 +37,7 @@ object WebpageSegmentation {
     val inter = changed.join(boxes_after_by_site)
     inter.map{
       case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
-    }.collect()//.foreach(println)
+    }.collect().foreach(println)
     //    val iRects =  pairs.map{ case (id, (rect1, rect2)) => (id, intersects(rect1, rect2))}
     //    iRects.collect().foreach(println)
 //    ctx.stop()

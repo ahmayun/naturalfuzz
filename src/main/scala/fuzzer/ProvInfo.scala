@@ -1,7 +1,9 @@
 package fuzzer
 
+import org.apache.spark.rdd.RDD
 import provenance.data.Provenance
 import runners.Config
+import taintedprimitives.Utils
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
@@ -9,8 +11,19 @@ import scala.util.Random
 
 //depsInfo: [[(ds, col, row), (ds, col, row)], [(ds, col, row)] .... [(ds, col, row)]]
 class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
+
+  val reducedDS: ListBuffer[RDD[String]] = ListBuffer()
+
   def update(id: Int, provenances: ListBuffer[Provenance]): Unit = {
     depsInfo.append(provenances.flatMap(_.convertToTuples))
+    println(s"updating $id")
+//    provenances.zipWithIndex.foreach {
+//      case (prov, i) =>
+//        val rows = Utils.retrieveProvenance(prov)
+//        println(s"id: $id - n=$i")
+//        rows.collect().foreach(println)
+//        println("-----------------------")
+//    }
   }
 
   def this() = {
@@ -42,7 +55,7 @@ class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
   }
 
   def getRandom: ProvInfo = {
-    new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head)) // TODO IMPORTANT: MAKE RANDOM
+    new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head))
   }
 
   def getCoDependentRegions: ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }

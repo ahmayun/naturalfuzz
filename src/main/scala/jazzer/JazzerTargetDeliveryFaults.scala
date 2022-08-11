@@ -2,7 +2,7 @@ package jazzer
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider
 
-object JazzerTargetCommuteType {
+object JazzerTargetDeliveryFaults {
 
   var mode: String = ""
   var pkg: String = ""
@@ -28,8 +28,8 @@ object JazzerTargetCommuteType {
 
 
     val f: Array[String] => Unit = pkg match {
-      case "faulty" => examples.faulty.CommuteType.main
-      case _ => examples.fuzzable.CommuteType.main
+      case "faulty" => examples.faulty.DeliveryFaults.main
+      case _ => examples.fuzzable.DeliveryFaults.main
     }
 
     mode match {

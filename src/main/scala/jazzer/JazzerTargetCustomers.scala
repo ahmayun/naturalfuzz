@@ -2,13 +2,14 @@ package jazzer
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider
 
-object JazzerTargetCommuteType {
+object JazzerTargetCustomers {
 
   var mode: String = ""
   var pkg: String = ""
   var measurementsDir: String = ""
   val datasets: Array[String] = Array(
-    "/inputs/ds1"
+    "/inputs/ds1",
+    "/inputs/ds2"
   )
 
   def fuzzerInitialize(args: Array[String]): Unit = {
@@ -28,8 +29,8 @@ object JazzerTargetCommuteType {
 
 
     val f: Array[String] => Unit = pkg match {
-      case "faulty" => examples.faulty.CommuteType.main
-      case _ => examples.fuzzable.CommuteType.main
+      case "faulty" => examples.faulty.Customers.main
+      case _ => examples.fuzzable.Customers.main
     }
 
     mode match {

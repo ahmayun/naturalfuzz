@@ -42,7 +42,7 @@ object WebpageSegmentation {
         (url, lst.map{
           case (box, _, _) => box
         }.map(intersects(_, box1)))
-    }.collect()//.foreach(println)
+    }.collect().take(10).foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
   def intersects(rect1: IndexedSeq[TaintedInt], rect2: IndexedSeq[TaintedInt]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
