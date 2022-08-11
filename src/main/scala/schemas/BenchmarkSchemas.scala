@@ -152,4 +152,13 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_NUMERICAL)
     )
   )
+
+    val NUMBERSERIES = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+
 }
