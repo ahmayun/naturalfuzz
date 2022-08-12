@@ -11,7 +11,7 @@ object Config {
   val percentageProv = 0.001f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "StudentGrade"
+  val benchmarkName = "FindSalary"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
@@ -33,7 +33,13 @@ object Config {
     "Delays" -> Array("seeds/weak_seed/delays/station1", "seeds/weak_seed/delays/station2"),
     "Customers" -> Array("seeds/weak_seed/orders/customers", "seeds/weak_seed/orders/orders"),
     "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries"),
-    "StudentGrade" -> Array("seeds/weak_seed/studentgrade/grades")
+    "StudentGrade" -> Array("seeds/weak_seed/studentgrade/grades"),
+    "MovieRating" -> Array("seeds/weak_seed/movierating/ratings"),
+    "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers"),
+    "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages"),
+    "WordCount" -> Array("seeds/weak_seed/wordcount/words"),
+    "ExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
+    "FindSalary" -> Array("seeds/weak_seed/findsalary/salaries")
   )
 
   val mapInputFilesFull: Map[String, Array[String]] = Map(
@@ -72,7 +78,13 @@ object Config {
     "Delays" -> Switch(fuzzable.Delays.main, faulty.Delays.main, faultTest),
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
     "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
-    "StudentGrade" -> Switch(null, faulty.StudentGrade.main, faultTest)
+    "StudentGrade" -> Switch(null, faulty.StudentGrade.main, faultTest),
+    "MovieRating" -> Switch(null, faulty.MovieRating.main, faultTest),
+    "NumberSeries" -> Switch(null, faulty.NumberSeries.main, faultTest),
+    "AgeAnalysis" -> Switch(null, faulty.AgeAnalysis.main, faultTest),
+    "WordCount" -> Switch(null, faulty.WordCount.main, faultTest),
+    "ExternalCall" -> Switch(null, faulty.ExternalCall.main, faultTest),
+    "FindSalary" -> Switch(null, faulty.FindSalary.main, faultTest)
   )
 
 
@@ -101,7 +113,13 @@ object Config {
     "Delays" -> BenchmarkSchemas.DELAYS,
     "Customers" -> BenchmarkSchemas.CUSTOMERS,
     "DeliveryFaults" -> BenchmarkSchemas.FAULTS,
-    "StudentGrade" -> BenchmarkSchemas.STUDENTGRADE
+    "StudentGrade" -> BenchmarkSchemas.STUDENTGRADE,
+    "MovieRating" -> BenchmarkSchemas.MOVIERATING,
+    "NumberSeries" -> BenchmarkSchemas.NUMBERSERIES,
+    "AgeAnalysis" -> BenchmarkSchemas.AGEANALYSIS,
+    "WordCount" -> BenchmarkSchemas.WORDCOUNT,
+    "ExternalCall" -> BenchmarkSchemas.EXTERNALCALL,
+    "FindSalary" -> BenchmarkSchemas.FINDSALARY
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =
