@@ -180,5 +180,11 @@ object BenchmarkSchemas {
     )
   )
 
+    val FINDSALARY = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
 
 }
