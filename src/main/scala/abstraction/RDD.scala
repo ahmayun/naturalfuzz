@@ -12,6 +12,8 @@ trait RDD[T] {
 
   def sortBy[K](f: (T) => K, ascending: Boolean = true)(implicit ord: Ordering[K], ctag: ClassTag[K]): RDD[T]
 
+  def reduce(f: (T, T) => T): T = ???
+
   def collect(): Array[T]
 
   def take(num: Int): Array[T]

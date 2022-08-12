@@ -11,7 +11,7 @@ object Config {
   val percentageProv = 0.001f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "MovieRating"
+  val benchmarkName = "IncomeAggregation"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
@@ -34,7 +34,16 @@ object Config {
     "Customers" -> Array("seeds/weak_seed/orders/customers", "seeds/weak_seed/orders/orders"),
     "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries"),
     "StudentGrade" -> Array("seeds/weak_seed/studentgrade/grades"),
-    "MovieRating" -> Array("seeds/weak_seed/movierating/ratings")
+    "MovieRating" -> Array("seeds/weak_seed/movierating/ratings"),
+    "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers"),
+    "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages"),
+    "WordCount" -> Array("seeds/weak_seed/wordcount/words"),
+    "ExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
+    "FindSalary" -> Array("seeds/weak_seed/findsalary/salaries"),
+    "InsideCircle" -> Array("seeds/weak_seed/insidecircle/circles"),
+    "MapString" -> Array("seeds/weak_seed/mapstring/strings"),
+    "IncomeAggregation" -> Array("seeds/weak_seed/incomeaggregation/income"),
+    "LoanType" -> Array("seeds/weak_seed/loantype/info")
   )
 
   val mapInputFilesFull: Map[String, Array[String]] = Map(
@@ -74,7 +83,16 @@ object Config {
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
     "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
     "StudentGrade" -> Switch(null, faulty.StudentGrade.main, faultTest),
-    "MovieRating" -> Switch(null, faulty.MovieRating.main, faultTest)
+    "MovieRating" -> Switch(null, faulty.MovieRating.main, faultTest),
+    "NumberSeries" -> Switch(null, faulty.NumberSeries.main, faultTest),
+    "AgeAnalysis" -> Switch(null, faulty.AgeAnalysis.main, faultTest),
+    "WordCount" -> Switch(null, faulty.WordCount.main, faultTest),
+    "ExternalCall" -> Switch(null, faulty.ExternalCall.main, faultTest),
+    "FindSalary" -> Switch(null, faulty.FindSalary.main, faultTest),
+    "InsideCircle" -> Switch(null, faulty.InsideCircle.main, faultTest),
+    "MapString" -> Switch(null, faulty.MapString.main, faultTest),
+    "IncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
+    "LoanType" -> Switch(null, faulty.LoanType.main, faultTest)
   )
 
 
@@ -104,7 +122,16 @@ object Config {
     "Customers" -> BenchmarkSchemas.CUSTOMERS,
     "DeliveryFaults" -> BenchmarkSchemas.FAULTS,
     "StudentGrade" -> BenchmarkSchemas.STUDENTGRADE,
-    "MovieRating" -> BenchmarkSchemas.MOVIERATING
+    "MovieRating" -> BenchmarkSchemas.MOVIERATING,
+    "NumberSeries" -> BenchmarkSchemas.NUMBERSERIES,
+    "AgeAnalysis" -> BenchmarkSchemas.AGEANALYSIS,
+    "WordCount" -> BenchmarkSchemas.WORDCOUNT,
+    "ExternalCall" -> BenchmarkSchemas.EXTERNALCALL,
+    "FindSalary" -> BenchmarkSchemas.FINDSALARY,
+    "InsideCircle" -> BenchmarkSchemas.INSIDECIRCLE,
+    "MapString" -> BenchmarkSchemas.MAPSTRING,
+    "IncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
+    "LoanType" -> BenchmarkSchemas.LOANTYPE
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =
