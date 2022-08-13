@@ -46,9 +46,8 @@ object GenSegmentationData {
 //    val fault_rate = 0.0001
 //    def faultInjector()  = if(Random.nextInt(dataper*partitions) < dataper*partitions* fault_rate) true else false
 
-    val sc = new SparkContext(sparkConf)
     datasets.foreach { case (_, f) =>
-      sc.parallelize(Seq[Int]() , partitions).mapPartitions { _ =>
+      SparkContext.getOrCreate(sparkConf).parallelize(Seq[Int]() , partitions).mapPartitions { _ =>
         (1 to dataper).map{_ =>
           val url = generateURL(url_len)
           val swx = Random.nextInt(1920)
