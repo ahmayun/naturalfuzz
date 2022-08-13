@@ -17,7 +17,8 @@ class PairProvenanceDefaultRDD[K, V](override val rdd: RDD[(K, ProvenanceRow[V])
     implicit val kct: ClassTag[K],
     implicit val vct: ClassTag[V])
     extends BaseProvenanceRDD[(K, V)](rdd)
-    with PairProvenanceRDD[K, V] {
+    with PairProvenanceRDD[K, V]
+    with Serializable {
 
   override def defaultPartitioner: Partitioner =
     org.apache.spark.Partitioner.defaultPartitioner(rdd)
