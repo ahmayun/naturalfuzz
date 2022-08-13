@@ -2,7 +2,6 @@ package utils
 
 
 import fuzzer.{InstrumentedProgram, ProvInfo, Schema}
-import generators.GenSegmentationData.deleteDir
 
 import java.io.{BufferedWriter, File, FileWriter}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -73,5 +72,14 @@ object ProvFuzzUtils {
       case _ => ret
     }
   }
+
+  def deleteDir(file: File): Unit = {
+    val contents = file.listFiles
+    if (contents != null) for (f <- contents) {
+      deleteDir(f)
+    }
+    file.delete
+  }
+
 
 }

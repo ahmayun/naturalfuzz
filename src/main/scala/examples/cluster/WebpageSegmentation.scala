@@ -1,14 +1,16 @@
-package examples.benchmarks
+package examples.cluster
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object WebpageSegmentation extends Serializable {
+object WebpageSegmentation extends Serializable  {
 
+  // args: hdfs://zion-headnode:9000/ahmad/WebpageSegmentation/{before,after} spark://zion-headnode:7077
   def main(args: Array[String]): Unit = {
-    println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
+    println(s"WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
-    sparkConf.setMaster("local[*]")
-    sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
+    if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
+    sparkConf.setMaster(args(2))
+    sparkConf.setAppName("Webpage Segmentation")
     val before_data = args(0) // "datasets/fuzzing_seeds/webpage_segmentation/before"
     val after_data = args(1) // "datasets/fuzzing_seeds/webpage_segmentation/after"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage
@@ -27,7 +29,7 @@ object WebpageSegmentation extends Serializable {
       .filter{
         case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
       }
-      .map {
+      .map{
         case (k, (_, (url, a))) =>
           val Array(_, cid, ctype) = k.split('*')
           (url, (a, cid, ctype))
@@ -37,7 +39,7 @@ object WebpageSegmentation extends Serializable {
     val inter = changed.join(boxes_after_by_site)
     inter.map{
       case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
-    }.collect().foreach(println)
+    }.take(10).foreach(println)
     //    val iRects =  pairs.map{ case (id, (rect1, rect2)) => (id, intersects(rect1, rect2))}
     //    iRects.collect().foreach(println)
 //    ctx.stop()
@@ -120,7 +122,7 @@ object WebpageSegmentation extends Serializable {
 //      iHeight = 0;
 //    }
 
-    Some(iSWx, iSWy, iHeight, iWidth)
+    Some((iSWx, iSWy, iHeight, iWidth))
   }
 
 }

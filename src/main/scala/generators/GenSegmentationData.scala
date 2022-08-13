@@ -8,9 +8,9 @@ import scala.util.Random
 
 object GenSegmentationData {
 
-  val partitions = 2
-  val dataper  = 10000
-  val url_len = 2
+  val partitions = 200
+  val dataper  = 100000
+  val url_len = 10
   val seed = Random.nextLong()
 
   def generateURL(len: Int): String = {
@@ -33,11 +33,11 @@ object GenSegmentationData {
 
       val sparkConf = new SparkConf()
       val datasets = Array(
-        ("before", "datasets/bigdata/webpage_segmentation/before"),
-        ("after", "datasets/bigdata/webpage_segmentation/after")
+        ("before", "hdfs://zion-headnode:9000/ahmad/WebpageSegmentationSmall/before"),
+        ("after", "hdfs://zion-headnode:9000/ahmad/WebpageSegmentationSmall/after")
       )
-      sparkConf.setMaster("local[*]")
-      sparkConf.setAppName("Webpage Segmentation Data Generator").set("spark.executor.memory", "2g")
+      sparkConf.setMaster("spark://zion-headnode:7077")
+      sparkConf.setAppName("DataGen: Webpage Segmentation")
 
       println(
       s"""
@@ -49,11 +49,6 @@ object GenSegmentationData {
       )
 //    val fault_rate = 0.0001
 //    def faultInjector()  = if(Random.nextInt(dataper*partitions) < dataper*partitions* fault_rate) true else false
-
-    datasets.foreach{ case (_, f) =>
-      if(new File(f).exists()){
-        deleteDir(new File(f))
-    }}
 
     val sc = new SparkContext(sparkConf)
     datasets.foreach { case (_, f) =>
@@ -69,14 +64,6 @@ object GenSegmentationData {
           s"""$url,$swx,$swy,$h,$w,$cid,$ctype"""
         }.iterator}.saveAsTextFile(f)
     }
-  }
-
-  def deleteDir(file: File): Unit = {
-    val contents = file.listFiles
-    if (contents != null) for (f <- contents) {
-      deleteDir(f)
-    }
-    file.delete
   }
 
 }

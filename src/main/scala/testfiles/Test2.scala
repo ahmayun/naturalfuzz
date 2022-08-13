@@ -1,7 +1,6 @@
 package testfiles
 
 import fuzzer.ProvInfo
-import generators.GenSegmentationData.deleteDir
 import runners.Config
 
 import java.io.{BufferedWriter, File, FileWriter}
