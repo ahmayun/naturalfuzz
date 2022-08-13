@@ -13,7 +13,7 @@ import taintedprimitives.SymImplicits._
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
-object Monitors {
+object Monitors extends Serializable {
 
 
   val provInfo: ProvInfo = new ProvInfo()
