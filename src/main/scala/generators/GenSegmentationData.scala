@@ -6,7 +6,7 @@ object GenSegmentationData extends Serializable {
 
   val partitions = 200
   val dataper  = 100000
-  val url_len = 10
+  val url_len = 2
   val seed = Random.nextLong()
 
   def generateURL(len: Int): String = {
