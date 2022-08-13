@@ -1,7 +1,3 @@
-package generators
-
-import java.io.File
-
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.util.Random
