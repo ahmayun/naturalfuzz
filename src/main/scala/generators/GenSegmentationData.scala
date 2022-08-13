@@ -2,7 +2,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.util.Random
 
-object GenSegmentationData {
+object GenSegmentationData extends Serializable {
 
   val partitions = 200
   val dataper  = 100000
