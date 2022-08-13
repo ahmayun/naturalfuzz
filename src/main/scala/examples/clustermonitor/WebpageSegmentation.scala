@@ -8,7 +8,7 @@ import sparkwrapper.SparkContextWithDP
 import taintedprimitives.SymImplicits._
 import taintedprimitives.{TaintedInt, TaintedString}
 
-object WebpageSegmentation {
+object WebpageSegmentation extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
