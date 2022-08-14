@@ -18,6 +18,8 @@ libraryDependencies += "com.code-intelligence" % "jazzer-api" % "0.11.0"
 
 ThisBuild / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case _ => MergeStrategy.first
+  case x @ _ =>
+    println(x)
+    MergeStrategy.first
 }
 
