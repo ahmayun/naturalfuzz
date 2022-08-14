@@ -12,7 +12,7 @@ object RunProvFuzz {
 
   def main(args: Array[String]): Unit = {
 
-    val runs = Config.iterations
+    val runs = Config.fuzzDuration
 
     // ==P.U.T. dependent configurations=======================
     val benchmarkName = Config.benchmarkName
@@ -47,45 +47,45 @@ object RunProvFuzz {
     // Probing and Fuzzing
 //    val probingDataset = ProvFuzzUtils.CreateProbingDatasets(probeProgram, schema)
     val (provInfo, timeStartProbe, timeEndProbe) = ProvFuzzUtils.Probe(probeProgram)
-//    val guidance = new ProvFuzzGuidance(inputFiles, schema, provInfo, runs)
-//    val (stats, timeStartFuzz, timeEndFuzz) = Fuzzer.Fuzz(program, guidance, outputDir)
-//
-//    // Finalizing
-//    val coverage = Serializer.deserialize(new File(s"$scoverageResultsDir/scoverage.coverage"))
-//    val measurementFiles = IOUtils.findMeasurementFiles(scoverageResultsDir)
-//    val measurements = IOUtils.invoked(measurementFiles)
-//
-//    coverage.apply(measurements)
-//    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageResultsDir)).write(coverage)
-//
-//    val durationProbe = (timeEndProbe - timeStartProbe) / 1000.0
-//    val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0
-//    val durationTotal = durationProbe + durationFuzz
-//
-//
-//    // Printing results
-//    stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} $c x $msg") }
-//    stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} x $c") }
-//    stats.failureMap.map { case (msg, (_, c, i)) => (getLineNo(benchmarkName, msg.mkString("\n")), c, i) }
-//      .groupBy(_._1)
-//      .map { case (line, list) => (line, list.size) }
-//      .toList.sortBy(_._1)
-//      .foreach(println)
-//
-//    println(s"=== RESULTS: ProvFuzz $benchmarkName ===")
-//    println(s"Failures: ${stats.failures} (${stats.failureMap.keySet.size} unique)")
-//    println(s"failures: ${stats.failureMap.map { case (_, (_, _, i)) => i + 1 }.toSeq.sortBy(i => i).mkString(",")}")
-//    println(s"coverage progress: ${stats.plotData._2.map(limitDP(_, 2)).mkString(",")}")
-//    println(s"iterations: ${stats.plotData._1.mkString(",")}")
-//    println(s"Coverage: ${limitDP(coverage.statementCoveragePercent, 2)}% (gathered from ${measurementFiles.length} measurement files)")
-//    println(s"Total Time (s): ${limitDP(durationTotal, 2)} (P: $durationProbe | F: $durationFuzz)")
-//    println(
-//      s"Config:\n" +
-//        s"\tProgram: ${program.name}\n" +
-//        s"\tMutation Distribution M1-M6: ${guidance.mutate_probs.mkString(",")}\n" +
-//        s"\tActual Application: ${guidance.actual_app.mkString(",")}\n" +
-//        s"\tIterations: $runs"
-//    )
+    val guidance = new ProvFuzzGuidance(inputFiles, schema, provInfo, runs)
+    val (stats, timeStartFuzz, timeEndFuzz) = Fuzzer.Fuzz(program, guidance, outputDir)
+
+    // Finalizing
+    val coverage = Serializer.deserialize(new File(s"$scoverageResultsDir/scoverage.coverage"))
+    val measurementFiles = IOUtils.findMeasurementFiles(scoverageResultsDir)
+    val measurements = IOUtils.invoked(measurementFiles)
+
+    coverage.apply(measurements)
+    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageResultsDir)).write(coverage)
+
+    val durationProbe = (timeEndProbe - timeStartProbe) / 1000.0
+    val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0
+    val durationTotal = durationProbe + durationFuzz
+
+
+    // Printing results
+    stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} $c x $msg") }
+    stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} x $c") }
+    stats.failureMap.map { case (msg, (_, c, i)) => (getLineNo(benchmarkName, msg.mkString("\n")), c, i) }
+      .groupBy(_._1)
+      .map { case (line, list) => (line, list.size) }
+      .toList.sortBy(_._1)
+      .foreach(println)
+
+    println(s"=== RESULTS: ProvFuzz $benchmarkName ===")
+    println(s"Failures: ${stats.failures} (${stats.failureMap.keySet.size} unique)")
+    println(s"failures: ${stats.failureMap.map { case (_, (_, _, i)) => i + 1 }.toSeq.sortBy(i => i).mkString(",")}")
+    println(s"coverage progress: ${stats.plotData._2.map(limitDP(_, 2)).mkString(",")}")
+    println(s"iterations: ${stats.plotData._1.mkString(",")}")
+    println(s"Coverage: ${limitDP(coverage.statementCoveragePercent, 2)}% (gathered from ${measurementFiles.length} measurement files)")
+    println(s"Total Time (s): ${limitDP(durationTotal, 2)} (P: $durationProbe | F: $durationFuzz)")
+    println(
+      s"Config:\n" +
+        s"\tProgram: ${program.name}\n" +
+        s"\tMutation Distribution M1-M6: ${guidance.mutate_probs.mkString(",")}\n" +
+        s"\tActual Application: ${guidance.actual_app.mkString(",")}\n" +
+        s"\tIterations: ${Global.iteration}"
+    )
     println("ProvInfo: ")
     println(provInfo)
   }

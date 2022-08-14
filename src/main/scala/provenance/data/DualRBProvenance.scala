@@ -89,12 +89,20 @@ class DualRBProvenance(var bitmap: RoaringBitmap) extends DataStructureProvenanc
   }
 
   override def convertToTuples: ListBuffer[(Int, Int, Int)] = {
-//    ListBuffer(0,1).flatMap(d => ListBuffer(0,5,6).map(c => (d, c, 0)))
+    //    ListBuffer(0,1).flatMap(d => ListBuffer(0,5,6).map(c => (d, c, 0)))
     val datasetColumns = Utils.retrieveColumnsFromBitmap(this.bitmap)
     datasetColumns
       .groupBy(_._1)
-      .map{case (datasetID, cols) => (cols, Utils.retrieveRowNumbers(this, datasetID).collect().take(Config.maxSamples))}
-      .flatMap{case (dsCols, rows) => dsCols.flatMap{case (ds, col) => rows.map(row => (ds, col, row))}}
+      .map { case (datasetID, cols) => (cols, Utils.retrieveRowNumbers(this, datasetID).collect().take(Config.maxSamples)) }
+      .flatMap { case (dsCols, rows) => dsCols.flatMap {
+        case (ds, col) =>
+          rows.map {
+            row =>
+//              println(ds, col, row)
+              (ds, col, row)
+          }
+        }
+      }
       .to[ListBuffer]
   }
 }

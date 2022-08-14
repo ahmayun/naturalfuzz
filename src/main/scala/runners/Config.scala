@@ -6,12 +6,13 @@ import schemas.BenchmarkSchemas
 
 object Config {
 
+  val scalaVersion = 2.11
   val maxSamples = 5
   val maxRepeats = 1
   val percentageProv = 0.001f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "IncomeAggregation"
+  val benchmarkName = "WebpageSegmentation"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
@@ -24,6 +25,15 @@ object Config {
     0.02f, // Format
     0.02f, // Format
     0.02f) // Format
+
+
+  val mutateProbsProvFuzz: Array[Float] = Array( // 0:M1, 1:M2 ... 5:M6
+    0.9f, // Data
+    0.000000000000000000f, // Data
+    0.000000000000000000f, // Format
+    0.000000000000000000f, // Format
+    0.000000000000000000f, // Format
+    0.000000000000000000f) // Format
 
 
   val mapInputFilesWeak: Map[String, Array[String]] = Map(

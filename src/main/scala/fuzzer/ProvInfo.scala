@@ -16,14 +16,6 @@ class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
 
   def update(id: Int, provenances: ListBuffer[Provenance]): Unit = {
     depsInfo.append(provenances.flatMap(_.convertToTuples))
-    println(s"updating $id")
-//    provenances.zipWithIndex.foreach {
-//      case (prov, i) =>
-//        val rows = Utils.retrieveProvenance(prov)
-//        println(s"id: $id - n=$i")
-//        rows.collect().foreach(println)
-//        println("-----------------------")
-//    }
   }
 
   def this() = {

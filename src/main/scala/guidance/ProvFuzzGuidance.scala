@@ -9,17 +9,19 @@ import utils.{FileUtils, MutationUtils}
 
 import java.io.File
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration.DurationInt
 import scala.util.Random
 
 
-class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[Schema[Any]]], val provInfo: ProvInfo, val maxRuns: Int) extends Guidance {
+class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[Schema[Any]]], val provInfo: ProvInfo, val duration: Int) extends Guidance {
   var last_input = inputFiles
   var coverage: Coverage = new Coverage
   var runs = 0
+  val deadline = duration.seconds.fromNow
 
   //Note to self: Each element here is the probability that a mutation M_n will be applied after it has already been selected
   //              This is NOT the probability of the mutation being selected
-  val mutate_probs = Config.mutateProbs
+  val mutate_probs = Config.mutateProbsProvFuzz
 
   val actual_app = Array.fill(mutate_probs.length){0}
 
@@ -54,18 +56,18 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   def M2(e: String, c: Int, d: Int): String = {
     val schema = this.schemas(d)(c)
     schema.dataType match {
-      case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
+//      case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
       case _ => M1(e, c, d)
     }
   }
   def M3(row: String, c: Int = -1, d: Int = -1): String = {
-//    row
-    val cols = row.split(',')
-    if(cols.length < 2) {
-      return row
-    }
-    val i = Random.nextInt(cols.length-1)
-    cols.slice(0, i+1).mkString(",") + "~" + cols.slice(i+1, cols.length).mkString(",")
+    row
+//    val cols = row.split(',')
+//    if(cols.length < 2) {
+//      return row
+//    }
+//    val i = Random.nextInt(cols.length-1)
+//    cols.slice(0, i+1).mkString(",") + "~" + cols.slice(i+1, cols.length).mkString(",")
   }
   def M4(e: String, c: Int, d: Int): String = {
     M1(e, c, d)
@@ -74,10 +76,10 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   // input: a dataset row
   // returns new row with random column(s) dropped
   def M5(e: String, c: Int, d: Int): String = {
-//    M1(e, c, d)
-    val cols = e.split(',').to
-    val to_drop = (0 to Random.nextInt(this.max_col_drops)).map(_ => Random.nextInt(cols.length))
-    cols.zipWithIndex.filter{ case (_, i) => !to_drop.contains(i)}.map(_._1).mkString(",")
+    M1(e, c, d)
+//    val cols = e.split(',').to
+//    val to_drop = (0 to Random.nextInt(this.max_col_drops)).map(_ => Random.nextInt(cols.length))
+//    cols.zipWithIndex.filter{ case (_, i) => !to_drop.contains(i)}.map(_._1).mkString(",")
   }
 
   // input: a column value
@@ -325,7 +327,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   }
 
   override def isDone(): Boolean = {
-    Global.iteration >= this.maxRuns
+    !deadline.hasTimeLeft()
   }
 
   override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {

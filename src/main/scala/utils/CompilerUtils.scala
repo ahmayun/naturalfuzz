@@ -1,5 +1,6 @@
 package utils
 
+import runners.Config
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{Coverage, ScoverageOptions, Serializer}
 
@@ -12,7 +13,7 @@ object CompilerUtils {
     scoverageOptions.dataDir = coverageOutDir
 
     val compiler = ScoverageCompiler.default
-    compiler.settings.outdir.value = "target/scala-2.11/classes"
+    compiler.settings.outdir.value = s"target/scala-${Config.scalaVersion}/classes"
     compiler.settings.Xprint.value = List()
     compiler.settings.Yposdebug.value = false
     compiler.setOptions(scoverageOptions)
