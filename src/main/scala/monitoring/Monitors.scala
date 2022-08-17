@@ -99,14 +99,18 @@ object Monitors extends Serializable {
   }
 
   def monitorReduceByKey[K<:TaintedBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
-    dataset
+//    dataset
 //      .sample(false, Config.percentageProv)
-      .foreach {
-        case (k, _) =>
-          println(k.getProvenance())
-          this.provInfo.update(id, ListBuffer(k.getProvenance()))
-      }
-    dataset.reduceByKey(func)
+//      .foreach {
+//        case (k, _) =>
+//          println(k.getProvenance())
+//          this.provInfo.update(id, ListBuffer(k.getProvenance()))
+//      }
+    dataset.reduceByKey {
+      (a, b) =>
+        println(a)
+        func(a, b)
+    }
   }
 
   def monitorFilter[T](rdd: RDD[T], f: T => Boolean): RDD[T] = {
