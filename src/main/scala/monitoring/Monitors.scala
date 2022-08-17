@@ -91,7 +91,9 @@ object Monitors extends Serializable {
     dataset
       .sample(false, Config.percentageProv)
       .foreach {
-        case (k, _) => this.provInfo.update(id, ListBuffer(k.getProvenance()))
+        case (k, _) =>
+          println(k.getProvenance().getClass)
+          this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
     dataset.groupByKey()
   }
