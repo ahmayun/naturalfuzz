@@ -1,6 +1,5 @@
 package sparkwrapper
 
-import fuzzer.ProvInfo
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import provenance.data.Provenance
@@ -13,12 +12,10 @@ import scala.reflect.ClassTag
 /**
   * Created by malig on 12/3/19.
   */
-class SparkContextWithDP(sc: SparkContext) extends Serializable {
+class SparkContextWithDP(sc: SparkContext) {
 
   var datasets = 0
   Provenance.setProvenanceType("dual")
-  val provInfo: ProvInfo = new ProvInfo()
-
 
   def textFile(filepath: String): RDD[String] ={
     sc.textFile(filepath)
@@ -77,9 +74,7 @@ class SparkContextWithDP(sc: SparkContext) extends Serializable {
     val ret = Utils.setInputZip(rdd.zipWithUniqueId().map{
       record => {
 //        println(s"rdd-id ${rdd.id}")
-        val ret = Utils.attachProv(record, followup, createCol, temp)
-        println(ret)
-        ret
+        Utils.attachProv(record, followup, createCol, temp)
       }
     })
     datasets += 1
