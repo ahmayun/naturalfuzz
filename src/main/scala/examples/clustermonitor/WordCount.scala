@@ -19,8 +19,11 @@ object WordCount extends Serializable {
     ctx.textFileProv(args(0), _.split("\\s"))
       .flatMap(s => s)
       .map { s =>
-        println(s.getProvenance())
         (s, 1)
+      }
+      .reduceByKey { (a, b) =>
+        println(a.getProvenance())
+        a+b
       }
       .collect()
       .foreach(println)
