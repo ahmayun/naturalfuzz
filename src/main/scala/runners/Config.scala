@@ -6,7 +6,7 @@ import schemas.BenchmarkSchemas
 
 object Config {
 
-  val scalaVersion = 2.11
+  val scalaVersion = 2.12
   val maxSamples = 5
   val maxRepeats = 1
   val percentageProv = 0.001f

@@ -10,7 +10,7 @@ import provenance.rdd.ProvenanceRDD.toPairRDD
 import taintedprimitives.{TaintedInt, TaintedString}
 import taintedprimitives.SymImplicits._
 
-object WebpageSegmentation {
+object WebpageSegmentation extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()

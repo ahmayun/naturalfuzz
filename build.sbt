@@ -1,6 +1,6 @@
 name := "ProvFuzz"
 version := "1.0"
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.2"
 
 libraryDependencies += "org.scalameta" %% "scalameta" % "4.2.3"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.8"
@@ -18,8 +18,9 @@ libraryDependencies += "com.code-intelligence" % "jazzer-api" % "0.11.0"
 
 ThisBuild / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x @ _ =>
-    println(x)
-    MergeStrategy.first
+//  case PathList("org", "apache", "hadoop", "fs", xs @ _*) =>
+//    println(xs)
+//    MergeStrategy.filterDistinctLines
+  case _ => MergeStrategy.first
 }
 

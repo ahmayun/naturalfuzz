@@ -10,7 +10,7 @@ import scala.util.Random
 
 
 //depsInfo: [[(ds, col, row), (ds, col, row)], [(ds, col, row)] .... [(ds, col, row)]]
-class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
+class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) extends Serializable {
 
   val reducedDS: ListBuffer[RDD[String]] = ListBuffer()
 

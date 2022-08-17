@@ -79,7 +79,9 @@ class RoaringBitmapProvenance(var bitmap: RoaringBitmap) extends DataStructurePr
     }
   }
 
-  override def convertToTuples: ListBuffer[(Int, Int, Int)] = ???
+  override def convertToTuples: ListBuffer[(Int, Int, Int)] = {
+    throw new Exception("test")
+  }
 }
 
 object RoaringBitmapProvenance extends ProvenanceFactory {
