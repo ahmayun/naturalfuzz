@@ -19,7 +19,7 @@ object WebpageSegmentation extends Serializable {
     val after_data = args(1)
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
     ctx.setLogLevel("ERROR")
-    Provenance.setProvenanceType("dual")
+//    Provenance.setProvenanceType("dual")
     val before = ctx.textFileProv(before_data, _.split(','))
     val after = ctx.textFileProv(after_data, _.split(','))
     val boxes_before = toPairRDD[TaintedString, (TaintedString, Vector[TaintedInt])](before.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
