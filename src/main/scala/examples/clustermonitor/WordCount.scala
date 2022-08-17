@@ -16,15 +16,9 @@ object WordCount extends Serializable {
     sparkConf.setAppName("Prov WordCount")
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
     ctx.setLogLevel("ERROR")
-    ctx.textFileProv(args(0), _.split("\\s"))
+    _root_.monitoring.Monitors.monitorReduceByKey(ctx.textFileProv(args(0), _.split("\\s"))
       .flatMap(s => s)
-      .map { s =>
-        (s, 1)
-      }
-      .reduceByKey { (a, b) =>
-        println(a.getProvenance())
-        a+b
-      }
+      .map { s => (s, 1) }, sumFunc, 1)
       .collect()
       .foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
