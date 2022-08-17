@@ -13,7 +13,7 @@ import scala.reflect.ClassTag
 /**
   * Created by malig on 12/3/19.
   */
-class SparkContextWithDP(sc: SparkContext) {
+class SparkContextWithDP(sc: SparkContext) extends Serializable {
 
   var datasets = 0
   Provenance.setProvenanceType("dual")
