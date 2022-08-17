@@ -1,5 +1,6 @@
 package sparkwrapper
 
+import fuzzer.ProvInfo
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import provenance.data.Provenance
@@ -16,6 +17,8 @@ class SparkContextWithDP(sc: SparkContext) {
 
   var datasets = 0
   Provenance.setProvenanceType("dual")
+  val provInfo: ProvInfo = new ProvInfo()
+
 
   def textFile(filepath: String): RDD[String] ={
     sc.textFile(filepath)

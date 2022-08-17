@@ -6,6 +6,7 @@ import org.roaringbitmap.RoaringBitmap
 import provenance.data.{DualRBProvenance, Provenance}
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import runners.Config
+import sparkwrapper.SparkContextWithDP
 import symbolicexecution.{SymbolicExpression, SymbolicTree}
 import taintedprimitives.{TaintedBase, TaintedBoolean}
 import taintedprimitives.SymImplicits._
@@ -14,9 +15,6 @@ import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 object Monitors extends Serializable {
-
-
-  val provInfo: ProvInfo = new ProvInfo()
 
 
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
@@ -42,13 +40,13 @@ object Monitors extends Serializable {
         }.collect().to[ListBuffer]
         buffer1
           .zip(buffer2)
-          .foreach { case (p1, p2) => this.provInfo.update(id, ListBuffer(p1, p2)) }
+//          .foreach { case (p1, p2) => this.provInfo.update(id, ListBuffer(p1, p2)) }
       case _ =>
         joint
 //          .sample(false, Config.maxSamples/count)
           .foreach {
         case (k1, (_, (k2, _))) =>
-          this.provInfo.update(id, ListBuffer(k1.getProvenance(), k2.getProvenance()))
+//          this.provInfo.update(id, ListBuffer(k1.getProvenance(), k2.getProvenance()))
       }
     }
 
@@ -93,22 +91,21 @@ object Monitors extends Serializable {
       .map {
         case (k, _) =>
           println(k.getProvenance().getClass)
-          new ProvInfo().update(id, ListBuffer(k.getProvenance()))
+//          this.provInfo().update(id, ListBuffer(k.getProvenance()))
       }
     dataset.groupByKey()
   }
 
-  def monitorReduceByKey[K<:TaintedBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
-//    dataset
-//      .sample(false, Config.percentageProv)
-//      .foreach {
-//        case (k, _) =>
-//          println(k.getProvenance())
-//          this.provInfo.update(id, ListBuffer(k.getProvenance()))
-//      }
+  def monitorReduceByKey[K<:TaintedBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int, sc: SparkContextWithDP): PairProvenanceRDD[K, V] = {
+    dataset
+      .sample(false, Config.percentageProv)
+      .foreach {
+        case (k, _) =>
+          println(k.getProvenance())
+          sc.provInfo.update(id, ListBuffer(k.getProvenance()))
+      }
     dataset.reduceByKey {
       (a, b) =>
-        println(a)
         func(a, b)
     }
   }
@@ -118,8 +115,8 @@ object Monitors extends Serializable {
   }
 
   // called at the end of main function
-  def finalizeProvenance(): ProvInfo = {
-    provInfo.simplify()
+  def finalizeProvenance(sc: SparkContextWithDP = null): ProvInfo = {
+    sc.provInfo.simplify()
   }
 }
 

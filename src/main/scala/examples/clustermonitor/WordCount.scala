@@ -18,10 +18,10 @@ object WordCount extends Serializable {
     ctx.setLogLevel("ERROR")
     _root_.monitoring.Monitors.monitorReduceByKey(ctx.textFileProv(args(0), _.split("\\s"))
       .flatMap(s => s)
-      .map { s => (s, 1) }, sumFunc, 1)
+      .map { s => (s, 1) }, sumFunc, 1, ctx)
       .collect()
       .foreach(println)
-    _root_.monitoring.Monitors.finalizeProvenance()
+    _root_.monitoring.Monitors.finalizeProvenance(ctx)
   }
 
   def sumFunc(a: Int, b: Int): Int = {
