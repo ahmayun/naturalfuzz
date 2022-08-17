@@ -53,7 +53,7 @@ object Provenance {
   }
 
   private var provenanceFactory: ProvenanceFactory = _
-  setProvenanceFactory(RoaringBitmapProvenance)
+  setProvenanceFactory(DualRBProvenance)
   //setProvenanceFactory(SetProvenance)
 
 
