@@ -90,10 +90,10 @@ object Monitors extends Serializable {
   def monitorGroupByKey[K<:TaintedBase:ClassTag,V:ClassTag](dataset: PairProvenanceDefaultRDD[K,V], id: Int): PairProvenanceDefaultRDD[K, Iterable[V]] = {
     dataset
       .sample(false, Config.percentageProv)
-      .foreach {
+      .map {
         case (k, _) =>
           println(k.getProvenance().getClass)
-          this.provInfo.update(id, ListBuffer(k.getProvenance()))
+          new ProvInfo().update(id, ListBuffer(k.getProvenance()))
       }
     dataset.groupByKey()
   }

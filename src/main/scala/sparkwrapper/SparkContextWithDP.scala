@@ -74,7 +74,9 @@ class SparkContextWithDP(sc: SparkContext) {
     val ret = Utils.setInputZip(rdd.zipWithUniqueId().map{
       record => {
 //        println(s"rdd-id ${rdd.id}")
-        Utils.attachProv(record, followup, createCol, temp)
+        val ret = Utils.attachProv(record, followup, createCol, temp)
+        println(ret)
+        ret
       }
     })
     datasets += 1

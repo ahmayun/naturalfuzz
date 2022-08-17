@@ -9,7 +9,7 @@ object Config {
   val scalaVersion = 2.12
   val maxSamples = 5
   val maxRepeats = 1
-  val percentageProv = 0.001f
+  val percentageProv = 0.1f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
   val benchmarkName = "WebpageSegmentation"

@@ -14,7 +14,8 @@ abstract class TaintedAny[T <: Any](val value: T, p: Provenance) extends Tainted
       case x: TaintedAny[_] => value.equals(x.value)
       case _ => value.equals(obj)
     }
-  
+
+
   override def toString: String = s"${this.getClass.getSimpleName}($value, ${getProvenance()})"
   
   
