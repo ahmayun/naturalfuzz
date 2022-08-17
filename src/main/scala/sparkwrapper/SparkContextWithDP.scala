@@ -15,7 +15,7 @@ import scala.reflect.ClassTag
 class SparkContextWithDP(sc: SparkContext) {
 
   var datasets = 0
-  Provenance.setProvenanceType("bitmap")
+  Provenance.setProvenanceType("dual")
 
   def textFile(filepath: String): RDD[String] ={
     sc.textFile(filepath)
