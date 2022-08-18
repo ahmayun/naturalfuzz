@@ -161,7 +161,8 @@ object Monitors extends Serializable {
       .foreach {
         case (k, _) =>
           println(depsInfo)
-          println(k.getProvenance()) //depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
+          println(k.getProvenance())
+          depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
     (dataset.reduceByKey(func), depsInfo)
   }
