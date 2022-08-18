@@ -19,62 +19,6 @@ object Monitors extends Serializable {
 
   val provInfo: ProvInfo = new ProvInfo()
 
-  def updateRowSet(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]], newLocs: Map[(Int, Int), (Int, Int)]): ProvInfo = {
-    new ProvInfo(depsInfo.map(
-      _.map {
-        case (ds, col, row) =>
-          val Some((newDs, newRow)) = newLocs.get((ds, row))
-          (newDs, col, newRow)
-      }
-    ))
-  }
-
-  def getRowLevelProvenance(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): List[(Int,Int)] = {
-    depsInfo.last.map{case (ds, _, row) => (ds, row)}.distinct.toList
-  }
-
-  def merge(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ProvInfo = {
-    new ProvInfo(ListBuffer(depsInfo.flatten))
-  }
-
-  def append(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]], other: ProvInfo): ProvInfo = {
-    new ProvInfo(depsInfo ++ other.depsInfo)
-  }
-
-  def getRandom(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ProvInfo = {
-    new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head))
-  }
-
-//  def getCoDependentRegions: ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }
-
-
-  def _mergeSubsets(buffer: ListBuffer[ListBuffer[(Int, Int, Int)]]): ListBuffer[ListBuffer[(Int, Int, Int)]] = {
-    buffer.foldLeft(ListBuffer[ListBuffer[(Int, Int, Int)]]()){
-      case (acc, e) =>
-        val keep = !buffer.filter(_.length > e.length).exists(s => e.toSet.subsetOf(s.toSet))
-        if(keep) acc :+ e else acc
-    }
-  }
-
-  def _mergeOverlapping(buffer: ListBuffer[ListBuffer[(Int, Int, Int)]]): ListBuffer[ListBuffer[(Int, Int, Int)]] = {
-    buffer.foldLeft(ListBuffer[ListBuffer[(Int, Int, Int)]]()){
-      case (acc, e) =>
-        val (merged, ne) = buffer.find(s => !e.equals(s) && e.toSet.intersect(s.toSet).nonEmpty) match {
-          case Some(x) => (true, (acc :+ e.toSet.union(x.toSet).to[ListBuffer]).map(_.sorted).distinct)
-          case None => (false, ListBuffer(e))
-        }
-        if(!merged) acc :+ e else ne
-    }
-  }
-
-  def _simplify(deps: ListBuffer[ListBuffer[(Int,Int,Int)]]): ListBuffer[ListBuffer[(Int,Int,Int)]] = {
-    _mergeOverlapping(_mergeSubsets(deps.map(_.distinct).distinct))
-  }
-
-  def simplify(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ProvInfo = {
-    new ProvInfo(_simplify(depsInfo))
-  }
-
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
                                                  d2: PairProvenanceDefaultRDD[K,V2],
                                                  id: Int): PairProvenanceRDD[K,(V1,V2)] = {
@@ -118,7 +62,7 @@ object Monitors extends Serializable {
   def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
     if (bool) {
       prov._1.foreach {
-        case v: TaintedBase => // this.provInfo.update(id, ListBuffer(v.getProvenance()))
+        case v: TaintedBase => this.provInfo.update(id, ListBuffer(v.getProvenance()))
         case _ =>
       }
     }
