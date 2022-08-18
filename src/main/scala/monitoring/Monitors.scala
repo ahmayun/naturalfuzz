@@ -12,12 +12,66 @@ import taintedprimitives.SymImplicits._
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
+import scala.util.Random
 
 object Monitors extends Serializable {
 
 
   val provInfo: ProvInfo = new ProvInfo()
 
+  def updateRowSet(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]], newLocs: Map[(Int, Int), (Int, Int)]): ProvInfo = {
+    new ProvInfo(depsInfo.map(
+      _.map {
+        case (ds, col, row) =>
+          val Some((newDs, newRow)) = newLocs.get((ds, row))
+          (newDs, col, newRow)
+      }
+    ))
+  }
+
+  def getRowLevelProvenance(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): List[(Int,Int)] = {
+    depsInfo.last.map{case (ds, _, row) => (ds, row)}.distinct.toList
+  }
+
+  def merge(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ProvInfo = {
+    new ProvInfo(ListBuffer(depsInfo.flatten))
+  }
+
+  def append(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]], other: ProvInfo): ProvInfo = {
+    new ProvInfo(depsInfo ++ other.depsInfo)
+  }
+
+  def getRandom(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ProvInfo = {
+    new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head))
+  }
+
+
+  def _mergeSubsets(buffer: ListBuffer[ListBuffer[(Int, Int, Int)]]): ListBuffer[ListBuffer[(Int, Int, Int)]] = {
+    buffer.foldLeft(ListBuffer[ListBuffer[(Int, Int, Int)]]()){
+      case (acc, e) =>
+        val keep = !buffer.filter(_.length > e.length).exists(s => e.toSet.subsetOf(s.toSet))
+        if(keep) acc :+ e else acc
+    }
+  }
+
+  def _mergeOverlapping(buffer: ListBuffer[ListBuffer[(Int, Int, Int)]]): ListBuffer[ListBuffer[(Int, Int, Int)]] = {
+    buffer.foldLeft(ListBuffer[ListBuffer[(Int, Int, Int)]]()){
+      case (acc, e) =>
+        val (merged, ne) = buffer.find(s => !e.equals(s) && e.toSet.intersect(s.toSet).nonEmpty) match {
+          case Some(x) => (true, (acc :+ e.toSet.union(x.toSet).to[ListBuffer]).map(_.sorted).distinct)
+          case None => (false, ListBuffer(e))
+        }
+        if(!merged) acc :+ e else ne
+    }
+  }
+
+  def _simplify(deps: ListBuffer[ListBuffer[(Int,Int,Int)]]): ListBuffer[ListBuffer[(Int,Int,Int)]] = {
+    _mergeOverlapping(_mergeSubsets(deps.map(_.distinct).distinct))
+  }
+
+  def simplify(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ProvInfo = {
+    new ProvInfo(_simplify(depsInfo))
+  }
 
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
                                                  d2: PairProvenanceDefaultRDD[K,V2],
@@ -96,13 +150,18 @@ object Monitors extends Serializable {
     dataset.groupByKey()
   }
 
-  def monitorReduceByKey[K<:TaintedBase:ClassTag,V](dataset: PairProvenanceDefaultRDD[K,V], func: (V, V) => V, id: Int): PairProvenanceRDD[K, V] = {
+  def monitorReduceByKey[K<:TaintedBase:ClassTag,V](
+                                                     dataset: PairProvenanceDefaultRDD[K,V],
+                                                     func: (V, V) => V, id: Int)
+  : (PairProvenanceRDD[K, V], ListBuffer[ListBuffer[(Int,Int,Int)]]) = {
+
+    val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]] = ListBuffer()
     dataset
       .sample(false, Config.percentageProv)
       .foreach {
-        case (k, _) => this.provInfo.update(id, ListBuffer(k.getProvenance()))
+        case (k, _) => depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
-    dataset.reduceByKey(func)
+    (dataset.reduceByKey(func), depsInfo)
   }
 
   def monitorFilter[T](rdd: RDD[T], f: T => Boolean): RDD[T] = {
@@ -113,8 +172,23 @@ object Monitors extends Serializable {
   def finalizeProvenance(): ProvInfo = {
     provInfo.simplify()
   }
-}
 
+  def finalizeProvenance(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ListBuffer[ListBuffer[(Int,Int,Int)]] = {
+    val ret = _simplify(depsInfo)
+    depsInfoToString(ret)
+    ret
+  }
+
+  def depsInfoToString(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): String = {
+    depsInfo
+      .map{
+        deps =>
+          val row = deps.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")
+          s"$row"
+      }.mkString("\n----------------------------\n")
+  }
+
+}
 /*
   def finalizeProvenance(): ProvInfo = {
     //    val min_data: Array[Seq[String]] = Array.fill(2)(Seq())
