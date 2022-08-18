@@ -26,7 +26,18 @@ object WordCount extends Serializable {
       .collect()
       .foreach(e => println(s"final: $e"))
 
+    depsInfoToString(depsInfo1)
+
     _root_.monitoring.Monitors.finalizeProvenance(depsInfo1)
+  }
+
+  def depsInfoToString(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): String = {
+    depsInfo
+      .map{
+        deps =>
+          val row = deps.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")
+          s"$row"
+      }.mkString("\n----------------------------\n")
   }
 
   def sumFunc(a: Int, b: Int): Int = {

@@ -177,17 +177,7 @@ object Monitors extends Serializable {
 
   def finalizeProvenance(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ListBuffer[ListBuffer[(Int,Int,Int)]] = {
     val ret = _simplify(depsInfo)
-    depsInfoToString(ret)
     ret
-  }
-
-  def depsInfoToString(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): String = {
-    depsInfo
-      .map{
-        deps =>
-          val row = deps.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")
-          s"$row"
-      }.mkString("\n----------------------------\n")
   }
 
 }
