@@ -24,7 +24,7 @@ object WordCount extends Serializable {
 
     rdd1
       .collect()
-      .foreach(println)
+      .foreach(e => println(s"final: $e"))
 
     _root_.monitoring.Monitors.finalizeProvenance(depsInfo1)
   }
