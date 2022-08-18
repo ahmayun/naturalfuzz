@@ -6,9 +6,6 @@ import scala.util.Random
 
 object GenWordCountData extends Serializable {
 
-  val partitions = 2
-  val dataper  = 100000
-  val seed = Random.nextLong()
 
   def generateURL(len: Int): String = {
     s"www.${Random.alphanumeric.take(len).mkString}.com"
@@ -26,6 +23,10 @@ object GenWordCountData extends Serializable {
   }
 
   def main(args:Array[String]): Unit = {
+
+      val partitions = args(0).toInt // e.g. 200
+      val dataper  = args(1).toInt // e.g. 100000
+      val seed = Random.nextLong()
       Random.setSeed(seed)
 
       val sparkConf = new SparkConf()
