@@ -159,7 +159,7 @@ object Monitors extends Serializable {
     dataset
 //      .sample(false, Config.percentageProv)
       .foreach {
-        case (k, _) => println(depsInfo, k.getProvenance()) //depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
+        case (k, _) => println(depsInfo) //depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
     (dataset.reduceByKey(func), depsInfo)
   }
