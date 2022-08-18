@@ -157,7 +157,7 @@ object Monitors extends Serializable {
 
     val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]] = ListBuffer()
     dataset
-      .sample(false, Config.percentageProv)
+//      .sample(false, Config.percentageProv)
       .foreach {
         case (k, _) => depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
