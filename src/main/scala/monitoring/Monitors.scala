@@ -155,11 +155,11 @@ object Monitors extends Serializable {
                                                      func: (V, V) => V, id: Int)
   : (PairProvenanceRDD[K, V], ListBuffer[ListBuffer[(Int,Int,Int)]]) = {
 
-    val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]] = ListBuffer()
+    val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]] = ListBuffer(ListBuffer((1,1,1)))
     dataset
 //      .sample(false, Config.percentageProv)
       .foreach {
-        case (k, _) => depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
+        case (k, _) => println(depsInfo) //depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
     (dataset.reduceByKey(func), depsInfo)
   }
