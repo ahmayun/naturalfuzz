@@ -27,6 +27,7 @@ object WordCount extends Serializable {
       .foreach(e => println(s"final: $e"))
 
     depsInfoToString(depsInfo1)
+    println(depsInfo1.length)
 
     _root_.monitoring.Monitors.finalizeProvenance(depsInfo1)
   }
