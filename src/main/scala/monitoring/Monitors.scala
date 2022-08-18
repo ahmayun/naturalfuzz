@@ -157,7 +157,7 @@ object Monitors extends Serializable {
 
     val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]] = ListBuffer(ListBuffer((1,1,1)))
     dataset
-//      .sample(false, Config.percentageProv)
+      .sample(false, Config.percentageProv)
       .foreach {
         case (k, _) =>
           println(depsInfo)
