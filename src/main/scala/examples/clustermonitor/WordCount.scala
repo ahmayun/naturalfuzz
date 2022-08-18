@@ -7,10 +7,8 @@ import sparkwrapper.SparkContextWithDP
 import taintedprimitives.SymImplicits._
 import taintedprimitives.{TaintedInt, TaintedString}
 
-import scala.collection.mutable.ListBuffer
-
 object WordCount extends Serializable {
-  def main(args: Array[String]): ListBuffer[ListBuffer[(Int,Int,Int)]] = {
+  def main(args: Array[String]): ProvInfo = {
     println(s"WordCount args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
@@ -24,20 +22,9 @@ object WordCount extends Serializable {
 
     rdd1
       .collect()
-      .foreach(e => println(s"final: $e"))
+      .foreach(println)
 
-    println(depsInfoToString(depsInfo1))
-    println(depsInfo1.length)
-    _root_.monitoring.Monitors.finalizeProvenance(depsInfo1)
-  }
-
-  def depsInfoToString(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): String = {
-    depsInfo
-      .map{
-        deps =>
-          val row = deps.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")
-          s"$row"
-      }.mkString("\n----------------------------\n")
+    _root_.monitoring.Monitors.finalizeProvenance()
   }
 
   def sumFunc(a: Int, b: Int): Int = {

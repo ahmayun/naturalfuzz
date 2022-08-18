@@ -45,6 +45,8 @@ object Monitors extends Serializable {
     new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head))
   }
 
+//  def getCoDependentRegions: ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }
+
 
   def _mergeSubsets(buffer: ListBuffer[ListBuffer[(Int, Int, Int)]]): ListBuffer[ListBuffer[(Int, Int, Int)]] = {
     buffer.foldLeft(ListBuffer[ListBuffer[(Int, Int, Int)]]()){
@@ -155,14 +157,11 @@ object Monitors extends Serializable {
                                                      func: (V, V) => V, id: Int)
   : (PairProvenanceRDD[K, V], ListBuffer[ListBuffer[(Int,Int,Int)]]) = {
 
-    val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]] = ListBuffer(ListBuffer((1,1,1)))
+    val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]] = ListBuffer()
     dataset
       .sample(false, Config.percentageProv)
       .foreach {
-        case (k, _) =>
-          println(depsInfo)
-          println(k.getProvenance())
-          depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
+        case (k, _) => depsInfo.append(ListBuffer(k.getProvenance()).flatMap(_.convertToTuples)) // this.provInfo.update(id, ListBuffer(k.getProvenance()))
       }
     (dataset.reduceByKey(func), depsInfo)
   }
@@ -176,12 +175,8 @@ object Monitors extends Serializable {
     provInfo.simplify()
   }
 
-  def finalizeProvenance(depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]): ListBuffer[ListBuffer[(Int,Int,Int)]] = {
-    val ret = _simplify(depsInfo)
-    ret
-  }
-
 }
+
 /*
   def finalizeProvenance(): ProvInfo = {
     //    val min_data: Array[Seq[String]] = Array.fill(2)(Seq())
