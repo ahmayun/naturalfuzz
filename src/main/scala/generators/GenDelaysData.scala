@@ -34,8 +34,8 @@ object GenDelaysData extends Serializable {
         (1 to dataper).map { _ =>
           // trip58490,95880023,68370870,route3
           val tripId = s"trip${Random.nextInt(99999)}"
-          val a = Random.nextInt()
-          val d = Random.nextInt()
+          val a = Random.nextInt(Int.MaxValue)
+          val d = Random.nextInt(Int.MaxValue)
           val r = s"route${Random.nextInt(100)}"
           s"""$tripId,$a,$d,$r"""
         }.iterator

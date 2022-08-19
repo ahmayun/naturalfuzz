@@ -52,8 +52,8 @@ object GenCustomersData extends Serializable {
               // order82,20272,419550854,item2
               val oid = s"order${Random.nextInt(999)}"
               val cid = Random.nextInt(999)
-              val time = Random.nextInt()
-              val item = s"item${Random.nextInt()}"
+              val time = Random.nextInt(Int.MaxValue)
+              val item = s"item${Random.nextInt(Int.MaxValue)}"
               s"""$oid,$cid,$time,$item"""
             }.iterator
           }.saveAsTextFile(f)
