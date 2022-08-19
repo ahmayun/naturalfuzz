@@ -85,7 +85,7 @@ object Monitors extends Serializable {
       prov._1.foreach {
         case v: TaintedBase =>
           val prov = ListBuffer(v.getProvenance())
-          updateMinData(prov)
+//          updateMinData(prov)
           prov
         case _ =>
       }
