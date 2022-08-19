@@ -4,8 +4,6 @@ import fuzzer.ProvInfo
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.rdd.ProvenanceRDD.toPairRDD
 import sparkwrapper.SparkContextWithDP
-import taintedprimitives.SymImplicits._
-import taintedprimitives.{TaintedInt, TaintedString}
 
 object WordCount extends Serializable {
   def main(args: Array[String]): ProvInfo = {
