@@ -2,7 +2,7 @@ package monitoring
 
 import fuzzer.ProvInfo
 import org.apache.spark.rdd.RDD
-import provenance.data.DualRBProvenance
+import provenance.data.{DualRBProvenance, Provenance}
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import runners.Config
 import taintedprimitives.{TaintedBase, Utils}
@@ -16,6 +16,24 @@ object Monitors extends Serializable {
 
   val provInfo: ProvInfo = new ProvInfo()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
+
+
+  def updateMinData(p: ListBuffer[Provenance]) = {
+    p.foreach { pi =>
+      val bitmap = pi.asInstanceOf[DualRBProvenance].bitmap
+      val datasets = Utils.retrieveColumnsFromBitmap(bitmap)
+        .groupBy(_._1)
+        .keys
+
+      datasets.foreach{ ds =>
+        val rows = Utils.retrieveColProvenance(bitmap, ds).take(5)
+        if(!this.minData.contains(ds)) {
+          this.minData.update(ds, ListBuffer())
+        }
+        this.minData.update(ds, this.minData(ds) ++ rows)
+      }
+    }
+  }
 
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
                                                  d2: PairProvenanceDefaultRDD[K,V2],
@@ -47,20 +65,7 @@ object Monitors extends Serializable {
       .take(5)
       .to[ListBuffer]
       .foreach { p =>
-        p.foreach { pi =>
-          val bitmap = pi.asInstanceOf[DualRBProvenance].bitmap
-          val datasets = Utils.retrieveColumnsFromBitmap(bitmap)
-            .groupBy(_._1)
-            .keys
-
-          datasets.foreach{ ds =>
-            val rows = Utils.retrieveColProvenance(bitmap, ds).take(5)
-            if(!this.minData.contains(ds)) {
-              this.minData.update(ds, ListBuffer())
-            }
-            this.minData.update(ds, this.minData(ds) ++ rows)
-          }
-        }
+        updateMinData(p)
         this.provInfo.update(id, p)
       }
     //    }
