@@ -2,22 +2,20 @@ package monitoring
 
 import fuzzer.ProvInfo
 import org.apache.spark.rdd.RDD
-import org.roaringbitmap.RoaringBitmap
-import provenance.data.{DualRBProvenance, Provenance}
+import provenance.data.DualRBProvenance
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import runners.Config
-import symbolicexecution.{SymbolicExpression, SymbolicTree}
-import taintedprimitives.{TaintedBase, TaintedBoolean}
-import taintedprimitives.SymImplicits._
+import taintedprimitives.{TaintedBase, Utils}
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
-import scala.util.Random
 
 object Monitors extends Serializable {
 
 
   val provInfo: ProvInfo = new ProvInfo()
+  val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
 
   def monitorJoin[K<:TaintedBase:ClassTag,V1,V2](d1: PairProvenanceDefaultRDD[K,V1],
                                                  d2: PairProvenanceDefaultRDD[K,V2],
@@ -48,7 +46,23 @@ object Monitors extends Serializable {
       .map { case (k1, (_, (k2, _))) => ListBuffer(k1.getProvenance(), k2.getProvenance()) }
       .take(5)
       .to[ListBuffer]
-      .foreach(p => this.provInfo.update(id, p))
+      .foreach { p =>
+        p.foreach { pi =>
+          val bitmap = pi.asInstanceOf[DualRBProvenance].bitmap
+          val datasets = Utils.retrieveColumnsFromBitmap(bitmap)
+            .groupBy(_._1)
+            .keys
+
+          datasets.foreach{ ds =>
+            val rows = Utils.retrieveColProvenance(bitmap, ds).take(5)
+            if(!this.minData.contains(ds)) {
+              this.minData.update(ds, ListBuffer())
+            }
+            this.minData.update(ds, this.minData(ds) ++ rows)
+          }
+        }
+        this.provInfo.update(id, p)
+      }
     //    }
 
     joint.map{

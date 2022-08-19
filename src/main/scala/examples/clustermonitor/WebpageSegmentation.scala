@@ -45,6 +45,12 @@ object WebpageSegmentation extends Serializable {
       .take(10)
       .foreach(println)
 
+    println("dataset 0")
+    monitoring.Monitors.minData(0).foreach(println)
+
+    println("dataset 1")
+    monitoring.Monitors.minData(1).foreach(println)
+
     _root_.monitoring.Monitors.finalizeProvenance()
   }
   def intersects(rect1: IndexedSeq[TaintedInt], rect2: IndexedSeq[TaintedInt]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
