@@ -83,13 +83,13 @@ object Monitors extends Serializable {
   def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
     if (bool) {
       prov._1.foreach {
-        case v: TaintedBase =>
-          val prov = ListBuffer(v.getProvenance())
-//          updateMinData(prov)
-          prov
+        case v: TaintedBase => ListBuffer(v.getProvenance())
         case _ =>
       }
     }
+
+    //TODO: Add rows to min data, currently this is running on workers
+
     bool
   }
 

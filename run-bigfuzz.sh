@@ -27,20 +27,20 @@ mkdir -p $DIR_BIGFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || 
 
 #sbt assembly || exit 1
 
-java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
+java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
           $DIR_BIGFUZZ_OUT/scoverage-results \
           || exit
 
-pushd target/scala-2.11/classes || exit 1
+pushd target/scala-2.12/classes || exit 1
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
         $PATH_INSTRUMENTED_CLASSES \
         || exit 1
 popd || exit 1
 
 
-java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
+java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunBigFuzzJar \
           $NAME \
           $PACKAGE \
