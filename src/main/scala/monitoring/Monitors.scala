@@ -18,7 +18,7 @@ object Monitors extends Serializable {
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
 
 
-  def updateMinData(p: ListBuffer[Provenance]) = {
+  def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
       val bitmap = pi.asInstanceOf[DualRBProvenance].bitmap
       val datasets = Utils.retrieveColumnsFromBitmap(bitmap)
@@ -70,6 +70,9 @@ object Monitors extends Serializable {
       }
     //    }
 
+    println("Join Prov")
+    println(provInfo.simplify())
+
     joint.map{
       case (k1, (v1, (k2, v2))) =>
         k1.setProvenance(k1.getProvenance().merge(k2.getProvenance()))
@@ -80,7 +83,10 @@ object Monitors extends Serializable {
   def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
     if (bool) {
       prov._1.foreach {
-        case v: TaintedBase => ListBuffer(v.getProvenance())
+        case v: TaintedBase =>
+          val prov = ListBuffer(v.getProvenance())
+          updateMinData(prov)
+          prov
         case _ =>
       }
     }
@@ -111,7 +117,10 @@ object Monitors extends Serializable {
       .map { case (k, _) => ListBuffer(k.getProvenance()) }
       .take(5)
       .to[ListBuffer]
-      .foreach(p => this.provInfo.update(id, p))
+      .foreach { p =>
+        updateMinData(p)
+        this.provInfo.update(id, p)
+      }
 
     println("GBK Prov")
     println(provInfo.simplify())
@@ -129,7 +138,10 @@ object Monitors extends Serializable {
       .map { case (k, _) => ListBuffer(k.getProvenance()) }
       .take(5)
       .to[ListBuffer]
-      .foreach(p => this.provInfo.update(id, p))
+      .foreach { p =>
+        this.provInfo.update(id, p)
+        updateMinData(p)
+      }
 
     println("RBK Prov")
     println(provInfo.simplify())
