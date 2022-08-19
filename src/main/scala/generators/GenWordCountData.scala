@@ -18,7 +18,7 @@ object GenWordCountData extends Serializable {
       ("ds1", s"hdfs://zion-headnode:9000/ahmad/$name")
     )
     sparkConf.setMaster("spark://zion-headnode:7077")
-    sparkConf.setAppName("DataGen: WordCounts")
+    sparkConf.setAppName("DataGen: WordCount")
 
     println(
       s"""
