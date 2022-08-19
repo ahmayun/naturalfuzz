@@ -19,6 +19,8 @@ object WordCount extends Serializable {
     _root_.monitoring.Monitors.monitorReduceByKey(ctx.textFileProv(args(0), _.split("\\s"))
       .flatMap(s => s)
       .map { s => (s, 1) }, sumFunc, 1)
+      .take(10)
+      .foreach(println)
 
     _root_.monitoring.Monitors.finalizeProvenance()
   }

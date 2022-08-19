@@ -19,7 +19,7 @@ object WebpageSegmentation extends Serializable {
     val after_data = args(1)
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
     ctx.setLogLevel("ERROR")
-//    Provenance.setProvenanceType("dual")
+    //    Provenance.setProvenanceType("dual")
     val before = ctx.textFileProv(before_data, _.split(','))
     val after = ctx.textFileProv(after_data, _.split(','))
     val boxes_before = toPairRDD[TaintedString, (TaintedString, Vector[TaintedInt])](before.map(r => (r(0)+"*"+r(r.length - 2)+"*"+r.last, (r(0), r.slice(1, r.length-2).map(_.toInt).toVector))))
@@ -41,7 +41,10 @@ object WebpageSegmentation extends Serializable {
         (url, lst.map{
           case (box, _, _) => box
         }.map(intersects(_, box1)))
-    }.collect().take(10).foreach(println)
+    }
+      .take(10)
+      .foreach(println)
+
     _root_.monitoring.Monitors.finalizeProvenance()
   }
   def intersects(rect1: IndexedSeq[TaintedInt], rect2: IndexedSeq[TaintedInt]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
