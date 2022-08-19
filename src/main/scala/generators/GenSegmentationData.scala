@@ -22,7 +22,7 @@ object GenSegmentationData extends Serializable {
   def main(args: Array[String]): Unit = {
     val partitions = args(0).toInt
     val dataper = args(1).toInt
-    val name = args(2)
+    val name = s"${args(2)}_${partitions*dataper}"
     val url_len = 2
     val seed = Random.nextLong()
     Random.setSeed(seed)

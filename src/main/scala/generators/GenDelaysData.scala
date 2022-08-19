@@ -4,21 +4,6 @@ import scala.util.Random
 
 object GenDelaysData extends Serializable {
 
-  def generateURL(len: Int): String = {
-    s"www.${Random.alphanumeric.take(len).mkString}.com"
-  }
-
-  def getRandomComponentType: String = {
-    val types = Array(
-      "advertisement",
-      "header",
-      "footer",
-      "heading",
-      "logo"
-    )
-    types(Random.nextInt(types.length))
-  }
-
   def main(args: Array[String]): Unit = {
     val partitions = args(0).toInt
     val dataper = args(1).toInt

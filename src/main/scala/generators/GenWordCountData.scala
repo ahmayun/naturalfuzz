@@ -9,7 +9,7 @@ object GenWordCountData extends Serializable {
 
     val partitions = args(0).toInt // e.g. 200
     val dataper = args(1).toInt // e.g. 100000
-    val name = args(2)
+    val name = s"${args(2)}_${partitions*dataper}"
     val seed = Random.nextLong()
     Random.setSeed(seed)
 
