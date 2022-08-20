@@ -1,7 +1,7 @@
 import org.apache.spark.{SparkConf, SparkContext}
 import scala.util.Random
 
-object GenWordCountData extends Serializable {
+object GenExternalCallData extends Serializable {
 
 
   def main(args: Array[String]): Unit = {
@@ -14,10 +14,10 @@ object GenWordCountData extends Serializable {
 
     val sparkConf = new SparkConf()
     val datasets = Array(
-      ("ds1", s"hdfs://zion-headnode:9000/ahmad/$name/words")
+      ("ds1", s"hdfs://zion-headnode:9000/ahmad/$name/calls")
     )
     sparkConf.setMaster("spark://zion-headnode:7077")
-    sparkConf.setAppName("DataGen: WordCount")
+    sparkConf.setAppName("DataGen: ExternalCall")
 
     println(
       s"""

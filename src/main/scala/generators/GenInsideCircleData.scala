@@ -1,23 +1,26 @@
 import org.apache.spark.{SparkConf, SparkContext}
+
 import scala.util.Random
 
-object GenWordCountData extends Serializable {
+object GenInsideCircleData extends Serializable {
 
+  def randIntBetween(min: Int, max: Int): Int = {
+    min + Random.nextInt( (max - min) + 1 )
+  }
 
   def main(args: Array[String]): Unit = {
-
-    val partitions = args(0).toInt // e.g. 200
-    val dataper = args(1).toInt // e.g. 100000
+    val partitions = args(0).toInt
+    val dataper = args(1).toInt
     val name = s"${args(2)}_${partitions*dataper}"
     val seed = Random.nextLong()
     Random.setSeed(seed)
 
     val sparkConf = new SparkConf()
     val datasets = Array(
-      ("ds1", s"hdfs://zion-headnode:9000/ahmad/$name/words")
+      ("ds1", s"hdfs://zion-headnode:9000/ahmad/$name/circles"),
     )
     sparkConf.setMaster("spark://zion-headnode:7077")
-    sparkConf.setAppName("DataGen: WordCount")
+    sparkConf.setAppName("DataGen: InsideCircle")
 
     println(
       s"""
@@ -26,11 +29,17 @@ object GenWordCountData extends Serializable {
          |seed: $seed
          |""".stripMargin
     )
+    //    val fault_rate = 0.0001
+    //    def faultInjector()  = if(Random.nextInt(dataper*partitions) < dataper*partitions* fault_rate) true else false
 
     datasets.foreach { case (_, f) =>
       SparkContext.getOrCreate(sparkConf).parallelize(Seq[Int](), partitions).mapPartitions { _ =>
         (1 to dataper).map { _ =>
-          s"This is a sentence"
+          // 90001,28,10990
+          val x = randIntBetween(1, 100)
+          val y = randIntBetween(1, 100)
+          val r = randIntBetween(1, 2000)
+          s"""$x,$y,$r"""
         }.iterator
       }.saveAsTextFile(f)
     }
