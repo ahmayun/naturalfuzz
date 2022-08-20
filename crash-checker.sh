@@ -1,7 +1,7 @@
 
 DIR_WATCH=$1
-FILE_ITER=target/scala-2.11/target/jazzer-output/WebpageSegmentation/measurements/iter
-FILE_WRITE=target/scala-2.11/target/jazzer-output/WebpageSegmentation/measurements/errors.csv
+FILE_ITER=$2
+FILE_WRITE=$3
 inotifywait -m $DIR_WATCH -e create |
     while read dir action file; do
         ITER=$(cat $FILE_ITER)
