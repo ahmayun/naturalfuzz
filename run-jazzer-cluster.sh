@@ -17,6 +17,7 @@ NAME=$1
 MODE=$2
 PACKAGE=$3
 DURATION=$4
+SCALA_VER=2.12
 
 CLASS_TARGET=jazzer.JazzerTarget$NAME
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
@@ -27,32 +28,35 @@ DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
-./crash-checker.sh target/jazzer-output/$NAME/reproducers/ &
+
+./crash-checker.sh 	$DIR_JAZZER_OUT/reproducers/  \
+			target/scala-$SCALA_VER/target/jazzer-output/$NAME/measurements/iter \
+			$DIR_JAZZER_OUT/measurements/errors.csv &
 
 
 sbt assembly || exit 1
 
-java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
+java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
           $DIR_JAZZER_OUT/measurements \
           || exit 1
 
 
-mkdir -p target/scala-2.11/$DIR_JAZZER_OUT/measurements
-cp $DIR_JAZZER_OUT/measurements/scoverage.coverage target/scala-2.11/$DIR_JAZZER_OUT/measurements || exit 1
+mkdir -p target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements
+cp $DIR_JAZZER_OUT/measurements/scoverage.coverage target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements || exit 1
 
-pushd target/scala-2.11/classes || exit
+pushd target/scala-$SCALA_VER/classes || exit
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
         $PATH_INSTRUMENTED_CLASSES \
         || exit 1
 popd || exit 1
 
-#java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
+#java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
 #          $CLASS_INSTRUMENTED \
 #          seeds/weak_seed/webpage_segmentation/*
 
-timeout $DURATION docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
+timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
                 -v "$(pwd)"/seeds:/seeds \
                 -v "$(pwd)"/$DIR_JAZZER_OUT/reproducers:/reproducers \
                 -v "$(pwd)"/$DIR_JAZZER_OUT/log:/log \
@@ -66,15 +70,15 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-2.11:/fuzzing \
                 --target_args="$DIR_JAZZER_OUT/measurements $MODE $PACKAGE" \
                 --keep_going=200
 
-chown -R $(whoami):$(whoami) target/scala-2.11/target
-chown $(whoami):$(whoami) target/scala-2.11/crash*
+chown -R $(whoami):$(whoami) target/scala-$SCALA_VER/target
+chown $(whoami):$(whoami) target/scala-$SCALA_VER/crash*
 
-mv target/scala-2.11/crash* $DIR_JAZZER_OUT/crashes
-mv target/scala-2.11/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
+mv target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
+mv target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
 
-rm -rf target/scala-2.11/target
+rm -rf target/scala-$SCALA_VER/target
 
-java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
+java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.CoverageMeasurementConsolidator \
           $DIR_JAZZER_OUT/measurements \
           src/main/scala \
@@ -85,7 +89,7 @@ kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
 
 # to reproduce errors
 #sudo docker run \
-#            -v "$(pwd)"/target/scala-2.11:/fuzzing \
+#            -v "$(pwd)"/target/scala-$SCALA_VER/fuzzing \
 #            -v "$(pwd)"/target/inputs:/inputs \
 #            cifuzz/jazzer \
 #            --cp=/fuzzing/ProvFuzz-assembly-1.0.jar \
