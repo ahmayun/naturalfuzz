@@ -28,7 +28,10 @@ DIR_JAZZER_OUT="target/jazzer-output/$NAME"
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
-./crash-checker.sh target/jazzer-output/$NAME/reproducers/ &
+
+./crash-checker.sh 	$DIR_JAZZER_OUT/reproducers/  \
+			target/scala-$SCALA_VER/target/jazzer-output/$NAME/measurements/iter \
+			$DIR_JAZZER_OUT/measurements/errors.csv &
 
 
 sbt assembly || exit 1
@@ -53,7 +56,7 @@ popd || exit 1
 #          $CLASS_INSTRUMENTED \
 #          seeds/weak_seed/webpage_segmentation/*
 
-timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER/fuzzing \
+timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
                 -v "$(pwd)"/seeds:/seeds \
                 -v "$(pwd)"/$DIR_JAZZER_OUT/reproducers:/reproducers \
                 -v "$(pwd)"/$DIR_JAZZER_OUT/log:/log \
