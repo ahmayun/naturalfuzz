@@ -60,6 +60,8 @@ class SparkContextWithDP(sc: SparkContext) {
   /** Text file with provenance RDDs (but no symbolic strings) */
   def textFileProv(filepath: String): ProvenanceRDD[String] = {
     // have to define this because predef identity was detecting as Nothing => Nothing
+    sc.hadoopConfiguration.set("fs.hdfs.impl", classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getName)
+    sc.hadoopConfiguration.set("fs.file.impl", classOf[org.apache.hadoop.fs.LocalFileSystem].getName)
     val identity = (s: String, p: Provenance) => (s, p)
     val baseRDD = textFileProvenanceCreator(filepath, identity)
     new FlatProvenanceDefaultRDD[String](baseRDD)

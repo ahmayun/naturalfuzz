@@ -12,6 +12,8 @@ object RunProvFuzzJar {
 
   def main(args: Array[String]): Unit = {
 
+    
+
     // ==P.U.T. dependent configurations=======================
     val benchmarkName = args(0)
     val duration = args(2)
