@@ -49,8 +49,6 @@ object WebpageSegmentation extends Serializable {
     println("dataset 0")
     monitoring.Monitors.minData(0).foreach(println)
 
-
-
     println("dataset 1")
     monitoring.Monitors.minData(1).foreach(println)
 
