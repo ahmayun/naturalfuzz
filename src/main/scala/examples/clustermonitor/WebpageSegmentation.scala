@@ -48,17 +48,11 @@ object WebpageSegmentation extends Serializable {
 
     println("dataset 0")
     monitoring.Monitors.minData(0).foreach(println)
-    sc.parallelize(Seq[Int](),1).mapPartitions { _ =>
-      monitoring.Monitors.minData(0).iterator
-    }.saveAsTextFile( s"hdfs://zion-headnode:9000/ahmad/ReducedWebpageSegmentation/after")
 
 
 
     println("dataset 1")
     monitoring.Monitors.minData(1).foreach(println)
-    sc.parallelize(Seq[Int](),1).mapPartitions { _ =>
-      monitoring.Monitors.minData(0).iterator
-    }.saveAsTextFile( s"hdfs://zion-headnode:9000/ahmad/ReducedWebpageSegmentation/before")
 
     _root_.monitoring.Monitors.finalizeProvenance()
   }

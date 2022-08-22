@@ -12,14 +12,18 @@ object RunProvFuzzJar {
 
   def main(args: Array[String]): Unit = {
 
-    
+
 
     // ==P.U.T. dependent configurations=======================
     val benchmarkName = args(0)
     val duration = args(2)
     val outDir = args(3)
+    val reducedDS = if(args.length > 4) {
+      if(args.length == 6) Array(args(4), args(5))
+      else Array(args(4))
+    } else Array[String]()
 
-    val Some(inputFiles) = Config.mapInputFilesReduced.get(benchmarkName)
+    val Some(inputFiles) = if(reducedDS.isEmpty) Config.mapInputFilesReduced.get(benchmarkName) else Some(reducedDS)
     val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = Config.benchmarkClass
