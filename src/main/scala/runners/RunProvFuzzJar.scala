@@ -13,6 +13,8 @@ object RunProvFuzzJar {
   def main(args: Array[String]): Unit = {
 
 
+    println("RunProvFuzzJar called with following args:")
+    println(args.mkString("\n"))
 
     // ==P.U.T. dependent configurations=======================
     val benchmarkName = args(0)
