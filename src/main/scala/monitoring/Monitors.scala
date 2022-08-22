@@ -40,26 +40,26 @@ object Monitors extends Serializable {
                                                  id: Int): PairProvenanceRDD[K,(V1,V2)] = {
 
     val joint = d1.join(d2.map{case (k, v) => (k, (k, v))})
-    //    val count = joint.count()
-    //    count match {
-    // If the data does not get past the join then test separately
-    //      case 0 =>
-    //        val buffer1 = d1
-    //          .sample(false, 0.5*Config.maxSamples/d1.count())
-    //          .map {
-    //          case (k1, _) =>
-    //            k1.getProvenance()
-    //        }.collect().to[ListBuffer]
-    //        val buffer2 = d2
-    //          .sample(false, 0.5*Config.maxSamples/d2.count())
-    //          .map {
-    //          case (k2, _) =>
-    //            k2.getProvenance()
-    //        }.collect().to[ListBuffer]
-    //        buffer1
-    //          .zip(buffer2)
-    //          .foreach { case (p1, p2) => this.provInfo.update(id, ListBuffer(p1, p2)) }
-    //      case _ =>
+        val count = joint.count()
+        count match {
+//     If the data does not get past the join then test separately
+          case 0 =>
+            val buffer1 = d1
+              .sample(false, 0.5*Config.maxSamples/d1.count())
+              .map {
+              case (k1, _) =>
+                k1.getProvenance()
+            }.collect().to[ListBuffer]
+            val buffer2 = d2
+              .sample(false, 0.5*Config.maxSamples/d2.count())
+              .map {
+              case (k2, _) =>
+                k2.getProvenance()
+            }.collect().to[ListBuffer]
+            buffer1
+              .zip(buffer2)
+              .foreach { case (p1, p2) => this.provInfo.update(id, ListBuffer(p1, p2)) }
+          case _ =>
     joint
       .map { case (k1, (_, (k2, _))) => ListBuffer(k1.getProvenance(), k2.getProvenance()) }
       .take(5)
@@ -68,10 +68,10 @@ object Monitors extends Serializable {
         updateMinData(p)
         this.provInfo.update(id, p)
       }
-    //    }
+        }
 
     println("Join Prov")
-    println(provInfo.simplify())
+    println(provInfo)
 
     joint.map{
       case (k1, (v1, (k2, v2))) =>
@@ -123,7 +123,7 @@ object Monitors extends Serializable {
       }
 
     println("GBK Prov")
-    println(provInfo.simplify())
+    println(provInfo)
 
     dataset.groupByKey()
   }
@@ -144,7 +144,7 @@ object Monitors extends Serializable {
       }
 
     println("RBK Prov")
-    println(provInfo.simplify())
+    println(provInfo)
 
     dataset.reduceByKey(func)
   }

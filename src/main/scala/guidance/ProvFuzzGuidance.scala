@@ -24,6 +24,8 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   val mutate_probs = Config.mutateProbsProvFuzz
 
   val actual_app = Array.fill(mutate_probs.length){0}
+  var app_total = 0
+
 
   val mutations = Array[(String, Int, Int) => String] (
     M1,
@@ -42,6 +44,80 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   val col_dup_prob = 0f
   val skip_prob = 0.1f
   val oor_prob = 1.0f //out-of-range probability: prob that a number will be mutated out of range vs normal mutation
+
+
+
+  def BFM1(e: String, c: Int, d: Int): String = {
+    val schema = this.schemas(d)(c)
+    schema.dataType match {
+      case Schema.TYPE_OTHER => mutateString(e, this.byte_mut_prob)
+      case Schema.TYPE_CATEGORICAL => mutateString(e, this.byte_mut_prob)// schema.values(Random.nextInt(schema.values.length)).toString
+      case _ if schema.range == null => mutateNumber(e)
+      case Schema.TYPE_NUMERICAL => mutateNumberSchemaAware(e, schema, this.oor_prob)
+    }
+  }
+
+  def BFM2(e: String, c: Int, d: Int): String = {
+    val schema = this.schemas(d)(c)
+    schema.dataType match {
+      case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
+      case _ => e
+    }
+  }
+  def BFM3(row: String, c: Int = -1, d: Int = -1): String = {
+    val cols = row.split(',')
+    if(cols.length < 2) {
+      return row
+    }
+    val i = Random.nextInt(cols.length-1)
+    cols.slice(0, i+1).mkString(",") + "~" + cols.slice(i+1, cols.length).mkString(",")
+  }
+  def BFM4(e: String, c: Int, d: Int): String = {
+    M1(e, c, d)
+  }
+
+  // input: a dataset row
+  // returns new row with random column(s) dropped
+  def BFM5(e: String, c: Int, d: Int): String = {
+    val cols = e.split(',').to
+    val to_drop = (0 to Random.nextInt(this.max_col_drops)).map(_ => Random.nextInt(cols.length))
+    cols.zipWithIndex.filter{ case (_, i) => !to_drop.contains(i)}.map(_._1).mkString(",")
+  }
+
+  // input: a column value
+  // returns an empty column (BigFuzz Paper)
+  def BFM6(e: String, c: Int, d: Int): String = {
+    ""
+  }
+
+  def BFmutateCol(v: String, c: Int, d: Int): String = {
+    val mutation_ids = Array(1, 2, 4, 5, 6).map(_-1)
+    val probs = mutation_ids.map(this.mutate_probs(_))
+    val to_apply = MutationUtils.RouletteSelect(mutation_ids, probs)
+    this.actual_app(to_apply) += 1
+    this.app_total += 1
+    probabalisticApply(this.mutations(to_apply), v, c, d)
+  }
+
+  def BFmutateRow(row: String, dataset: Int): String = {
+    probabalisticApply(M3, row.split(',').zipWithIndex.map{case (e, i) => BFmutateCol(e, i, dataset)}.mkString(","), prob=this.mutate_probs(2))
+  }
+
+  // Mutates a single dataset (Each dataset is mutated independently in BigFuzz)
+  def BFmutate(input: Seq[String], dataset: Int): Seq[String] = {
+    randomDuplications(input, this.max_row_dups, this.row_dup_prob)
+      .map(row => BFmutateRow(randomDuplications(row.split(','), this.max_col_dups, this.col_dup_prob).mkString(","), dataset))
+  }
+
+  // Mutates all datasets
+  def BFmutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
+    //    return inputFiles
+    val mutatedDatasets = inputDatasets.zipWithIndex.map{case (d, i) => BFmutate(d, i)}
+    mutatedDatasets
+    //    this.last_input = mutated_datasets.zipWithIndex.map{case (e, i) => writeToFile(e, i)}
+    //    this.last_input
+  }
+
 
   def M1(e: String, c: Int, d: Int): String = {
     val schema = this.schemas(d)(c)
@@ -318,7 +394,10 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   }
 
   def mutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
-    val mutatedDatasets = applyProvAwareMutation(inputDatasets, provInfo)
+    val mutatedDatasets = if(flipCoin(0.0001f))
+      BFmutate(inputDatasets)
+    else
+      applyProvAwareMutation(inputDatasets, provInfo)
     mutatedDatasets
   }
 
