@@ -12,7 +12,7 @@ object FlightDistance {
     val sparkConf = new SparkConf()
     if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
-    sparkConf.setAppName("Column Provenance Test")
+    sparkConf.setAppName("Prov FlightDistance")
     val flights_data = args(0)// "datasets/fuzzing_seeds/FlightDistance/flights" // "/home/ahmad/Documents/VT/project1/cs5614-hw/data/flights"
     val airports_data = args(1) // "datasets/fuzzing_seeds/FlightDistance/airports_data" // "/home/ahmad/Documents/VT/project1/cs5614-hw/data/airports_data"
     val sc = new SparkContext(sparkConf)
@@ -39,7 +39,14 @@ object FlightDistance {
       case (fid, ((dap, dlat, dlong), (aap, alat, along))) =>
         (fid, (dap, aap, distance((dlat.toFloat, dlong.toFloat), (alat.toFloat, along.toFloat))))
     })
-    flights_and_distances.collect().take(10).foreach(println)
+
+    println("flights")
+    monitoring.Monitors.minData(0).foreach(println)
+
+    println("airports")
+    monitoring.Monitors.minData(1).foreach(println)
+
+    flights_and_distances.take(10).foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
   def distance(departure: (TaintedFloat, TaintedFloat), arrival: (TaintedFloat, TaintedFloat)): Float = {
