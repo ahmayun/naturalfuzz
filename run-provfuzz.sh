@@ -42,7 +42,6 @@ popd || exit 1
 shift
 shift
 shift
-shift
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunProvFuzzJar \

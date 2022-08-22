@@ -20,6 +20,9 @@ object WordCount extends Serializable {
       .take(10)
       .foreach(println)
 
+    println("dataset 0")
+    monitoring.Monitors.minData(0).foreach(println)
+
     _root_.monitoring.Monitors.finalizeProvenance()
   }
 
