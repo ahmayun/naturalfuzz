@@ -4,7 +4,7 @@ import fuzzer.ProvInfo
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance.setProvenanceType
 import sparkwrapper.SparkContextWithDP
-object CommuteType {
+object CommuteType extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")

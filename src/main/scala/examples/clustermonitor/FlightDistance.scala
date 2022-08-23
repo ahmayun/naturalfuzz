@@ -7,7 +7,7 @@ import sparkwrapper.SparkContextWithDP
 import taintedprimitives.SymImplicits._
 import taintedprimitives.TaintedFloat
 
-object FlightDistance {
+object FlightDistance extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val sparkConf = new SparkConf()
     if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")

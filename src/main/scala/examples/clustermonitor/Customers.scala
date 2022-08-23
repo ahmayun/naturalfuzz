@@ -5,7 +5,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.TaintedString
-object Customers {
+object Customers extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val sparkConf = new SparkConf()
     if (args.length < 3) throw new IllegalArgumentException("Program was called with too few args")

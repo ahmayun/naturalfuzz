@@ -6,7 +6,7 @@ import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.SymImplicits._
 import taintedprimitives.TaintedInt
-object Delays {
+object Delays extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     if (args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
