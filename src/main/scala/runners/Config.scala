@@ -101,7 +101,8 @@ object Config {
     "MapString" -> Array("seeds/reduced_data/mapstring/strings"),
     "MovieRating" -> Array("seeds/reduced_data/movierating/ratings"),
     "NumberSeries" -> Array("seeds/reduced_data/numberseries/numbers"),
-    "StudentGrade" -> Array("seeds/reduced_data/studentgrade/grades")
+    "StudentGrade" -> Array("seeds/reduced_data/studentgrade/grades"),
+    "FindSalary" -> Array("seeds/reduced_data/findsalary/salaries")
   )
 
   val Some(mapInputFiles) = Map(
