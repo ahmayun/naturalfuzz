@@ -12,6 +12,7 @@ object Invoker {
 
   private val MeasurementsPrefix = s"scoverage.measurements."
   private val threadFiles = new ThreadLocal[mutable.HashMap[String, FileWriter]]
+  private val savedWriter = new mutable.HashMap[Int, FileWriter]()
 
   // For each data directory we maintain a thread-safe set tracking the ids that we've already
   // seen and recorded. We're using a map as a set, so we only care about its keys and can ignore
@@ -64,7 +65,7 @@ object Invoker {
 //        dataDir,
 //        new FileWriter(measurementFile(dataDir), true)
 //      )
-      val writer = new FileWriter(measurementFile(dataDir), true)
+      val writer = savedWriter.getOrElseUpdate(1, new FileWriter(measurementFile(dataDir), true))
       if (reportTestName)
         writer
           .append(Integer.toString(id))

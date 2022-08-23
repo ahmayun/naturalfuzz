@@ -1,17 +1,3 @@
 this is a string
-
-import scala.util.Random
-val types = Array("ad","header","footer","heading","logo")
-datasets.foreach { case (_, f) =>
-    sc.parallelize(Seq[Int]() , 200).mapPartitions { _ =>
-     (1 to 10000000).map { _ =>
-         val url = s"www.${scala.util.Random.alphanumeric.take(10).mkString}.com"
-         val swx = Random.nextInt(1920)
-         val swy = Random.nextInt(1080)
-         val w = Random.nextInt(1920)
-         val h = Random.nextInt(1080)
-         val cid = Random.nextInt(100)
-         val ctype = types(Random.nextInt(5))
-         s"""$url,$swx,$swy,$h,$w,$cid,$ctype"""
-     }.iterator}.saveAsTextFile(f)
-     }
+this is a string
+this is a string
