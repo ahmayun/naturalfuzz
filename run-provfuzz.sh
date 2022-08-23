@@ -25,7 +25,7 @@ rm -rf $DIR_PROVFUZZ_OUT
 mkdir -p $DIR_PROVFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1
 
 
-#sbt assembly || exit 1
+sbt assembly || exit 1
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
