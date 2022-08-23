@@ -28,7 +28,7 @@ object RunProvFuzzJar {
     val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = s"examples.faulty.$benchmarkName"
-    val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)
+//    val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)
     val Some(provInfo) = Config.provInfos.get(benchmarkName)
     // ========================================================
 
@@ -46,11 +46,11 @@ object RunProvFuzzJar {
 
     val probeClass = s"examples.monitored.$benchmarkName"
     val probePath = s"src/main/scala/${probeClass.split('.').mkString("/")}.scala"
-    val probeProgram = new InstrumentedProgram(benchmarkName,
-      probeClass,
-      probePath,
-      funProbeAble,
-      inputFiles)
+//    val probeProgram = new InstrumentedProgram(benchmarkName,
+//      probeClass,
+//      probePath,
+//      funProbeAble,
+//      inputFiles)
 
     // Probing and Fuzzing
     //    val probingDataset = ProvFuzzUtils.CreateProbingDatasets(probeProgram, schema)

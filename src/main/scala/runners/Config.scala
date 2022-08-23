@@ -102,7 +102,9 @@ object Config {
     "MovieRating" -> Array("seeds/reduced_data/movierating/ratings"),
     "NumberSeries" -> Array("seeds/reduced_data/numberseries/numbers"),
     "StudentGrade" -> Array("seeds/reduced_data/studentgrade/grades"),
-    "FindSalary" -> Array("seeds/reduced_data/findsalary/salaries")
+    "FindSalary" -> Array("seeds/reduced_data/findsalary/salaries"),
+    "LoanType" -> Array("seeds/reduced_data/loantype/info"),
+    "WordCount" -> Array("seeds/reduced_data/wordcount/words")
   )
 
   val Some(mapInputFiles) = Map(
