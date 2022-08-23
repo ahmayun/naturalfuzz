@@ -10,8 +10,8 @@ object TestMonitorAttacher2 {
   def main(args: Array[String]): Unit = {
     val outputFolder = "src/main/scala/refactor/testout"
     new File(outputFolder).mkdirs()
-    val testName = "WordCount"
-    val testData = FileUtils.readFile("src/main/scala/examples/clustermonitor/WordCount.scala").mkString("\n")
+    val testName = "StudentGrade"
+    val testData = FileUtils.readFile(s"src/main/scala/examples/faulty/$testName.scala").mkString("\n")
 
     println(testData)
     println("-"*3 + s" $testName " + "-"*10)

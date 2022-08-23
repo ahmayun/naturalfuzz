@@ -7,7 +7,7 @@ import sparkwrapper.SparkContextWithDP
 import taintedprimitives.TaintedFloat
 import taintedprimitives.SymImplicits._
 
-object FlightDistance {
+object FlightDistance extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val sparkConf = new SparkConf()
     sparkConf.setMaster("local[6]")

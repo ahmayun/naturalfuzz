@@ -29,6 +29,7 @@ object RunProvFuzzJar {
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = s"examples.faulty.$benchmarkName"
     val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)
+    val Some(provInfo) = Config.provInfos.get(benchmarkName)
     // ========================================================
 
 //    val outputDir = s"${Config.resultsDir}/ProvFuzz"
@@ -53,12 +54,13 @@ object RunProvFuzzJar {
 
     // Probing and Fuzzing
     //    val probingDataset = ProvFuzzUtils.CreateProbingDatasets(probeProgram, schema)
-    val (provInfo, timeStartProbe, timeEndProbe) = ProvFuzzUtils.Probe(probeProgram)
+//    val (provInfo, timeStartProbe, timeEndProbe) = ProvFuzzUtils.Probe(probeProgram)
     val guidance = new ProvFuzzGuidance(inputFiles, schema, provInfo, duration.toInt)
 
     println("ProvInfo: ")
     println(provInfo)
 
+//    sys.exit(0)
     val (stats, timeStartFuzz, timeEndFuzz) = Fuzzer.Fuzz(program, guidance, outDir)
 
     // Finalizing
@@ -69,7 +71,7 @@ object RunProvFuzzJar {
     coverage.apply(measurements)
     new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageOutputDir)).write(coverage)
 
-    val durationProbe = (timeEndProbe - timeStartProbe) / 1000.0
+    val durationProbe = 0.1f // (timeEndProbe - timeStartProbe) / 1000.0
     val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0
     val durationTotal = durationProbe + durationFuzz
 

@@ -83,7 +83,8 @@ object Monitors extends Serializable {
   def monitorPredicate(bool: Boolean, prov: (List[Any], List[Any]), id: Int): Boolean = {
     if (bool) {
       prov._1.foreach {
-        case v: TaintedBase => ListBuffer(v.getProvenance())
+        case v: TaintedBase =>
+          provInfo.update(id, ListBuffer(v.getProvenance())) // WARNING: Not cluster safe, temporary
         case _ =>
       }
     }

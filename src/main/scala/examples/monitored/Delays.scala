@@ -8,7 +8,7 @@ import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.TaintedInt
 import taintedprimitives.SymImplicits._
-object Delays {
+object Delays extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     conf.setMaster("local[*]")

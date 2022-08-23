@@ -53,6 +53,10 @@ case class TaintedDouble(i: Double, p: Provenance) extends TaintedAny(i, p) {
     TaintedDouble(value / x.value, newProvenance(x.getProvenance()))
   }
 
+  def toInt: TaintedInt = {
+    TaintedInt(value.toInt, getProvenance())
+  }
+
   // TODO: Following are control flow provenance that, in my opinion, should be configurable. [Gulzar]
   // JT: agreed - for now, I've disabled since they don't return a new data type.
   def <(x: TaintedDouble): Boolean = {

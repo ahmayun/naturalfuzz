@@ -7,7 +7,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.{TaintedInt, TaintedString}
-object Customers {
+object Customers extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val sparkConf = new SparkConf()
     sparkConf.setMaster("local[6]")

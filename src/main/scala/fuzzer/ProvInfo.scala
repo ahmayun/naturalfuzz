@@ -81,11 +81,12 @@ class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) extends Seri
   }
 
   override def toString: String = {
-    depsInfo
-      .map{
-        deps =>
-          val row = deps.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")
-          s"$row"
-      }.mkString("\n----------------------------\n")
+    depsInfo.toString
+//    depsInfo
+//      .map{
+//        deps =>
+//          val row = deps.map{case (ds, row, col) => s"($ds,$row,$col)"}.mkString("<=>")
+//          s"$row"
+//      }.mkString("\n----------------------------\n")
   }
 }

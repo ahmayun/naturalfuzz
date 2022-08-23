@@ -39,14 +39,9 @@ jar uvf  ../ProvFuzz-assembly-1.0.jar \
         || exit 1
 popd || exit 1
 
-#shift
-#shift
-#shift
-#
-#java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
-#          runners.RunProvFuzzJar \
-#          $NAME \
-#          $PACKAGE \
-#          $DURATION \
-#          $DIR_PROVFUZZ_OUT \
-#          "$@"
+java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
+          runners.RunProvFuzzJar \
+          $NAME \
+          $PACKAGE \
+          $DURATION \
+          $DIR_PROVFUZZ_OUT

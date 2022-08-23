@@ -1,4 +1,3 @@
-airport_code,airport_name,city,coordinates_lat,coordinates_long,timezone
 YKS,"Yakutsk Airport",Yakutsk,129.77099609375,62.0932998657227,Asia/Yakutsk
 MJZ,"Mirny Airport",Mirnyj,114.039001464844,62.5346984863281,Asia/Yakutsk
 KHV,"Khabarovsk-Novy Airport",Khabarovsk,135.18800354004,48.52799987793,Asia/Vladivostok
