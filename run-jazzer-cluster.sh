@@ -56,6 +56,8 @@ popd || exit 1
 #          $CLASS_INSTRUMENTED \
 #          seeds/weak_seed/webpage_segmentation/*
 
+START_TIME=$(date +"%T %D")
+
 timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
                 -v "$(pwd)"/seeds:/seeds \
                 -v "$(pwd)"/$DIR_JAZZER_OUT/reproducers:/reproducers \
@@ -86,6 +88,8 @@ java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
 
 
 kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
+echo "Jazzer - $NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
+
 
 # to reproduce errors
 #sudo docker run \
