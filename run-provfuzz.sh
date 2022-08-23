@@ -47,4 +47,4 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DURATION \
           $DIR_PROVFUZZ_OUT
 
-echo "$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
+echo "CoFuzz $NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
