@@ -18,7 +18,7 @@ object RunBigFuzzJar {
     val Some(input_files) = Config.mapInputFiles.get(benchmark_name)
     val Some(fun_fuzzable) = Config.mapFunFuzzables.get(benchmark_name)
     val Some(schema) = Config.mapSchemas.get(benchmark_name)
-    val benchmark_class = Config.benchmarkClass
+    val benchmark_class = s"examples.faulty.$benchmark_name"
     // ========================================================
 
     val guidance = new BigFuzzGuidance(input_files, schema, duration.toInt)

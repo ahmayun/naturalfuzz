@@ -27,7 +27,7 @@ object RunProvFuzzJar {
     val Some(inputFiles) = if(reducedDS.isEmpty) Config.mapInputFilesReduced.get(benchmarkName) else Some(reducedDS)
     val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
-    val benchmarkClass = Config.benchmarkClass
+    val benchmarkClass = s"examples.faulty.$benchmarkName"
     val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)
     // ========================================================
 
