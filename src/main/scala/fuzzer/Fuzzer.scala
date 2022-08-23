@@ -31,19 +31,16 @@ object Fuzzer {
     output_dir
   }
 
-  def writeErrorToFile(error: Vector[String], outDir: String): Unit = {
-    val writer = new FileWriter(new File(outDir), true)
+  def writeErrorToFile(error: Vector[String], writer: FileWriter): Unit = {
     writer
-      .append(s"${Global.iteration},${error.mkString(" : ")}")
-      .append("\n")
-      .flush()
-
-    writer.close()
+      .write(s"${Global.iteration},${error.mkString(" : ")}\n")
   }
 
   def Fuzz(program: Program, guidance: Guidance, outDir: String, compile: Boolean = true): (FuzzStats, Long, Long) = {
     val testCaseOutDir = s"$outDir/error-inputs"
     val coverageOutDir = s"$outDir/scoverage-results"
+    val errorWriter = new FileWriter(new File(s"$outDir/errors.csv"), true)
+
     val stats = new FuzzStats(program.name)
     var crashed = false
     if(compile) {
@@ -85,7 +82,7 @@ object Fuzzer {
             })
             stats.cumulativeError :+= stats.failureMap.keySet.size
             if(oldFailCount != stats.failureMap.keySet.size)
-              writeErrorToFile(e_id, s"$outDir/errors.csv")
+              writeErrorToFile(e_id, errorWriter)
           }
 
         case _ =>
@@ -107,6 +104,9 @@ object Fuzzer {
 
       fuzzer.Global.iteration += 1
     }
+
+    errorWriter.close()
+
 
     if(stats.failureMap.keySet.size > Global.maxErrors) {
       Global.maxErrorsMap = stats.failureMap
