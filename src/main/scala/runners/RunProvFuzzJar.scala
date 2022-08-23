@@ -44,8 +44,8 @@ object RunProvFuzzJar {
       inputFiles)
 
 
-    val probeClass = s"examples.monitored.$benchmarkName"
-    val probePath = s"src/main/scala/${probeClass.split('.').mkString("/")}.scala"
+//    val probeClass = s"examples.monitored.$benchmarkName"
+//    val probePath = s"src/main/scala/${probeClass.split('.').mkString("/")}.scala"
 //    val probeProgram = new InstrumentedProgram(benchmarkName,
 //      probeClass,
 //      probePath,
