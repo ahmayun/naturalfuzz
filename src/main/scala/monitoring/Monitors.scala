@@ -16,6 +16,7 @@ object Monitors extends Serializable {
 
   val provInfo: ProvInfo = new ProvInfo()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
+  val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
 
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
@@ -84,7 +85,7 @@ object Monitors extends Serializable {
     if (bool) {
       prov._1.foreach {
         case v: TaintedBase =>
-          provInfo.update(id, ListBuffer(v.getProvenance())) // WARNING: Not cluster safe, temporary
+          dummyBuffer.append(v.getProvenance()) // WARNING: Not cluster safe, temporary
         case _ =>
       }
     }
