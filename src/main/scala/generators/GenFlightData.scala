@@ -60,10 +60,11 @@ object GenFlightData extends Serializable {
               // KGD,"Khrabrovo Airport",Kaliningrad,20.5925998687744,54.8899993896484,Europe/Kaliningrad
               val airportCode = getAirportCode
               val airportName = generateString(10)
+              val airportName2 = generateString(10)
               val long = randFloatBetween(-180, 180)
               val lat = randFloatBetween(-90, 90)
               val continent = generateString(10)
-              s"""$airportCode,$airportName,$long,$lat,$continent"""
+              s"""$airportCode,$airportName,$airportName2,$long,$lat,$continent"""
             }.iterator
           }.saveAsTextFile(f)
 
