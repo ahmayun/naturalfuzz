@@ -40,12 +40,17 @@ object CommuteType extends Serializable {
       }).mapValues({
         case (sum, count) =>
           sum.toDouble / count
-      }).collect()
+      }).take(10)
+
+      println("dataset 0")
+      monitoring.Monitors.minData(0).foreach(println)
+
     } catch {
       case e: Exception =>
         e.printStackTrace()
     }
-    sco.stop()
+
+
     _root_.monitoring.Monitors.finalizeProvenance()
   }
 }
