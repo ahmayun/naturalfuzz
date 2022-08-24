@@ -40,7 +40,7 @@ object CommuteType extends Serializable {
       }).mapValues({
         case (sum, count) =>
           sum.toDouble / count
-      }).take(10)
+      }).take(100).foreach(println)
 
 
     } catch {
@@ -49,7 +49,6 @@ object CommuteType extends Serializable {
     }
 
 
-    println("Done")
     _root_.monitoring.Monitors.finalizeProvenance()
   }
 }
