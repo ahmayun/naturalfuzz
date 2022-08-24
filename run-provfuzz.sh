@@ -15,7 +15,6 @@
 NAME=$1
 PACKAGE=$2
 DURATION=$3
-START_TIME=$(date +"%T %D")
 
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
@@ -40,6 +39,10 @@ jar uvf  ../ProvFuzz-assembly-1.0.jar \
         || exit 1
 popd || exit 1
 
+START_TIME=$(date +"%T %D")
+
+echo -e "Subject:[START] $(hostname)\nCoFuzz $NAME $START_TIME" | sendmail ahmad35@vt.edu
+
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunProvFuzzJar \
           $NAME \
@@ -47,4 +50,4 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DURATION \
           $DIR_PROVFUZZ_OUT
 
-echo "CoFuzz $NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
+echo -e "Subject:[END] $(hostname)\nCoFuzz $NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
