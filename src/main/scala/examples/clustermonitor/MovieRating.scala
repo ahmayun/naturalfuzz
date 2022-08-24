@@ -18,12 +18,15 @@ object MovieRating {
     }.filter { v =>
       v._2 > 4
     }
+      .map{case (a, b) => (a, b.asInstanceOf[Any])} // Temporary fix
 
     _root_.monitoring.Monitors.monitorReduceByKey(rdd, sum, 0).take(100).foreach(println)
     _root_.monitoring.Monitors.finalizeProvenance()
   }
 
-  def sum(a: Int, b: Int): Int = {
-    a + b
+  def sum(a: Any, b: Any): Int = {
+    (a, b) match {
+      case (x: Int, y: Int) => x + y
+    }
   }
 }
