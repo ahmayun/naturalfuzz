@@ -4,7 +4,7 @@ import fuzzer.ProvInfo
 import org.apache.spark.{SparkConf, SparkContext}
 import sparkwrapper.SparkContextWithDP
 
-object MovieRating {
+object MovieRating extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
@@ -20,7 +20,10 @@ object MovieRating {
     }
       .map{case (a, b) => (a, b.asInstanceOf[Any])} // Temporary fix
 
-    _root_.monitoring.Monitors.monitorReduceByKey(rdd, sum, 0).take(100).foreach(println)
+    _root_.monitoring.Monitors.monitorReduceByKey(rdd, sum, 0)
+      .take(100)
+      .foreach(println)
+
     _root_.monitoring.Monitors.finalizeProvenance()
   }
 
