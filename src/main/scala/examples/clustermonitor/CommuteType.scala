@@ -42,8 +42,6 @@ object CommuteType extends Serializable {
           sum.toDouble / count
       }).take(10)
 
-      println("dataset 0")
-      monitoring.Monitors.minData(0).foreach(println)
 
     } catch {
       case e: Exception =>
@@ -51,6 +49,7 @@ object CommuteType extends Serializable {
     }
 
 
+    println("Done")
     _root_.monitoring.Monitors.finalizeProvenance()
   }
 }
