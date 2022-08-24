@@ -36,7 +36,7 @@ object GenFindSalaryData extends Serializable {
       SparkContext.getOrCreate(sparkConf).parallelize(Seq[Int](), partitions).mapPartitions { _ =>
         (1 to dataper).map { _ =>
           // 1000
-          val salary = randIntBetween(1000, 999999)
+          val salary = randIntBetween(100000, 999999)
           val dollar = if(Random.nextBoolean()) "$" else ""
           s"""$dollar$salary"""
         }.iterator
