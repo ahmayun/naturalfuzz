@@ -14,6 +14,7 @@ object CommuteType extends Serializable {
     val data2 = Array(",Palms", ",Palms", ",Palms", "", "", "", "", ",", ",", "", "")
     val sco = new SparkContext(conf)
     val sc = new SparkContextWithDP(sco)
+    sc.setLogLevel("ERROR")
     setProvenanceType("dual")
     val tripLines = sc.textFileProv(args(0), _.split(",")) //"datasets/commute/trips/part-000[0-4]*"
     try {
