@@ -11,7 +11,10 @@ object InsideCircle extends Serializable {
   }
 
   def main(args: Array[String]): ProvInfo = {
-    val conf = new SparkConf().setMaster("local").setAppName("InsideCircle")
+    val conf = new SparkConf()
+    if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
+    conf.setMaster(args(1))
+    conf.setAppName("InsideCircle")
     val sc = new SparkContextWithDP(new SparkContext(conf))
     sc.textFileProv(args(0), _.split(",")).map {
       cols => (cols(0).toInt, cols(1).toInt, cols(2).toInt)
