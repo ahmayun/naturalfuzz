@@ -57,7 +57,7 @@ popd || exit 1
 #          seeds/weak_seed/webpage_segmentation/*
 
 START_TIME=$(date +"%T %D")
-echo -e "Subject:[START] $(hostname)\nJazzer $NAME $START_TIME" | sendmail ahmad35@vt.edu
+echo -e "Subject:[START] Jazzer $(hostname)\n$NAME $START_TIME" | sendmail ahmad35@vt.edu
 
 timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
                 -v "$(pwd)"/seeds:/seeds \
@@ -73,7 +73,7 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
                 --target_args="$DIR_JAZZER_OUT/measurements $MODE $PACKAGE" \
                 --keep_going=200
 
-echo -e "Subject:[END] $(hostname)\nJazzer - $NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
+echo -e "Subject:[END] Jazzer $(hostname)\n$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
 
 chown -R $(whoami):$(whoami) target/scala-$SCALA_VER/target
 chown $(whoami):$(whoami) target/scala-$SCALA_VER/crash*

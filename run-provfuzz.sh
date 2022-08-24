@@ -41,7 +41,7 @@ popd || exit 1
 
 START_TIME=$(date +"%T %D")
 
-echo -e "Subject:[START] $(hostname)\nCoFuzz $NAME $START_TIME" | sendmail ahmad35@vt.edu
+echo -e "Subject:[START] CoFuzz $(hostname)\n$NAME $START_TIME" | sendmail ahmad35@vt.edu
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunProvFuzzJar \
@@ -50,4 +50,4 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DURATION \
           $DIR_PROVFUZZ_OUT
 
-echo -e "Subject:[END] $(hostname)\nCoFuzz $NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
+echo -e "Subject:[END] CoFuzz $(hostname)\n$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
