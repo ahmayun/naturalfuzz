@@ -8,7 +8,8 @@ import taintedprimitives.TaintedInt
 object StudentGrade extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
-    conf.setMaster("local[*]")
+    if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
+    conf.setMaster(args(1))
     conf.setAppName("StudentGrade")
     val sc = new SparkContextWithDP(new SparkContext(conf))
     val rdd = sc.textFileProv(args(0), _.split(",")).map { a =>
