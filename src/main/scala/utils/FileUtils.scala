@@ -34,7 +34,7 @@ object FileUtils {
     val file = new File(path)
 
     if (!file.getParentFile.exists() && !file.getParentFile.mkdirs())
-      throw new Exception("File could not be created")
+      throw new Exception(s"Directory ${file.getParentFile} could not be created")
 
     val bw = new BufferedWriter(new FileWriter(file))
     data.foreach(r => bw.write(s"$r\n"))
