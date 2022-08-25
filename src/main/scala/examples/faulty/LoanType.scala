@@ -16,9 +16,12 @@ object LoanType {
       }
       .map { s =>
         var a = s._1
+        var x = 0
         if(a > 5635244 && a < 6875632) throw new RuntimeException()
         for (i <- 1 to s._2) {
           a = a * (1 + s._3)
+          x+=1
+          if(x  > 100) sys.exit(0)
         }
         (a, s._2, s._3, s._4)
       }
