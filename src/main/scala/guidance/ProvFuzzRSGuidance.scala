@@ -17,7 +17,13 @@ class ProvFuzzRSGuidance(val input_files: Array[String], val schemas: Array[Arra
   val deadline = duration.seconds.fromNow
   var coverage: Coverage = new Coverage
   var runs = 0
-  val mutate_probs = Config.mutateProbs
+  val mutate_probs: Array[Float] = Array( // 0:M1, 1:M2 ... 5:M6
+    0.999f, // Data
+    0.0002f, // Data
+    0.0002f, // Format
+    0.0002f, // Format
+    0.0002f, // Format
+    0.0002f) // Format
 
   val actual_app = Array.fill(mutate_probs.length){0}
   override def get_actual_app: Array[Int] = actual_app
@@ -57,7 +63,7 @@ class ProvFuzzRSGuidance(val input_files: Array[String], val schemas: Array[Arra
     val schema = this.schemas(d)(c)
     schema.dataType match {
       case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
-      case _ => e
+      case _ => M1(e, c, d)
     }
   }
   def M3(row: String, c: Int = -1, d: Int = -1): String = {
