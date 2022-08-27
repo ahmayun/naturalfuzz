@@ -15,6 +15,7 @@
 NAME=$1
 PACKAGE=$2
 DURATION=$3
+MODE=$4 # either full, rs or cm
 
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
@@ -46,7 +47,7 @@ echo -e "Subject:[START] CoFuzz $(hostname)\n$NAME $START_TIME" | sendmail ahmad
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunProvFuzzJar \
           $NAME \
-          $PACKAGE \
+          $MODE \
           $DURATION \
           $DIR_PROVFUZZ_OUT
 

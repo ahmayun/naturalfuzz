@@ -1,7 +1,7 @@
 package runners
 
 import fuzzer.{Fuzzer, Global, InstrumentedProgram, Program}
-import guidance.{BigFuzzGuidance, ProvFuzzGuidance}
+import guidance.{BigFuzzGuidance, ProvFuzzGuidance, ProvFuzzRSGuidance}
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
 import utils.ProvFuzzUtils
@@ -17,14 +17,15 @@ object RunProvFuzzJar {
 
     // ==P.U.T. dependent configurations=======================
     val benchmarkName = args(0)
+    val mode = args(1)
     val duration = args(2)
     val outDir = args(3)
-    val reducedDS = if(args.length > 4) {
-      if(args.length == 6) Array(args(4), args(5))
-      else Array(args(4))
-    } else Array[String]()
 
-    val Some(inputFiles) = if(reducedDS.isEmpty) Config.mapInputFilesReduced.get(benchmarkName) else Some(reducedDS)
+    val Some(inputFiles) = if (!mode.equals("cm"))
+      Config.mapInputFilesReduced.get(benchmarkName)
+    else
+      Config.mapInputFilesWeak.get(benchmarkName)
+
     val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = s"examples.faulty.$benchmarkName"
@@ -55,7 +56,10 @@ object RunProvFuzzJar {
     // Probing and Fuzzing
     //    val probingDataset = ProvFuzzUtils.CreateProbingDatasets(probeProgram, schema)
 //    val (provInfo, timeStartProbe, timeEndProbe) = ProvFuzzUtils.Probe(probeProgram)
-    val guidance = new ProvFuzzGuidance(inputFiles, schema, provInfo, duration.toInt)
+    val guidance = if(!mode.equals("rs"))
+      new ProvFuzzGuidance(inputFiles, schema, provInfo, duration.toInt)
+    else
+      new ProvFuzzRSGuidance(inputFiles, schema, duration.toInt)
 
     println("ProvInfo: ")
     println(provInfo)
