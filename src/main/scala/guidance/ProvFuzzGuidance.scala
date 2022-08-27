@@ -26,6 +26,9 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   val actual_app = Array.fill(mutate_probs.length){0}
   var app_total = 0
 
+  override def get_actual_app: Array[Int] = actual_app
+
+  override def get_mutate_probs: Array[Float] = mutate_probs
 
   val mutations = Array[(String, Int, Int) => String] (
     M1,

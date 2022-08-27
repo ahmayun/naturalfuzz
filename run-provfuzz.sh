@@ -20,7 +20,7 @@ MODE=$4 # either full, rs or cm
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
 PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
-DIR_PROVFUZZ_OUT="target/provfuzz-output/$NAME"
+DIR_PROVFUZZ_OUT="target/provfuzz-output/$MODE/$NAME"
 
 rm -rf $DIR_PROVFUZZ_OUT
 mkdir -p $DIR_PROVFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1

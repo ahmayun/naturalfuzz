@@ -58,6 +58,25 @@ object Config {
     "WordCount" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))) // temp
   )
 
+  val provInfosForWeak: Map[String, ProvInfo] = Map (
+    "Customers" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0), (1,1,0)))),
+    "Delays" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0), (1,0,0)), ListBuffer((0,0,0), (1,0,0)), ListBuffer((0,0,0), (1,0,0)), ListBuffer((0,0,0), (1,0,0)), ListBuffer((0,0,0), (1,0,0)), ListBuffer((1,2,0), (1,1,0), (0,2,0), (0,1,0)), ListBuffer((1,2,0), (1,1,0), (0,2,0), (0,1,0)), ListBuffer((1,2,0), (1,1,0), (0,2,0), (0,1,0)), ListBuffer((1,2,0), (1,1,0), (0,2,0), (0,1,0)), ListBuffer((1,2,0), (1,1,0), (0,2,0), (0,1,0)))),
+    "FlightDistance" ->  new ProvInfo(ListBuffer(ListBuffer((0,4,0), (1,0,0)), ListBuffer((0,4,0), (1,0,0)), ListBuffer((0,4,0), (1,0,0)), ListBuffer((0,4,0), (1,0,0)), ListBuffer((0,4,0), (1,0,0)), ListBuffer((0,5,0), (1,0,0)), ListBuffer((0,5,0), (1,0,0)), ListBuffer((0,5,0), (1,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)))),
+    "DeliveryFaults" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)))),
+    "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,0)), ListBuffer((1,0,0)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,6,0), (1,5,0), (1,0,0)))),
+    "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)))),
+    "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
+    "ExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
+    "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,0)),ListBuffer((0,0,0)))),
+    "IncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
+    "InsideCircle" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,1,0)),ListBuffer((0,2,0)))),
+    "LoanType" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
+    "MapString" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
+    "MovieRating" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,1,0)),ListBuffer((0,0,0)),ListBuffer((0,1,0)))),
+    "NumberSeries" -> new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
+    "StudentGrade" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)), ListBuffer((0,1,0)))),
+    "WordCount" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))) // temp
+  )
   val mapInputFilesWeak: Map[String, Array[String]] = Map(
     "FlightDistance" -> Array("seeds/weak_seed/FlightDistance/flights", "seeds/weak_seed/FlightDistance/airports_data"),
     "WebpageSegmentation" -> Array("seeds/weak_seed/webpage_segmentation/before", "seeds/weak_seed/webpage_segmentation/after"),

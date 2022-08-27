@@ -30,10 +30,9 @@ object RunProvFuzzJar {
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = s"examples.faulty.$benchmarkName"
 //    val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)
-    val Some(provInfo) = Config.provInfos.get(benchmarkName)
+    val Some(provInfo) = if(mode.equals("cm")) Config.provInfosForWeak.get(benchmarkName) else Config.provInfos.get(benchmarkName)
     // ========================================================
 
-//    val outputDir = s"${Config.resultsDir}/ProvFuzz"
     val scoverageOutputDir = s"$outDir/scoverage-results"
 
     val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
@@ -54,7 +53,6 @@ object RunProvFuzzJar {
 //      inputFiles)
 
     // Probing and Fuzzing
-    //    val probingDataset = ProvFuzzUtils.CreateProbingDatasets(probeProgram, schema)
 //    val (provInfo, timeStartProbe, timeEndProbe) = ProvFuzzUtils.Probe(probeProgram)
     val guidance = if(!mode.equals("rs"))
       new ProvFuzzGuidance(inputFiles, schema, provInfo, duration.toInt)
@@ -99,8 +97,8 @@ object RunProvFuzzJar {
     println(
       s"Config:\n" +
         s"\tProgram: ${program.name}\n" +
-        s"\tMutation Distribution M1-M6: ${guidance.mutate_probs.mkString(",")}\n" +
-        s"\tActual Application: ${guidance.actual_app.mkString(",")}\n" +
+        s"\tMutation Distribution M1-M6: ${guidance.get_mutate_probs.mkString(",")}\n" +
+        s"\tActual Application: ${guidance.get_actual_app.mkString(",")}\n" +
         s"\tIterations: ${Global.iteration}"
     )
     println("ProvInfo: ")
