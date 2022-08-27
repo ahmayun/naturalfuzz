@@ -32,6 +32,14 @@ class ProvFuzzRSGuidance(val input_files: Array[String], val schemas: Array[Arra
 
   var app_total = 0
 
+  def getSchema(d: Int, c: Int): Schema[Any]  = {
+    try {
+      this.schemas(d)(c)
+    } catch {
+      case _ => new Schema[Any](Schema.TYPE_OTHER)
+    }
+  }
+
   val mutations = Array[(String, Int, Int) => String] (
     M1,
     M2,
@@ -50,7 +58,7 @@ class ProvFuzzRSGuidance(val input_files: Array[String], val schemas: Array[Arra
   val oor_prob = 1.0f //out-of-range probability: prob that a number will be mutated out of range vs normal mutation
 
   def M1(e: String, c: Int, d: Int): String = {
-    val schema = this.schemas(d)(c)
+    val schema = getSchema(d, c)
     schema.dataType match {
       case Schema.TYPE_OTHER => mutateString(e, this.byte_mut_prob)
       case Schema.TYPE_CATEGORICAL => mutateString(e, this.byte_mut_prob)// schema.values(Random.nextInt(schema.values.length)).toString
@@ -60,7 +68,7 @@ class ProvFuzzRSGuidance(val input_files: Array[String], val schemas: Array[Arra
   }
 
   def M2(e: String, c: Int, d: Int): String = {
-    val schema = this.schemas(d)(c)
+    val schema = getSchema(d, c)
     schema.dataType match {
       case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
       case _ => M1(e, c, d)

@@ -49,9 +49,17 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   val oor_prob = 1.0f //out-of-range probability: prob that a number will be mutated out of range vs normal mutation
 
 
+  def getSchema(d: Int, c: Int): Schema[Any]  = {
+    try {
+      this.schemas(d)(c)
+    } catch {
+      case _ => new Schema[Any](Schema.TYPE_OTHER)
+    }
+  }
+
 
   def BFM1(e: String, c: Int, d: Int): String = {
-    val schema = this.schemas(d)(c)
+    val schema = getSchema(d,c)
     schema.dataType match {
       case Schema.TYPE_OTHER => mutateString(e, this.byte_mut_prob)
       case Schema.TYPE_CATEGORICAL => mutateString(e, this.byte_mut_prob)// schema.values(Random.nextInt(schema.values.length)).toString
@@ -61,7 +69,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   }
 
   def BFM2(e: String, c: Int, d: Int): String = {
-    val schema = this.schemas(d)(c)
+    val schema = getSchema(d, c)
     schema.dataType match {
       case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
       case _ => e
@@ -123,7 +131,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
 
 
   def M1(e: String, c: Int, d: Int): String = {
-    val schema = this.schemas(d)(c)
+    val schema = getSchema(d, c)
     schema.dataType match {
       case Schema.TYPE_OTHER => mutateString(e, this.byte_mut_prob)
       case Schema.TYPE_CATEGORICAL => mutateString(e, this.byte_mut_prob)// schema.values(Random.nextInt(schema.values.length)).toString
@@ -133,7 +141,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   }
 
   def M2(e: String, c: Int, d: Int): String = {
-    val schema = this.schemas(d)(c)
+    val schema = getSchema(d, c)
     schema.dataType match {
 //      case Schema.TYPE_NUMERICAL => changeNumberFormat(e)
       case _ => M1(e, c, d)
@@ -205,7 +213,7 @@ class ProvFuzzGuidance(val inputFiles: Array[String], val schemas: Array[Array[S
   }
   def mutator(data: Seq[String], d: Int, c: Int, r: Int, seed: Long): Seq[String] = {
     val rand = new Random(seed)
-    val schema = this.schemas(d)(c)
+    val schema = getSchema(d, c)
 //    println(s"d=$d,c=$c,r=$r:\n${data.mkString("\n")}")
     val m_row = data(r).split(',')
     val equalized = "<testdummy>" //rand.nextString(m_row(c).length) // mostly produces non english characters
