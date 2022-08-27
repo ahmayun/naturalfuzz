@@ -21,6 +21,8 @@ object RunProvFuzzJar {
     val duration = args(2)
     val outDir = args(3)
 
+    if(!Array("rs","cm","full").contains(mode)) throw new IllegalArgumentException()
+
     val Some(inputFiles) = if (!mode.equals("cm"))
       Config.mapInputFilesReduced.get(benchmarkName)
     else
