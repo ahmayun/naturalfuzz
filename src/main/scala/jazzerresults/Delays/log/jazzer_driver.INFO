@@ -1,5 +1,0 @@
-Log file created at: 2022/08/21 04:49:17
-Running on machine: d63f8f4794a1
-Running duration (h:mm:ss): 0:00:00
-Log line format: [IWEF]yyyymmdd hh:mm:ss.uuuuuu threadid file:line] msg
-got class path -Djava.class.path=/fuzzing/ProvFuzz-assembly-1.0.jar
