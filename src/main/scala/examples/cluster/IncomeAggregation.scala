@@ -30,7 +30,7 @@ object IncomeAggregation extends Serializable {
           } else if (s._2 < 20) {
             ("0-19", (s._3, 1))
           } else {
-            (">65", (s._3 / 0, 1)) // Error: Div by zero
+            (">65", (s._3, 1)) // Error: Div by zero
           }
       }
       .reduceByKey { (x, y) =>
