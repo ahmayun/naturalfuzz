@@ -14,5 +14,7 @@ object MapString {
     sc.textFile(args(0)).map { s =>
       s
     }
+      .take(100)
+      .foreach(println)
   }
 }

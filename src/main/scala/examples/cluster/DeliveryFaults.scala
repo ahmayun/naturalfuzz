@@ -30,7 +30,7 @@ object DeliveryFaults {
 
     bad_triplets
       .map(processTriplets)
-      .collect()
+      .take(10)
       .foreach(println)
   }
 

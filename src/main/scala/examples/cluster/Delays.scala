@@ -30,7 +30,7 @@ object Delays {
       .flatMap(flatMap1)
       .map(map1)
       .reduceByKey(rbk1)
-      .collect()
+      .take(10)
       .foreach(println)
   }
 

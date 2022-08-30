@@ -22,5 +22,7 @@ object LoanType {
           }
         (a, s._2, s._3, s._4)
       }
+      .take(100)
+      .foreach(println)
   }
 }

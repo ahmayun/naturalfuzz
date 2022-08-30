@@ -30,7 +30,8 @@ object StudentGrade {
       }
       .filter { v =>
         v._2 > 5
-      }.collect()
-      .foreach{case (a, b) => println(s"$a, $b")}
+      }
+      .take(100)
+      .foreach(println)
   }
 }

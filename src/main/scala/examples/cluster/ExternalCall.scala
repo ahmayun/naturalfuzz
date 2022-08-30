@@ -25,7 +25,7 @@ object ExternalCall {
         val v1 = log10(v._2)
         v1 > 1
       }
-      .collect()
+      .take(5)
       .foreach(println)
   }
 }

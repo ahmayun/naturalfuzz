@@ -19,7 +19,8 @@ object WordCount {
         val sum = a+b
         sum
       }// Numerical overflow
-      .collect()
+      .take(10)
       .foreach(println)
+
   }
 }

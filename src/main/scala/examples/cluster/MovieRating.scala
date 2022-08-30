@@ -32,8 +32,9 @@ object MovieRating {
         val sum = r1+r2
         sum
       }
-      .collect()
+      .take(100)
       .foreach(println)
+
 
   }
 }

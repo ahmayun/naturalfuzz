@@ -40,8 +40,9 @@ object NumberSeries {
         case (l, m) =>
           m.equals(25)
       }
-      .collect()
+      .take(100)
       .foreach(println)
+
 
   }
 }

@@ -24,7 +24,7 @@ object InsideCircle {
         cols =>
           (cols(0).toInt, cols(1).toInt, cols(2).toInt)
       }.filter(s => inside(s._1, s._2, s._3))
-      .collect().foreach(println)
+      .take(100).foreach(println)
 
   }
 }

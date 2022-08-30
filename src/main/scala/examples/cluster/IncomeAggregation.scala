@@ -39,7 +39,7 @@ object IncomeAggregation {
       .mapValues { x =>
         (x._2, x._1.toDouble / x._2.toDouble)
       }
-      .collect()
+      .take(100)
       .foreach(println)
 
   }
