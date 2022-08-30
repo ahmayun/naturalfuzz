@@ -1,6 +1,6 @@
 package examples.cluster
 
-import abstraction.{SparkConf, SparkContext}
+import org.apache.spark.{SparkConf, SparkContext}
 
 object Delays {
 
@@ -35,10 +35,10 @@ object Delays {
   }
 
   def buckets(v: Int): Int = v / 1800 // groups of 30 min delays
-  def filter1(tup: (Int, Any)): Boolean = {
+  def filter1(tup: (Int, Iterable[String])): Boolean = {
     if(tup._1 > 2) true else false
   }
-  def flatMap1(s: (Int, Seq[String])) = {
+  def flatMap1(s: (Int, Iterable[String])) = {
     s._2
   }
   def map1(s: String) = {

@@ -1,6 +1,6 @@
 package examples.cluster
 
-import abstraction.{SparkConf, SparkContext}
+import org.apache.spark.{SparkConf, SparkContext}
 
 object FlightDistance {
 

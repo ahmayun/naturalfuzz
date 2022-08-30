@@ -1,6 +1,6 @@
 package examples.cluster
 
-import abstraction.{SparkConf, SparkContext}
+import org.apache.spark.{SparkConf, SparkContext}
 
 /* OUTPUT ON datasets/commute/trips SHOULD BE:
 (car,51.47077409162717)
