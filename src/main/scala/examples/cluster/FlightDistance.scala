@@ -41,7 +41,7 @@ object FlightDistance extends Serializable {
       case (fid, ((dap, dlat, dlong), (aap, alat, along))) =>
         (fid, (dap,aap,distance((dlat.toFloat,dlong.toFloat),(alat.toFloat,along.toFloat))))
     }
-    flights_and_distances.collect().take(10).foreach(println)
+    flights_and_distances.take(10).foreach(println)
   }
   def distance(departure: (Float, Float), arrival: (Float, Float)): Float = {
     val R = 6373.0
