@@ -4,7 +4,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.math.log10
 
-object ExternalCall {
+object ExternalCall extends Serializable {
 
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf()

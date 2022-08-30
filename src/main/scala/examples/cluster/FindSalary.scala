@@ -2,7 +2,7 @@ package examples.cluster
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object FindSalary {
+object FindSalary extends Serializable {
 
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf()

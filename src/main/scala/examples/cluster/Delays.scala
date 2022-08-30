@@ -2,7 +2,7 @@ package examples.cluster
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object Delays {
+object Delays extends Serializable {
 
 
   def main(args: Array[String]) {

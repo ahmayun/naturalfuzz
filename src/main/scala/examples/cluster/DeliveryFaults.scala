@@ -2,7 +2,7 @@ package examples.cluster
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object DeliveryFaults {
+object DeliveryFaults extends Serializable {
 
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf()

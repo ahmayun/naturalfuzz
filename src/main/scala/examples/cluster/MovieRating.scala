@@ -8,7 +8,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 (public,27.985614467735306)
  */
 
-object MovieRating {
+object MovieRating extends Serializable {
 
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf()

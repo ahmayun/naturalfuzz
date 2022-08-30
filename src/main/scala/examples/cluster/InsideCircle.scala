@@ -2,7 +2,7 @@ package examples.cluster
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object InsideCircle {
+object InsideCircle extends Serializable {
 
   def inside(x:Int, y:Int, z:Int): Boolean ={
     x*x+y*y<z*z

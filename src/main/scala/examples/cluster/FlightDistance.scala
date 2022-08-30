@@ -2,7 +2,7 @@ package examples.cluster
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object FlightDistance {
+object FlightDistance extends Serializable {
 
   def main(args: Array[String]): Unit = {
     println(s"synthetic 3 args ${args.mkString(",")}")

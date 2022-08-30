@@ -2,7 +2,7 @@ package examples.cluster
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object Customers {
+object Customers extends Serializable {
 
   def main(args: Array[String]): Unit = {
     //set up spark configuration
