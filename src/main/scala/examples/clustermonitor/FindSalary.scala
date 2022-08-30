@@ -9,7 +9,7 @@ object FindSalary {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(1))
-    conf.setAppName("FindSalary")
+    conf.setAppName("FindSalary Monitored")
     val sc = new SparkContextWithDP(new SparkContext(conf))
     val data = sc.textFileProv(args(0), _.split(",")).map(_ (0)).map {
       line =>

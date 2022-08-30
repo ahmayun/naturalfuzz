@@ -10,7 +10,7 @@ object IncomeAggregation {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(1))
-    conf.setAppName("IncomeAggregation")
+    conf.setAppName("IncomeAggregation Monitored")
     val sc = new SparkContextWithDP(new SparkContext(conf))
     val rdd = sc.textFileProv(args(0), _.split(",")).map {
       cols => (cols(0), cols(1).toInt, cols(2).toInt)

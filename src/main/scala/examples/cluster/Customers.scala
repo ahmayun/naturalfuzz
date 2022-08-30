@@ -9,7 +9,7 @@ object Customers extends Serializable {
     val sparkConf = new SparkConf()
     if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
-    sparkConf.setAppName("Customers Orders")
+    sparkConf.setAppName("Customers Orders Original")
     val customers_data = args(0)// "datasets/fuzzing_seeds/orders/customers"
     val orders_data = args(1) // "datasets/fuzzing_seeds/orders/orders"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage

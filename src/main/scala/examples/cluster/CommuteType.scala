@@ -7,7 +7,7 @@ object CommuteType extends Serializable {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(1))
-    conf.setAppName("CommuteType")
+    conf.setAppName("CommuteType Original")
     val sc = new SparkContext(conf)
     sc.setLogLevel("ERROR")
     val tripLines = sc.textFile(args(0)).map(_.split(",")) //"datasets/commute/trips/part-000[0-4]*"

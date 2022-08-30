@@ -14,7 +14,7 @@ object WebpageSegmentation extends Serializable {
     val sparkConf = new SparkConf()
     if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
-    sparkConf.setAppName("Prov Webpage Segmentation")
+    sparkConf.setAppName("WebpageSegmentation Monitored")
     val before_data = args(0)
     val after_data = args(1)
     val sc = new SparkContext(sparkConf)

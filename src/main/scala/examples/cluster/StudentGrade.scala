@@ -8,7 +8,7 @@ object StudentGrade extends Serializable {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(1))
-    conf.setAppName("StudentGrade")
+    conf.setAppName("StudentGrade Original")
 
     val sc = new SparkContext(conf)
 

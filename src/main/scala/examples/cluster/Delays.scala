@@ -9,7 +9,7 @@ object Delays extends Serializable {
     val conf = new SparkConf()
     if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(2))
-    conf.setAppName("Bus Delays")
+    conf.setAppName("Delays Original")
     val sc = new SparkContext(conf)
 
     //<id>,<departure_time>,<advertised_departure>

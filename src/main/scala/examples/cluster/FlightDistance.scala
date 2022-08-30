@@ -10,7 +10,7 @@ object FlightDistance extends Serializable {
     val sparkConf = new SparkConf()
     if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
-    sparkConf.setAppName("Column Provenance Test")
+    sparkConf.setAppName("FlightDistance Original")
     val flights_data = args(0) //"datasets/fuzzing_seeds/FlightDistance/flights"
     val airports_data = args(1) //"datasets/fuzzing_seeds/FlightDistance/airports_data"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage

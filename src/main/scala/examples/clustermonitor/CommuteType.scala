@@ -9,7 +9,7 @@ object CommuteType extends Serializable {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(1))
-    conf.setAppName("CommuteType")
+    conf.setAppName("CommuteType Monitored")
     val data1 = Array(",, ,0,1", ",, ,16,1", ",, ,41,1", " , , ,", " , , , ,0", " , , , ,", "", "", "", ",A, ,-0,1", ",A, ,-0,1")
     val data2 = Array(",Palms", ",Palms", ",Palms", "", "", "", "", ",", ",", "", "")
     val sco = new SparkContext(conf)

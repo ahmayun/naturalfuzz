@@ -14,7 +14,7 @@ object InsideCircle extends Serializable {
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(1))
 
-    conf.setAppName("InsideCircle")
+    conf.setAppName("InsideCircle Original")
 
     val sc = new SparkContext(conf)
 

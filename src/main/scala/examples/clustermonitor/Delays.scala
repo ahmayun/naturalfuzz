@@ -11,7 +11,7 @@ object Delays extends Serializable {
     val conf = new SparkConf()
     if (args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     conf.setMaster(args(2))
-    conf.setAppName("Bus Delays")
+    conf.setAppName("Delays Monitored")
     val sc = new SparkContextWithDP(new SparkContext(conf))
     Provenance.setProvenanceType("dual")
     val station1 = sc.textFileProv(args(0),_.split(',')).map(r => (r(0), (r(1).toInt, r(2).toInt, r(3))))

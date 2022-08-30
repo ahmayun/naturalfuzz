@@ -10,7 +10,7 @@ object Customers extends Serializable {
     val sparkConf = new SparkConf()
     if (args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
-    sparkConf.setAppName("Customers Orders")
+    sparkConf.setAppName("Customers Monitored")
     val customers_data = args(0)
     val orders_data = args(1)
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
