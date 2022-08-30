@@ -1,0 +1,743 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          examples/faulty/FindSalary.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package examples.faulty
+</span>2 <span style=''>
+</span>3 <span style=''>import abstraction.{SparkConf, SparkContext}
+</span>4 <span style=''>
+</span>5 <span style=''>object FindSalary {
+</span>6 <span style=''>
+</span>7 <span style=''>  def main(args: Array[String]): Unit = {
+</span>8 <span style=''>    val conf = </span><span style='background: #AEF1AE'>new SparkConf()</span><span style=''>
+</span>9 <span style=''>    </span><span style='background: #AEF1AE'>conf.setMaster(&quot;local[*]&quot;)</span><span style=''>
+</span>10 <span style=''>    </span><span style='background: #AEF1AE'>conf.setAppName(&quot;FindSalary&quot;)</span><span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>    val sc = </span><span style='background: #AEF1AE'>new SparkContext(conf)</span><span style=''>
+</span>13 <span style=''>    val data = </span><span style='background: #AEF1AE'>sc.textFile(args(0)).map(_.split(&quot;,&quot;))
+</span>14 <span style=''></span><span style='background: #AEF1AE'>      .map(_(0))
+</span>15 <span style=''></span><span style='background: #AEF1AE'>      .map {
+</span>16 <span style=''></span><span style='background: #AEF1AE'>        line =&gt;
+</span>17 <span style=''></span><span style='background: #AEF1AE'>          if (line.substring(0, 1).equals(&quot;$&quot;)) {
+</span>18 <span style=''></span><span style='background: #AEF1AE'>            line.substring(1, 6).toInt
+</span>19 <span style=''></span><span style='background: #AEF1AE'>          } else {
+</span>20 <span style=''></span><span style='background: #AEF1AE'>            line.toInt
+</span>21 <span style=''></span><span style='background: #AEF1AE'>          }
+</span>22 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>23 <span style=''></span><span style='background: #AEF1AE'>      .filter{ r =&gt;
+</span>24 <span style=''></span><span style='background: #AEF1AE'>        if(r &gt; 3563245 &amp;&amp; </span><span style='background: #F0ADAD'>r &lt; 4535256</span><span style='background: #AEF1AE'>) </span><span style='background: #F0ADAD'>throw new RuntimeException()</span><span style='background: #AEF1AE'>
+</span>25 <span style=''></span><span style='background: #AEF1AE'>        r &lt; 300
+</span>26 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>27 <span style=''></span><span style='background: #AEF1AE'>      .reduce { (a, b) =&gt;
+</span>28 <span style=''></span><span style='background: #AEF1AE'>        val sum = a + b
+</span>29 <span style=''></span><span style='background: #AEF1AE'>        if (sum &gt; 500 &amp;&amp; </span><span style='background: #F0ADAD'>sum &lt; 550</span><span style='background: #AEF1AE'>) </span><span style='background: #F0ADAD'>throw new RuntimeException()</span><span style='background: #AEF1AE'>
+</span>30 <span style=''></span><span style='background: #AEF1AE'>        sum
+</span>31 <span style=''></span><span style='background: #AEF1AE'>      }</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>println(data)</span><span style=''>
+</span>34 <span style=''>  }
+</span>35 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          149
+          -
+          164
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkConf()
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          169
+          -
+          195
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setMaster
+        </td>
+        <td style="background: #AEF1AE">
+          conf.setMaster(&quot;local[*]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          200
+          -
+          229
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setAppName
+        </td>
+        <td style="background: #AEF1AE">
+          conf.setAppName(&quot;FindSalary&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          244
+          -
+          266
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkContext.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkContext(conf)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          294
+          -
+          301
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          args.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          307
+          -
+          319
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.split
+        </td>
+        <td style="background: #AEF1AE">
+          x$1.split(&quot;,&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          332
+          -
+          336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          x$2.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          381
+          -
+          413
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.equals
+        </td>
+        <td style="background: #AEF1AE">
+          line.substring(0, 1).equals(&quot;$&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          11
+        </td>
+        <td>
+          429
+          -
+          455
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(line.substring(1, 6)).toInt
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          429
+          -
+          455
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(line.substring(1, 6)).toInt
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          429
+          -
+          449
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.substring
+        </td>
+        <td style="background: #AEF1AE">
+          line.substring(1, 6)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          487
+          -
+          497
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(line).toInt
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          487
+          -
+          497
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(line).toInt
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          577
+          -
+          605
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          546
+          -
+          546
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          553
+          -
+          560
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          3563245
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          16
+        </td>
+        <td>
+          549
+          -
+          575
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #AEF1AE">
+          r.&gt;(3563245).&amp;&amp;(r.&lt;(4535256))
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          546
+          -
+          546
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          577
+          -
+          605
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          564
+          -
+          575
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          r.&lt;(4535256)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          21
+        </td>
+        <td>
+          614
+          -
+          621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          r.&lt;(300)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          30
+        </td>
+        <td>
+          282
+          -
+          764
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.RDD.reduce
+        </td>
+        <td style="background: #AEF1AE">
+          sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) =&gt; x$1.split(&quot;,&quot;)))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]])).map[String](((x$2: Array[String]) =&gt; x$2.apply(0)))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String])).map[Int](((line: String) =&gt; if (line.substring(0, 1).equals(&quot;$&quot;))
+  scala.Predef.augmentString(line.substring(1, 6)).toInt
+else
+  scala.Predef.augmentString(line).toInt))((ClassTag.Int: scala.reflect.ClassTag[Int])).filter(((r: Int) =&gt; {
+  if (r.&gt;(3563245).&amp;&amp;(r.&lt;(4535256)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  r.&lt;(300)
+})).reduce(((a: Int, b: Int) =&gt; {
+  val sum: Int = a.+(b);
+  if (sum.&gt;(500).&amp;&amp;(sum.&lt;(550)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  sum
+}))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          22
+        </td>
+        <td>
+          674
+          -
+          679
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #AEF1AE">
+          a.+(b)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          23
+        </td>
+        <td>
+          698
+          -
+          701
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          500
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          26
+        </td>
+        <td>
+          716
+          -
+          744
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          29
+        </td>
+        <td>
+          688
+          -
+          688
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          25
+        </td>
+        <td>
+          692
+          -
+          714
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #AEF1AE">
+          sum.&gt;(500).&amp;&amp;(sum.&lt;(550))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          688
+          -
+          688
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          27
+        </td>
+        <td>
+          716
+          -
+          744
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          24
+        </td>
+        <td>
+          705
+          -
+          714
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          sum.&lt;(550)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          31
+        </td>
+        <td>
+          770
+          -
+          783
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.println
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.println(data)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

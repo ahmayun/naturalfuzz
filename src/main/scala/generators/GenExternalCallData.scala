@@ -17,7 +17,7 @@ object GenExternalCallData extends Serializable {
       ("ds1", s"hdfs://zion-headnode:9000/ahmad/$name/calls")
     )
     sparkConf.setMaster("spark://zion-headnode:7077")
-    sparkConf.setAppName("DataGen: ExternalCall")
+    sparkConf.setAppName("DataGen: OldExternalCall")
 
     println(
       s"""

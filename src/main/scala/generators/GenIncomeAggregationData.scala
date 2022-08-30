@@ -20,7 +20,7 @@ object GenIncomeAggregationData extends Serializable {
       ("ds1", s"hdfs://zion-headnode:9000/ahmad/$name/income"),
     )
     sparkConf.setMaster("spark://zion-headnode:7077")
-    sparkConf.setAppName("DataGen: IncomeAggregation")
+    sparkConf.setAppName("DataGen: OldIncomeAggregation")
 
     println(
       s"""

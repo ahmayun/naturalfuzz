@@ -86,6 +86,7 @@ object Monitors extends Serializable {
       prov._1.foreach {
         case v: TaintedBase =>
           dummyBuffer.append(v.getProvenance()) // WARNING: Not cluster safe, temporary
+          this.provInfo.update(id, ListBuffer(v.getProvenance()))
         case _ =>
       }
     }
@@ -157,7 +158,10 @@ object Monitors extends Serializable {
 
   // called at the end of main function
   def finalizeProvenance(): ProvInfo = {
-    provInfo.simplify()
+    val x = provInfo.simplify()
+    println(x)
+    println("done")
+    x
   }
 
 }

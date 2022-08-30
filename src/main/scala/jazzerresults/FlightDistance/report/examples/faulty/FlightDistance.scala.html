@@ -1,0 +1,2370 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          examples/faulty/FlightDistance.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package examples.faulty
+</span>2 <span style=''>
+</span>3 <span style=''>import abstraction.{SparkConf, SparkContext}
+</span>4 <span style=''>
+</span>5 <span style=''>object FlightDistance {
+</span>6 <span style=''>
+</span>7 <span style=''>  def main(args: Array[String]): Unit = {
+</span>8 <span style=''>    </span><span style='background: #AEF1AE'>println(s&quot;synthetic 3 args ${args.mkString(&quot;,&quot;)}&quot;)</span><span style=''>
+</span>9 <span style=''>    //set up spark configuration
+</span>10 <span style=''>    val sparkConf = </span><span style='background: #AEF1AE'>new SparkConf()</span><span style=''>
+</span>11 <span style=''>    </span><span style='background: #AEF1AE'>sparkConf.setMaster(&quot;local[6]&quot;)</span><span style=''>
+</span>12 <span style=''>    </span><span style='background: #AEF1AE'>sparkConf.setAppName(&quot;Column Provenance Test&quot;).set(&quot;spark.executor.memory&quot;, &quot;2g&quot;)</span><span style=''>
+</span>13 <span style=''>    val flights_data = </span><span style='background: #AEF1AE'>args(0)</span><span style=''> //&quot;datasets/fuzzing_seeds/FlightDistance/flights&quot;
+</span>14 <span style=''>    val airports_data = </span><span style='background: #AEF1AE'>args(1)</span><span style=''> //&quot;datasets/fuzzing_seeds/FlightDistance/airports_data&quot;
+</span>15 <span style=''>    val ctx = </span><span style='background: #AEF1AE'>new SparkContext(sparkConf)</span><span style=''> //set up lineage context and start capture lineage
+</span>16 <span style=''>    </span><span style='background: #AEF1AE'>ctx.setLogLevel(&quot;ERROR&quot;)</span><span style=''>
+</span>17 <span style=''>    val flights = </span><span style='background: #AEF1AE'>ctx.textFile(flights_data).map(_.split(','))</span><span style=''>
+</span>18 <span style=''>    // === Sample ===
+</span>19 <span style=''>    //    flight_id,flight_no,scheduled_departure,scheduled_arrival,departure_airport,arrival_airport,status,aircraft_code,actual_departure,actual_arrival
+</span>20 <span style=''>    //    1185,PG0134,&quot;2017-09-10 02:50:00.000&quot;,&quot;2017-09-10 07:55:00.000&quot;,DME,BTK,Scheduled,319,,
+</span>21 <span style=''>    // ==============
+</span>22 <span style=''>    val airports = </span><span style='background: #AEF1AE'>ctx.textFile(airports_data).map(_.split(','))</span><span style=''>
+</span>23 <span style=''>    // === Sample ===
+</span>24 <span style=''>    //    airport_code,airport_name,city,coordinates_lat,coordinates_long,timezone
+</span>25 <span style=''>    //    YKS,&quot;Yakutsk Airport&quot;,Yakutsk,129.77099609375,62.0932998657227,Asia/Yakutsk
+</span>26 <span style=''>    // ==============
+</span>27 <span style=''>    //  ---------------------------------------------------------------------------------------
+</span>28 <span style=''>
+</span>29 <span style=''>    val departure_flights = </span><span style='background: #AEF1AE'>flights.map(r =&gt; (r(4), r(0)))</span><span style=''> // (DME, 1185)
+</span>30 <span style=''>    val arrival_flights = </span><span style='background: #AEF1AE'>flights.map(r =&gt; (r(5), r(0)))</span><span style=''> // (BTK, 1185)
+</span>31 <span style=''>    val airports_and_coords = </span><span style='background: #AEF1AE'>airports.map(r =&gt; (r(0), (r(3), </span><span style='background: #F0ADAD'>r(4)</span><span style='background: #AEF1AE'>)))</span><span style=''> // (YKS, (129.777, 62.093))
+</span>32 <span style=''>    val dairports_and_coords = </span><span style='background: #F0ADAD'>departure_flights.join(airports_and_coords)</span><span style=''> // (DME,(1185,(37.9062995910645,55.4087982177734)))
+</span>33 <span style=''>    val aairports_and_coords = </span><span style='background: #F0ADAD'>arrival_flights.join(airports_and_coords)</span><span style=''> // (NSK,(1546,(87.3321990966797,69.3110961914062)))
+</span>34 <span style=''>
+</span>35 <span style=''>    val dflights_and_coords = </span><span style='background: #F0ADAD'>dairports_and_coords.map{case (ap, (id, (lat, long))) =&gt; (id, (ap, lat, long))}</span><span style=''> //(12032,(KZN,49.278701782227,55.606201171875))
+</span>36 <span style=''>    val aflights_and_coords = </span><span style='background: #F0ADAD'>aairports_and_coords.map{case (ap, (id, (lat, long))) =&gt; (id, (ap, lat, long))}</span><span style=''> //(12032,(KZN,49.278701782227,55.606201171875))
+</span>37 <span style=''>    val flights_and_coords = </span><span style='background: #F0ADAD'>dflights_and_coords.join(aflights_and_coords)</span><span style=''> //(25604,((ULV,48.2266998291,54.2682991028),(DME,37.9062995910645,55.4087982177734)))
+</span>38 <span style=''>
+</span>39 <span style=''>    val flights_and_distances = </span><span style='background: #F0ADAD'>flights_and_coords.map{
+</span>40 <span style=''></span><span style='background: #F0ADAD'>      case (fid, ((dap, dlat, dlong), (aap, alat, along))) =&gt;
+</span>41 <span style=''></span><span style='background: #F0ADAD'>        (fid, (dap,aap,distance((dlat.toFloat,dlong.toFloat),(alat.toFloat,along.toFloat))))
+</span>42 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>43 <span style=''>    </span><span style='background: #F0ADAD'>flights_and_distances.collect().take(10).foreach(println)</span><span style=''>
+</span>44 <span style=''>  }
+</span>45 <span style=''>  def distance(departure: (Float, Float), arrival: (Float, Float)): Float = {
+</span>46 <span style=''>    val R = </span><span style='background: #F0ADAD'>6373.0</span><span style=''>
+</span>47 <span style=''>    val (dlat, dlong) = departure
+</span>48 <span style=''>    val (alat, along) = arrival
+</span>49 <span style=''>    val (dlatr, dlongr) = (toRad(dlat), toRad(dlong))
+</span>50 <span style=''>    val (alatr, alongr) = (toRad(alat), toRad(along))
+</span>51 <span style=''>    val difflat = </span><span style='background: #F0ADAD'>alatr-dlatr</span><span style=''>
+</span>52 <span style=''>    val difflong = </span><span style='background: #F0ADAD'>alongr-dlongr</span><span style=''>
+</span>53 <span style=''>
+</span>54 <span style=''>    </span><span style='background: #F0ADAD'>println(s&quot;alat:$alat along:$along&quot;)</span><span style=''>
+</span>55 <span style=''>    </span><span style='background: #F0ADAD'>println(s&quot;dlat:$alat dlong:$along&quot;)</span><span style=''>
+</span>56 <span style=''>
+</span>57 <span style=''>    val a = </span><span style='background: #F0ADAD'>math.pow(math.sin(difflat / 2), 2) + math.cos(dlatr) * math.cos(alatr) * math.pow(math.sin(difflong / 2),2)</span><span style=''>
+</span>58 <span style=''>    val c = </span><span style='background: #F0ADAD'>2*math.atan2(math.sqrt(a), math.sqrt(.1-a))</span><span style=''> // should be 1-a. Results in NaNs
+</span>59 <span style=''>    val dist = (</span><span style='background: #F0ADAD'>R * c * 0.621371).toFloat</span><span style=''>
+</span>60 <span style=''>    if(</span><span style='background: #F0ADAD'>dist.isNaN</span><span style=''>) {
+</span>61 <span style=''>      </span><span style='background: #F0ADAD'>throw new RuntimeException()</span><span style=''>
+</span>62 <span style=''>    }
+</span>63 <span style=''>
+</span>64 <span style=''>    dist
+</span>65 <span style=''>  }
+</span>66 <span style=''>
+</span>67 <span style=''>  def toRad(d: Float): Float = {
+</span>68 <span style=''>    if(</span><span style='background: #F0ADAD'>d &gt; 1.5E9f &amp;&amp; d &lt; 2.0E9f</span><span style=''>) {
+</span>69 <span style=''>      </span><span style='background: #F0ADAD'>throw new RuntimeException()</span><span style=''>
+</span>70 <span style=''>    }
+</span>71 <span style=''>    (</span><span style='background: #F0ADAD'>d * math.Pi/180.0).toFloat</span><span style=''>
+</span>72 <span style=''>  }
+</span>73 <span style=''>
+</span>74 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          190
+          -
+          191
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;&quot;
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          142
+          -
+          192
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.println
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.println(scala.StringContext.apply(&quot;synthetic 3 args &quot;, &quot;&quot;).s(scala.Predef.refArrayOps[String](args).mkString(&quot;,&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          150
+          -
+          191
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;synthetic 3 args &quot;, &quot;&quot;).s(scala.Predef.refArrayOps[String](args).mkString(&quot;,&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          152
+          -
+          170
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;synthetic 3 args &quot;
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          171
+          -
+          189
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableOnce.mkString
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.refArrayOps[String](args).mkString(&quot;,&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          246
+          -
+          261
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkConf()
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          266
+          -
+          297
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setMaster
+        </td>
+        <td style="background: #AEF1AE">
+          sparkConf.setMaster(&quot;local[6]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          302
+          -
+          383
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.set
+        </td>
+        <td style="background: #AEF1AE">
+          sparkConf.setAppName(&quot;Column Provenance Test&quot;).set(&quot;spark.executor.memory&quot;, &quot;2g&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          407
+          -
+          414
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          args.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          489
+          -
+          496
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          args.apply(1)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          11
+        </td>
+        <td>
+          567
+          -
+          594
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkContext.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkContext(sparkConf)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          650
+          -
+          674
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkContext.setLogLevel
+        </td>
+        <td style="background: #AEF1AE">
+          ctx.setLogLevel(&quot;ERROR&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          693
+          -
+          737
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #AEF1AE">
+          ctx.textFile(flights_data).map[Array[String]](((x$1: String) =&gt; scala.Predef.augmentString(x$1).split(',')))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]]))
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          724
+          -
+          736
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.split
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(x$1).split(',')
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          16
+        </td>
+        <td>
+          1054
+          -
+          1099
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #AEF1AE">
+          ctx.textFile(airports_data).map[Array[String]](((x$2: String) =&gt; scala.Predef.augmentString(x$2).split(',')))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]]))
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          1086
+          -
+          1098
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.split
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(x$2).split(',')
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          1456
+          -
+          1460
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          r.apply(4)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          1438
+          -
+          1468
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #AEF1AE">
+          flights.map[(String, String)](((r: Array[String]) =&gt; scala.Tuple2.apply[String, String](r.apply(4), r.apply(0))))((ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)]))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          1455
+          -
+          1467
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[String, String](r.apply(4), r.apply(0))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          1462
+          -
+          1466
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          r.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          23
+        </td>
+        <td>
+          1527
+          -
+          1539
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[String, String](r.apply(5), r.apply(0))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          22
+        </td>
+        <td>
+          1534
+          -
+          1538
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          r.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          21
+        </td>
+        <td>
+          1528
+          -
+          1532
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          r.apply(5)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          24
+        </td>
+        <td>
+          1510
+          -
+          1540
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #AEF1AE">
+          flights.map[(String, String)](((r: Array[String]) =&gt; scala.Tuple2.apply[String, String](r.apply(5), r.apply(0))))((ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)]))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          26
+        </td>
+        <td>
+          1612
+          -
+          1616
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          r.apply(3)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          29
+        </td>
+        <td>
+          1604
+          -
+          1624
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[String, (String, String)](r.apply(0), scala.Tuple2.apply[String, String](r.apply(3), r.apply(4)))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          25
+        </td>
+        <td>
+          1605
+          -
+          1609
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          r.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          1611
+          -
+          1623
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[String, String](r.apply(3), r.apply(4))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          27
+        </td>
+        <td>
+          1618
+          -
+          1622
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #F0ADAD">
+          r.apply(4)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          30
+        </td>
+        <td>
+          1586
+          -
+          1625
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #AEF1AE">
+          airports.map[(String, (String, String))](((r: Array[String]) =&gt; scala.Tuple2.apply[String, (String, String)](r.apply(0), scala.Tuple2.apply[String, String](r.apply(3), r.apply(4)))))((ClassTag.apply[(String, (String, String))](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, (String, String))]))
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          32
+        </td>
+        <td>
+          1685
+          -
+          1728
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.BasePairRDD.join
+        </td>
+        <td style="background: #F0ADAD">
+          abstraction.this.RDD.toPairRDD[String, String](departure_flights)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String])).join[(String, String)](abstraction.this.RDD.toPairRDD[String, (String, String)](airports_and_coords)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)])))
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          31
+        </td>
+        <td>
+          1708
+          -
+          1727
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.toPairRDD
+        </td>
+        <td style="background: #F0ADAD">
+          abstraction.this.RDD.toPairRDD[String, (String, String)](airports_and_coords)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)]))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          34
+        </td>
+        <td>
+          1812
+          -
+          1853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.BasePairRDD.join
+        </td>
+        <td style="background: #F0ADAD">
+          abstraction.this.RDD.toPairRDD[String, String](arrival_flights)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String])).join[(String, String)](abstraction.this.RDD.toPairRDD[String, (String, String)](airports_and_coords)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)])))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          33
+        </td>
+        <td>
+          1833
+          -
+          1852
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.toPairRDD
+        </td>
+        <td style="background: #F0ADAD">
+          abstraction.this.RDD.toPairRDD[String, (String, String)](airports_and_coords)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)]))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          35
+        </td>
+        <td>
+          1999
+          -
+          2014
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple3.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple3.apply[String, String, String](ap, lat, long)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          37
+        </td>
+        <td>
+          1937
+          -
+          2016
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #F0ADAD">
+          dairports_and_coords.map[(String, (String, String, String))](((x0$1: (String, (String, (String, String)))) =&gt; x0$1 match {
+  case (_1: String, _2: (String, (String, String)))(String, (String, (String, String)))((ap @ _), (_1: String, _2: (String, String))(String, (String, String))((id @ _), (_1: String, _2: String)(String, String)((lat @ _), (long @ _)))) =&gt; scala.Tuple2.apply[String, (String, String, String)](id, scala.Tuple3.apply[String, String, String](ap, lat, long))
+}))((ClassTag.apply[(String, (String, String, String))](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, (String, String, String))]))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          36
+        </td>
+        <td>
+          1994
+          -
+          2015
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[String, (String, String, String)](id, scala.Tuple3.apply[String, String, String](ap, lat, long))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          38
+        </td>
+        <td>
+          2157
+          -
+          2172
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple3.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple3.apply[String, String, String](ap, lat, long)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          40
+        </td>
+        <td>
+          2095
+          -
+          2174
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #F0ADAD">
+          aairports_and_coords.map[(String, (String, String, String))](((x0$2: (String, (String, (String, String)))) =&gt; x0$2 match {
+  case (_1: String, _2: (String, (String, String)))(String, (String, (String, String)))((ap @ _), (_1: String, _2: (String, String))(String, (String, String))((id @ _), (_1: String, _2: String)(String, String)((lat @ _), (long @ _)))) =&gt; scala.Tuple2.apply[String, (String, String, String)](id, scala.Tuple3.apply[String, String, String](ap, lat, long))
+}))((ClassTag.apply[(String, (String, String, String))](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, (String, String, String))]))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          39
+        </td>
+        <td>
+          2152
+          -
+          2173
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[String, (String, String, String)](id, scala.Tuple3.apply[String, String, String](ap, lat, long))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          41
+        </td>
+        <td>
+          2277
+          -
+          2296
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.toPairRDD
+        </td>
+        <td style="background: #F0ADAD">
+          abstraction.this.RDD.toPairRDD[String, (String, String, String)](aflights_and_coords)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String, String)](classOf[scala.Tuple3]): scala.reflect.ClassTag[(String, String, String)]))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          42
+        </td>
+        <td>
+          2252
+          -
+          2297
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.BasePairRDD.join
+        </td>
+        <td style="background: #F0ADAD">
+          abstraction.this.RDD.toPairRDD[String, (String, String, String)](dflights_and_coords)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String, String)](classOf[scala.Tuple3]): scala.reflect.ClassTag[(String, String, String)])).join[(String, String, String)](abstraction.this.RDD.toPairRDD[String, (String, String, String)](aflights_and_coords)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String, String)](classOf[scala.Tuple3]): scala.reflect.ClassTag[(String, String, String)])))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          52
+        </td>
+        <td>
+          2417
+          -
+          2601
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #F0ADAD">
+          flights_and_coords.map[(String, (String, String, Float))](((x0$3: (String, ((String, String, String), (String, String, String)))) =&gt; x0$3 match {
+  case (_1: String, _2: ((String, String, String), (String, String, String)))(String, ((String, String, String), (String, String, String)))((fid @ _), (_1: (String, String, String), _2: (String, String, String))((String, String, String), (String, String, String))((_1: String, _2: String, _3: String)(String, String, String)((dap @ _), (dlat @ _), (dlong @ _)), (_1: String, _2: String, _3: String)(String, String, String)((aap @ _), (alat @ _), (along @ _)))) =&gt; scala.Tuple2.apply[String, (String, String, Float)](fid, scala.Tuple3.apply[String, String, Float](dap, aap, FlightDistance.this.distance(scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(dlat).toFloat, scala.Predef.augmentString(dlong).toFloat), scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(alat).toFloat, scala.Predef.augmentString(along).toFloat))))
+}))((ClassTag.apply[(String, (String, String, Float))](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, (String, String, Float))]))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          50
+        </td>
+        <td>
+          2517
+          -
+          2594
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple3.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple3.apply[String, String, Float](dap, aap, FlightDistance.this.distance(scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(dlat).toFloat, scala.Predef.augmentString(dlong).toFloat), scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(alat).toFloat, scala.Predef.augmentString(along).toFloat)))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          44
+        </td>
+        <td>
+          2549
+          -
+          2562
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toFloat
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.augmentString(dlong).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          47
+        </td>
+        <td>
+          2578
+          -
+          2591
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toFloat
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.augmentString(along).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          46
+        </td>
+        <td>
+          2565
+          -
+          2577
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toFloat
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.augmentString(alat).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          49
+        </td>
+        <td>
+          2526
+          -
+          2593
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          examples.faulty.FlightDistance.distance
+        </td>
+        <td style="background: #F0ADAD">
+          FlightDistance.this.distance(scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(dlat).toFloat, scala.Predef.augmentString(dlong).toFloat), scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(alat).toFloat, scala.Predef.augmentString(along).toFloat))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          43
+        </td>
+        <td>
+          2536
+          -
+          2548
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toFloat
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.augmentString(dlat).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          45
+        </td>
+        <td>
+          2535
+          -
+          2563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(dlat).toFloat, scala.Predef.augmentString(dlong).toFloat)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          48
+        </td>
+        <td>
+          2564
+          -
+          2592
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(alat).toFloat, scala.Predef.augmentString(along).toFloat)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          51
+        </td>
+        <td>
+          2511
+          -
+          2595
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[String, (String, String, Float)](fid, scala.Tuple3.apply[String, String, Float](dap, aap, FlightDistance.this.distance(scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(dlat).toFloat, scala.Predef.augmentString(dlong).toFloat), scala.Tuple2.apply[Float, Float](scala.Predef.augmentString(alat).toFloat, scala.Predef.augmentString(along).toFloat))))
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          53
+        </td>
+        <td>
+          2606
+          -
+          2646
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IndexedSeqOptimized.take
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.refArrayOps[(String, (String, String, Float))](flights_and_distances.collect()).take(10)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          55
+        </td>
+        <td>
+          2606
+          -
+          2663
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IndexedSeqOptimized.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.refArrayOps[(String, (String, String, Float))](scala.Predef.refArrayOps[(String, (String, String, Float))](flights_and_distances.collect()).take(10)).foreach[Unit]({
+  ((x: Any) =&gt; scala.Predef.println(x))
+})
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          54
+        </td>
+        <td>
+          2655
+          -
+          2662
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.println
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.println(x)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          56
+        </td>
+        <td>
+          2758
+          -
+          2764
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          6373.0
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          58
+        </td>
+        <td>
+          2780
+          -
+          2780
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          x$3._2
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          57
+        </td>
+        <td>
+          2774
+          -
+          2774
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          x$3._1
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          59
+        </td>
+        <td>
+          2808
+          -
+          2808
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          x$4._1
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          60
+        </td>
+        <td>
+          2814
+          -
+          2814
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          x$4._2
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          62
+        </td>
+        <td>
+          2847
+          -
+          2847
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          x$5._2
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          61
+        </td>
+        <td>
+          2840
+          -
+          2840
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          x$5._1
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          64
+        </td>
+        <td>
+          2901
+          -
+          2901
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          x$6._2
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          63
+        </td>
+        <td>
+          2894
+          -
+          2894
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          x$6._1
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          65
+        </td>
+        <td>
+          2957
+          -
+          2968
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Float.-
+        </td>
+        <td style="background: #F0ADAD">
+          alatr.-(dlatr)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          66
+        </td>
+        <td>
+          2988
+          -
+          3001
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Float.-
+        </td>
+        <td style="background: #F0ADAD">
+          alongr.-(dlongr)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          68
+        </td>
+        <td>
+          3007
+          -
+          3042
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.println
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.println(scala.StringContext.apply(&quot;alat:&quot;, &quot; along:&quot;, &quot;&quot;).s(alat, along))
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          67
+        </td>
+        <td>
+          3015
+          -
+          3041
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #F0ADAD">
+          scala.StringContext.apply(&quot;alat:&quot;, &quot; along:&quot;, &quot;&quot;).s(alat, along)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          70
+        </td>
+        <td>
+          3047
+          -
+          3082
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.println
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.println(scala.StringContext.apply(&quot;dlat:&quot;, &quot; dlong:&quot;, &quot;&quot;).s(alat, along))
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          69
+        </td>
+        <td>
+          3055
+          -
+          3081
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #F0ADAD">
+          scala.StringContext.apply(&quot;dlat:&quot;, &quot; dlong:&quot;, &quot;&quot;).s(alat, along)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          83
+        </td>
+        <td>
+          3133
+          -
+          3203
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.cos(dlatr.toDouble).*(scala.math.`package`.cos(alatr.toDouble)).*(scala.math.`package`.pow(scala.math.`package`.sin(difflong./(2).toDouble), 2.0))
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          77
+        </td>
+        <td>
+          3151
+          -
+          3166
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.cos
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.cos(alatr.toDouble)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          80
+        </td>
+        <td>
+          3178
+          -
+          3200
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.sin
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.sin(difflong./(2).toDouble)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          71
+        </td>
+        <td>
+          3124
+          -
+          3125
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          2
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          74
+        </td>
+        <td>
+          3128
+          -
+          3129
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          82
+        </td>
+        <td>
+          3169
+          -
+          3203
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.pow
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.pow(scala.math.`package`.sin(difflong./(2).toDouble), 2.0)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          73
+        </td>
+        <td>
+          3105
+          -
+          3126
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.sin
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.sin(difflat./(2).toDouble)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          76
+        </td>
+        <td>
+          3160
+          -
+          3165
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Float.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          alatr.toDouble
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          79
+        </td>
+        <td>
+          3187
+          -
+          3199
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Float.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          difflong./(2).toDouble
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          78
+        </td>
+        <td>
+          3198
+          -
+          3199
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          2
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          72
+        </td>
+        <td>
+          3114
+          -
+          3125
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Float.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          difflat./(2).toDouble
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          81
+        </td>
+        <td>
+          3201
+          -
+          3202
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          84
+        </td>
+        <td>
+          3096
+          -
+          3203
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.pow(scala.math.`package`.sin(difflat./(2).toDouble), 2.0).+(scala.math.`package`.cos(dlatr.toDouble).*(scala.math.`package`.cos(alatr.toDouble)).*(scala.math.`package`.pow(scala.math.`package`.sin(difflong./(2).toDouble), 2.0)))
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          75
+        </td>
+        <td>
+          3142
+          -
+          3147
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Float.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          dlatr.toDouble
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          86
+        </td>
+        <td>
+          3229
+          -
+          3241
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.sqrt
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.sqrt(a)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          89
+        </td>
+        <td>
+          3218
+          -
+          3259
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.atan2
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.atan2(scala.math.`package`.sqrt(a), scala.math.`package`.sqrt(0.1.-(a)))
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          85
+        </td>
+        <td>
+          3216
+          -
+          3217
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          2
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          88
+        </td>
+        <td>
+          3243
+          -
+          3258
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.sqrt
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.sqrt(0.1.-(a))
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          87
+        </td>
+        <td>
+          3253
+          -
+          3257
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #F0ADAD">
+          0.1.-(a)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          90
+        </td>
+        <td>
+          3216
+          -
+          3259
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.*
+        </td>
+        <td style="background: #F0ADAD">
+          2.*(scala.math.`package`.atan2(scala.math.`package`.sqrt(a), scala.math.`package`.sqrt(0.1.-(a))))
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          92
+        </td>
+        <td>
+          3310
+          -
+          3335
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Double.toFloat
+        </td>
+        <td style="background: #F0ADAD">
+          R.*(c).*(0.621371).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          91
+        </td>
+        <td>
+          3318
+          -
+          3326
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.621371
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          97
+        </td>
+        <td>
+          3340
+          -
+          3340
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          96
+        </td>
+        <td>
+          3340
+          -
+          3340
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          93
+        </td>
+        <td>
+          3343
+          -
+          3353
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Float.isNaN
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.float2Float(dist).isNaN()
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          95
+        </td>
+        <td>
+          3363
+          -
+          3391
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          94
+        </td>
+        <td>
+          3363
+          -
+          3391
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          104
+        </td>
+        <td>
+          3450
+          -
+          3450
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          98
+        </td>
+        <td>
+          3457
+          -
+          3463
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.5E9
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          100
+        </td>
+        <td>
+          3453
+          -
+          3477
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          d.&gt;(1.5E9).&amp;&amp;(d.&lt;(2.0E9))
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          103
+        </td>
+        <td>
+          3450
+          -
+          3450
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          99
+        </td>
+        <td>
+          3467
+          -
+          3477
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Float.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          d.&lt;(2.0E9)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          101
+        </td>
+        <td>
+          3487
+          -
+          3515
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          102
+        </td>
+        <td>
+          3487
+          -
+          3515
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          107
+        </td>
+        <td>
+          3527
+          -
+          3553
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Double.toFloat
+        </td>
+        <td style="background: #F0ADAD">
+          d.*(3.141592653589793)./(180.0).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          106
+        </td>
+        <td>
+          3539
+          -
+          3544
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          180.0
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          105
+        </td>
+        <td>
+          3531
+          -
+          3538
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          3.141592653589793
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

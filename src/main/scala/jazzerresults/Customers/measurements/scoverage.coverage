@@ -1,0 +1,1243 @@
+# Coverage data, format version: 2.0
+# Statement data:
+# - id
+# - source path
+# - package name
+# - class name
+# - class type (Class, Object or Trait)
+# - full class name
+# - method name
+# - start offset
+# - end offset
+# - line number
+# - symbol name
+# - tree name
+# - is branch
+# - invocations count
+# - is ignored
+# - description (can be multi-line)
+# '' sign
+# ------------------------------------------
+1
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+186
+201
+9
+abstraction.SparkConf.<init>
+Apply
+false
+0
+false
+new abstraction.SparkConf()
+
+2
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+206
+237
+10
+abstraction.SparkConf.setMaster
+Apply
+false
+0
+false
+sparkConf.setMaster("local[6]")
+
+3
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+242
+317
+11
+abstraction.SparkConf.set
+Apply
+false
+0
+false
+sparkConf.setAppName("Customers Orders").set("spark.executor.memory", "2g")
+
+4
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+343
+350
+12
+scala.Array.apply
+Apply
+false
+0
+false
+args.apply(0)
+
+5
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+417
+424
+13
+scala.Array.apply
+Apply
+false
+0
+false
+args.apply(1)
+
+6
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+481
+508
+14
+abstraction.SparkContext.<init>
+Apply
+false
+0
+false
+new abstraction.SparkContext(sparkConf)
+
+7
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+564
+588
+15
+abstraction.SparkContext.setLogLevel
+Apply
+false
+0
+false
+ctx.setLogLevel("ERROR")
+
+8
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+642
+654
+16
+java.lang.String.split
+Apply
+false
+0
+false
+x$1.split(",")
+
+9
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+609
+655
+16
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+ctx.textFile(customers_data).map[Array[String]](((x$1: String) => x$1.split(",")))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]]))
+
+10
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+703
+715
+17
+java.lang.String.split
+Apply
+false
+0
+false
+x$2.split(",")
+
+11
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+673
+716
+17
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+ctx.textFile(orders_data).map[Array[String]](((x$2: String) => x$2.split(",")))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]]))
+
+12
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1012
+1018
+28
+scala.Array.apply
+Apply
+false
+0
+false
+row.apply(0)
+
+13
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1020
+1026
+28
+scala.Array.apply
+Apply
+false
+0
+false
+row.apply(1)
+
+14
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1011
+1027
+28
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, String](row.apply(0), row.apply(1))
+
+15
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+964
+1035
+26
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+customers.map[(String, String)](((row: Array[String]) => scala.Tuple2.apply[String, String](row.apply(0), row.apply(1))))((ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)]))
+
+16
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1112
+1123
+33
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, String](iid, date)
+
+17
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1106
+1124
+33
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, (String, String)](cid, scala.Tuple2.apply[String, String](iid, date))
+
+18
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1049
+1132
+32
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+orders.map[(String, (String, String))](((x0$1: Array[String]) => x0$1 match {
+  case scala.Array.unapplySeq[String](<unapply-selector>) <unapply> (_, (cid @ _), (date @ _), (iid @ _)) => scala.Tuple2.apply[String, (String, String)](cid, scala.Tuple2.apply[String, String](iid, date))
+}))((ClassTag.apply[(String, (String, String))](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, (String, String))]))
+
+19
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1158
+1159
+36
+abstraction.RDD.toPairRDD
+ApplyToImplicitArgs
+false
+0
+false
+abstraction.this.RDD.toPairRDD[String, (String, String)](o)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)]))
+
+20
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1229
+1239
+38
+<nosymbol>
+Literal
+false
+0
+false
+1641013200
+
+21
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1264
+1271
+39
+<nosymbol>
+Literal
+false
+0
+false
+2000000
+
+22
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1275
+1295
+39
+scala.Int.<
+Apply
+false
+0
+false
+scala.Predef.augmentString(date).toInt.<(3000000)
+
+23
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1251
+1295
+39
+scala.Boolean.&&
+Apply
+false
+0
+false
+scala.Predef.augmentString(date).toInt.>(2000000).&&(scala.Predef.augmentString(date).toInt.<(3000000))
+
+24
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1297
+1325
+39
+<nosymbol>
+Throw
+false
+0
+false
+throw new scala.`package`.RuntimeException()
+
+25
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1297
+1325
+39
+<nosymbol>
+Block
+true
+0
+false
+throw new scala.`package`.RuntimeException()
+
+26
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1248
+1248
+39
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+27
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1248
+1248
+39
+<nosymbol>
+Block
+true
+0
+false
+()
+
+28
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1337
+1359
+40
+scala.Int.>
+Apply
+false
+0
+false
+scala.Predef.augmentString(date).toInt.>(this_year)
+
+29
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1371
+1375
+41
+<nosymbol>
+Literal
+false
+0
+false
+true
+
+30
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1371
+1375
+41
+<nosymbol>
+Block
+true
+0
+false
+true
+
+31
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1399
+1404
+43
+<nosymbol>
+Literal
+false
+0
+false
+false
+
+32
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1399
+1404
+43
+<nosymbol>
+Block
+true
+0
+false
+false
+
+33
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1151
+1412
+37
+abstraction.RDD.filter
+Apply
+false
+0
+false
+abstraction.this.RDD.toPairRDD[String, String](c)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String])).join[(String, String)](abstraction.this.RDD.toPairRDD[String, (String, String)](o)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, String)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, String)]))).filter(((x0$2: (String, (String, (String, String)))) => x0$2 match {
+  case (_1: String, _2: (String, (String, String)))(String, (String, (String, String)))(_, (_1: String, _2: (String, String))(String, (String, String))(_, (_1: String, _2: String)(String, String)(_, (date @ _)))) => {
+    val this_year: Int = 1641013200;
+    if (scala.Predef.augmentString(date).toInt.>(2000000).&&(scala.Predef.augmentString(date).toInt.<(3000000)))
+      throw new scala.`package`.RuntimeException()
+    else
+      ();
+    if (scala.Predef.augmentString(date).toInt.>(this_year))
+      true
+    else
+      false
+  }
+}))
+
+34
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1431
+1450
+45
+abstraction.BasePairRDD.groupByKey
+Apply
+false
+0
+false
+abstraction.this.RDD.toPairRDD[String, (String, (String, String))](joined)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.apply[(String, (String, String))](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, (String, String))])).groupByKey()
+
+35
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1512
+1525
+48
+scala.Int.>
+Apply
+false
+0
+false
+iter.size.>(9)
+
+36
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1527
+1555
+48
+<nosymbol>
+Throw
+false
+0
+false
+throw new scala.`package`.RuntimeException()
+
+37
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1527
+1555
+48
+<nosymbol>
+Block
+true
+0
+false
+throw new scala.`package`.RuntimeException()
+
+38
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1509
+1509
+48
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+39
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1509
+1509
+48
+<nosymbol>
+Block
+true
+0
+false
+()
+
+40
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1564
+1573
+49
+scala.collection.SeqLike.size
+Select
+false
+0
+false
+iter.size
+
+41
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1468
+1579
+46
+abstraction.PairRDD.mapValues
+Apply
+false
+0
+false
+grouped.mapValues[Int](((iter: Seq[(String, (String, String))]) => {
+  if (iter.size.>(9))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  iter.size
+}))
+
+42
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1636
+1659
+53
+java.lang.String.startsWith
+Apply
+false
+0
+false
+tup._1.startsWith("ck")
+
+43
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1661
+1689
+53
+<nosymbol>
+Throw
+false
+0
+false
+throw new scala.`package`.RuntimeException()
+
+44
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1661
+1689
+53
+<nosymbol>
+Block
+true
+0
+false
+throw new scala.`package`.RuntimeException()
+
+45
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1633
+1633
+53
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+46
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1633
+1633
+53
+<nosymbol>
+Block
+true
+0
+false
+()
+
+47
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1698
+1709
+54
+scala.Int.>=
+Apply
+false
+0
+false
+tup._2.>=(3)
+
+48
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1597
+1715
+51
+abstraction.RDD.filter
+Apply
+false
+0
+false
+numpur.filter(((tup: (String, Int)) => {
+  if (tup._1.startsWith("ck"))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  tup._2.>=(3)
+}))
+
+49
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1730
+1764
+56
+abstraction.RDD.take
+Apply
+false
+0
+false
+thresh.sortBy[Int](((x$3: (String, Int)) => x$3._2), false)(math.this.Ordering.Int, (ClassTag.Int: scala.reflect.ClassTag[Int])).take(3)
+
+50
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1772
+1786
+57
+scala.Int.<
+Apply
+false
+0
+false
+top.length.<(3)
+
+51
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1796
+1822
+58
+scala.Predef.println
+Apply
+false
+0
+false
+scala.Predef.println("not enough data")
+
+52
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1829
+1835
+59
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+53
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1788
+1841
+57
+<nosymbol>
+Block
+true
+0
+false
+{
+  scala.Predef.println("not enough data");
+  return ()
+}
+
+54
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1769
+1769
+57
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+55
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1769
+1769
+57
+<nosymbol>
+Block
+true
+0
+false
+()
+
+56
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1868
+1882
+61
+examples.faulty.Customers.computeRewards
+Apply
+false
+0
+false
+Customers.this.computeRewards(custInfo)
+
+57
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1867
+1867
+61
+scala.Array.canBuildFrom
+ApplyToImplicitArgs
+false
+0
+false
+scala.this.Array.canBuildFrom[(String, Float, String)]((ClassTag.apply[(String, Float, String)](classOf[scala.Tuple3]): scala.reflect.ClassTag[(String, Float, String)]))
+
+58
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1860
+1883
+61
+scala.collection.TraversableLike.map
+ApplyToImplicitArgs
+false
+0
+false
+scala.Predef.refArrayOps[(String, Int)](top).map[(String, Float, String), Array[(String, Float, String)]]({
+  ((custInfo: (String, Int)) => Customers.this.computeRewards(custInfo))
+})(scala.this.Array.canBuildFrom[(String, Float, String)]((ClassTag.apply[(String, Float, String)](classOf[scala.Tuple3]): scala.reflect.ClassTag[(String, Float, String)])))
+
+59
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1904
+1911
+62
+scala.Predef.println
+Apply
+false
+0
+false
+scala.Predef.println(x)
+
+60
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+main
+1888
+1912
+62
+scala.collection.IndexedSeqOptimized.foreach
+Apply
+false
+0
+false
+scala.Predef.refArrayOps[(String, Float, String)](rewards).foreach[Unit]({
+  ((x: Any) => scala.Predef.println(x))
+})
+
+61
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2003
+2003
+67
+scala.Tuple2._1
+Select
+false
+0
+false
+x$4._1
+
+62
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2007
+2007
+67
+scala.Tuple2._2
+Select
+false
+0
+false
+x$4._2
+
+63
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2030
+2039
+68
+scala.Int.==
+Apply
+false
+0
+false
+num.==(4)
+
+64
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2041
+2069
+68
+<nosymbol>
+Throw
+false
+0
+false
+throw new scala.`package`.RuntimeException()
+
+65
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2041
+2069
+68
+<nosymbol>
+Block
+true
+0
+false
+throw new scala.`package`.RuntimeException()
+
+66
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2027
+2027
+68
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+67
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2027
+2027
+68
+<nosymbol>
+Block
+true
+0
+false
+()
+
+68
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2079
+2085
+69
+<nosymbol>
+Literal
+false
+0
+false
+100.0
+
+69
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2087
+2114
+69
+scala.StringContext.s
+Apply
+false
+0
+false
+scala.StringContext.apply("", " has won ", "100.0f").s(id, "$")
+
+70
+/home/ahmad/jazzer/src/main/scala/examples/faulty/Customers.scala
+examples.faulty
+Customers
+Object
+examples.faulty.Customers
+computeRewards
+2074
+2115
+69
+scala.Tuple3.apply
+Apply
+false
+0
+false
+scala.Tuple3.apply[String, Float, String](id, 100.0, scala.StringContext.apply("", " has won ", "100.0f").s(id, "$"))
+

@@ -1,0 +1,230 @@
+# Coverage data, format version: 2.0
+# Statement data:
+# - id
+# - source path
+# - package name
+# - class name
+# - class type (Class, Object or Trait)
+# - full class name
+# - method name
+# - start offset
+# - end offset
+# - line number
+# - symbol name
+# - tree name
+# - is branch
+# - invocations count
+# - is ignored
+# - description (can be multi-line)
+# '' sign
+# ------------------------------------------
+1
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+148
+163
+8
+abstraction.SparkConf.<init>
+Apply
+false
+0
+false
+new abstraction.SparkConf()
+
+2
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+168
+194
+9
+abstraction.SparkConf.setMaster
+Apply
+false
+0
+false
+conf.setMaster("local[*]")
+
+3
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+199
+227
+10
+abstraction.SparkConf.setAppName
+Apply
+false
+0
+false
+conf.setAppName("WordCount")
+
+4
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+242
+264
+12
+abstraction.SparkContext.<init>
+Apply
+false
+0
+false
+new abstraction.SparkContext(conf)
+
+5
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+281
+288
+13
+scala.Array.apply
+Apply
+false
+0
+false
+args.apply(0)
+
+6
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+310
+328
+14
+java.lang.String.startsWith
+Apply
+false
+0
+false
+s.startsWith("f2")
+
+7
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+330
+358
+14
+<nosymbol>
+Throw
+false
+0
+false
+throw new scala.`package`.RuntimeException()
+
+8
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+330
+358
+14
+<nosymbol>
+Block
+true
+0
+false
+throw new scala.`package`.RuntimeException()
+
+9
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+307
+307
+14
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+10
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+307
+307
+14
+<nosymbol>
+Block
+true
+0
+false
+()
+
+11
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+269
+372
+13
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+sc.textFile(args.apply(0)).map[String](((s: String) => {
+  if (s.startsWith("f2"))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  s
+}))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]))
+
+12
+/home/ahmad/jazzer/src/main/scala/examples/faulty/MapString.scala
+examples.faulty
+MapString
+Object
+examples.faulty.MapString
+main
+294
+294
+13
+<nosymbol>
+Literal
+false
+0
+false
+()
+

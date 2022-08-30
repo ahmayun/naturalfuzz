@@ -1,0 +1,167 @@
+# Coverage data, format version: 2.0
+# Statement data:
+# - id
+# - source path
+# - package name
+# - class name
+# - class type (Class, Object or Trait)
+# - full class name
+# - method name
+# - start offset
+# - end offset
+# - line number
+# - symbol name
+# - tree name
+# - is branch
+# - invocations count
+# - is ignored
+# - description (can be multi-line)
+# '' sign
+# ------------------------------------------
+1
+/home/ahmad/jazzer/src/main/scala/examples/faulty/WordCount.scala
+examples.faulty
+WordCount
+Object
+examples.faulty.WordCount
+main
+148
+163
+8
+abstraction.SparkConf.<init>
+Apply
+false
+0
+false
+new abstraction.SparkConf()
+
+2
+/home/ahmad/jazzer/src/main/scala/examples/faulty/WordCount.scala
+examples.faulty
+WordCount
+Object
+examples.faulty.WordCount
+main
+168
+194
+9
+abstraction.SparkConf.setMaster
+Apply
+false
+0
+false
+conf.setMaster("local[*]")
+
+3
+/home/ahmad/jazzer/src/main/scala/examples/faulty/WordCount.scala
+examples.faulty
+WordCount
+Object
+examples.faulty.WordCount
+main
+199
+227
+10
+abstraction.SparkConf.setAppName
+Apply
+false
+0
+false
+conf.setAppName("WordCount")
+
+4
+/home/ahmad/jazzer/src/main/scala/examples/faulty/WordCount.scala
+examples.faulty
+WordCount
+Object
+examples.faulty.WordCount
+main
+242
+264
+12
+abstraction.SparkContext.<init>
+Apply
+false
+0
+false
+new abstraction.SparkContext(conf)
+
+5
+/home/ahmad/jazzer/src/main/scala/examples/faulty/WordCount.scala
+examples.faulty
+WordCount
+Object
+examples.faulty.WordCount
+main
+269
+615
+23
+abstraction.RDD.collect
+Apply
+false
+0
+false
+abstraction.this.RDD.toPairRDD[String, Int](sc.textFile(args.apply(0)).flatMap[String](((x$1: String) => scala.Predef.refArrayOps[String](x$1.split("\\s"))))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String])).map[(String, Int)](((s: String) => {
+  if (s.startsWith("F3"))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  scala.Tuple2.apply[String, Int](s, 1)
+}))((ClassTag.apply[(String, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Int)])))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.Int: scala.reflect.ClassTag[Int])).reduceByKey(((a: Int, b: Int) => {
+  val sum: Int = a.+(b);
+  if (sum.<(0))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  sum
+})).collect()
+
+6
+/home/ahmad/jazzer/src/main/scala/examples/faulty/WordCount.scala
+examples.faulty
+WordCount
+Object
+examples.faulty.WordCount
+main
+631
+638
+24
+scala.Predef.println
+Apply
+false
+0
+false
+scala.Predef.println(x)
+
+7
+/home/ahmad/jazzer/src/main/scala/examples/faulty/WordCount.scala
+examples.faulty
+WordCount
+Object
+examples.faulty.WordCount
+main
+269
+639
+24
+scala.collection.IndexedSeqOptimized.foreach
+Apply
+false
+0
+false
+scala.Predef.refArrayOps[(String, Int)](abstraction.this.RDD.toPairRDD[String, Int](sc.textFile(args.apply(0)).flatMap[String](((x$1: String) => scala.Predef.refArrayOps[String](x$1.split("\\s"))))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String])).map[(String, Int)](((s: String) => {
+  if (s.startsWith("F3"))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  scala.Tuple2.apply[String, Int](s, 1)
+}))((ClassTag.apply[(String, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Int)])))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.Int: scala.reflect.ClassTag[Int])).reduceByKey(((a: Int, b: Int) => {
+  val sum: Int = a.+(b);
+  if (sum.<(0))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  sum
+})).collect()).foreach[Unit]({
+  ((x: Any) => scala.Predef.println(x))
+})
+

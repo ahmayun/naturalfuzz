@@ -46,9 +46,9 @@ object Config {
     "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,10)), ListBuffer((1,0,14)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,6), (1,5,5), (1,5,6), (1,6,5), (1,6,6)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,7), (1,5,5), (1,5,7), (1,6,5), (1,6,7)), ListBuffer((1,4,5), (1,1,5)), ListBuffer((1,4,6), (1,1,6)), ListBuffer((1,4,7), (1,1,7)), ListBuffer((1,4,8), (1,1,8)), ListBuffer((1,4,9), (1,1,9)), ListBuffer((1,2,8), (1,3,8)), ListBuffer((1,2,9), (1,3,9)))),
     "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,1)), ListBuffer((0,3,2)), ListBuffer((0,3,3)), ListBuffer((0,3,4)))),
     "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,5)), ListBuffer((0,1,0)), ListBuffer((0,1,6)), ListBuffer((0,1,1)), ListBuffer((0,1,7)), ListBuffer((0,1,2)), ListBuffer((0,1,8)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
-    "ExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
+    "OldExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,1)),ListBuffer((0,0,2)))),
-    "IncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,1)), ListBuffer((0,1,2)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
+    "OldIncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,1)), ListBuffer((0,1,2)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
     "InsideCircle" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,1,0)),ListBuffer((0,2,0)))),
     "LoanType" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "MapString" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
@@ -66,9 +66,9 @@ object Config {
     "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,0)), ListBuffer((1,0,0)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,6,0), (1,5,0), (1,0,0)))),
     "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)))),
     "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
-    "ExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
+    "OldExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,0)),ListBuffer((0,0,0)))),
-    "IncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
+    "OldIncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
     "InsideCircle" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,1,0)),ListBuffer((0,2,0)))),
     "LoanType" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "MapString" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
@@ -89,11 +89,11 @@ object Config {
     "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers"),
     "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages"),
     "WordCount" -> Array("seeds/weak_seed/wordcount/words"),
-    "ExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
+    "OldExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
     "FindSalary" -> Array("seeds/weak_seed/findsalary/salaries"),
     "InsideCircle" -> Array("seeds/weak_seed/insidecircle/circles"),
     "MapString" -> Array("seeds/weak_seed/mapstring/strings"),
-    "IncomeAggregation" -> Array("seeds/weak_seed/incomeaggregation/income"),
+    "OldIncomeAggregation" -> Array("seeds/weak_seed/incomeaggregation/income"),
     "LoanType" -> Array("seeds/weak_seed/loantype/info")
   )
 
@@ -114,8 +114,8 @@ object Config {
     "DeliveryFaults" -> Array("seeds/reduced_data/deliveries"),
     "Delays" -> Array("seeds/reduced_data/delays/station1", "seeds/reduced_data/delays/station2"),
     "AgeAnalysis" -> Array("seeds/reduced_data/ageanalysis/ages"),
-    "ExternalCall" -> Array("seeds/reduced_data/externalcall/calls"),
-    "IncomeAggregation" -> Array("seeds/reduced_data/incomeaggregation/income"),
+    "OldExternalCall" -> Array("seeds/reduced_data/externalcall/calls"),
+    "OldIncomeAggregation" -> Array("seeds/reduced_data/incomeaggregation/income"),
     "InsideCircle" -> Array("seeds/reduced_data/insidecircle/circles"),
     "MapString" -> Array("seeds/reduced_data/mapstring/strings"),
     "MovieRating" -> Array("seeds/reduced_data/movierating/ratings"),
@@ -149,11 +149,11 @@ object Config {
     "NumberSeries" -> Switch(null, faulty.NumberSeries.main, faultTest),
     "AgeAnalysis" -> Switch(null, faulty.AgeAnalysis.main, faultTest),
     "WordCount" -> Switch(null, faulty.WordCount.main, faultTest),
-    "ExternalCall" -> Switch(null, faulty.ExternalCall.main, faultTest),
+    "OldExternalCall" -> Switch(null, faulty.ExternalCall.main, faultTest),
     "FindSalary" -> Switch(null, faulty.FindSalary.main, faultTest),
     "InsideCircle" -> Switch(null, faulty.InsideCircle.main, faultTest),
     "MapString" -> Switch(null, faulty.MapString.main, faultTest),
-    "IncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
+    "OldIncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
     "LoanType" -> Switch(null, faulty.LoanType.main, faultTest)
   )
 
@@ -170,13 +170,13 @@ object Config {
   val mapFunProbeAble: Map[String, Array[String] => ProvInfo] = Map[String, Array[String] => ProvInfo](elems =
     "FlightDistance" -> monitored.FlightDistance.main,
     "WebpageSegmentation" -> monitored.WebpageSegmentation.main,
-    "CommuteType" -> monitored.CommuteType.main,
+//    "CommuteType" -> monitored.CommuteType.main,
     "Delays" -> monitored.Delays.main,
     "Customers" -> monitored.Customers.main,
     "DeliveryFaults" -> monitored.DeliveryFaults.main,
     "AgeAnalysis" -> monitored.AgeAnalysis.main,
-    "IncomeAggregation" -> monitored.IncomeAggregation.main,
-    "ExternalCall" -> monitored.ExternalCall.main,
+    "OldIncomeAggregation" -> monitored.IncomeAggregation.main,
+    "OldExternalCall" -> monitored.ExternalCall.main,
     "InsideCircle" -> monitored.InsideCircle.main,
     "MovieRating" -> monitored.MovieRating.main,
     "FindSalary" -> monitored.FindSalary.main,
@@ -197,11 +197,11 @@ object Config {
     "NumberSeries" -> BenchmarkSchemas.NUMBERSERIES,
     "AgeAnalysis" -> BenchmarkSchemas.AGEANALYSIS,
     "WordCount" -> BenchmarkSchemas.WORDCOUNT,
-    "ExternalCall" -> BenchmarkSchemas.EXTERNALCALL,
+    "OldExternalCall" -> BenchmarkSchemas.EXTERNALCALL,
     "FindSalary" -> BenchmarkSchemas.FINDSALARY,
     "InsideCircle" -> BenchmarkSchemas.INSIDECIRCLE,
     "MapString" -> BenchmarkSchemas.MAPSTRING,
-    "IncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
+    "OldIncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
     "LoanType" -> BenchmarkSchemas.LOANTYPE
   )
 

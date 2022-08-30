@@ -53,7 +53,7 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
 
   def /(x: TaintedInt): TaintedInt = {
     val d = value / x.value
-    new TaintedInt(d, getProvenance())
+    new TaintedInt(d, mergeProvenance(getProvenance(), x.getProvenance()))
   }
 
 

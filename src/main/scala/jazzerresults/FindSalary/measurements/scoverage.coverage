@@ -1,0 +1,563 @@
+# Coverage data, format version: 2.0
+# Statement data:
+# - id
+# - source path
+# - package name
+# - class name
+# - class type (Class, Object or Trait)
+# - full class name
+# - method name
+# - start offset
+# - end offset
+# - line number
+# - symbol name
+# - tree name
+# - is branch
+# - invocations count
+# - is ignored
+# - description (can be multi-line)
+# '' sign
+# ------------------------------------------
+1
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+149
+164
+8
+abstraction.SparkConf.<init>
+Apply
+false
+0
+false
+new abstraction.SparkConf()
+
+2
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+169
+195
+9
+abstraction.SparkConf.setMaster
+Apply
+false
+0
+false
+conf.setMaster("local[*]")
+
+3
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+200
+229
+10
+abstraction.SparkConf.setAppName
+Apply
+false
+0
+false
+conf.setAppName("FindSalary")
+
+4
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+244
+266
+12
+abstraction.SparkContext.<init>
+Apply
+false
+0
+false
+new abstraction.SparkContext(conf)
+
+5
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+294
+301
+13
+scala.Array.apply
+Apply
+false
+0
+false
+args.apply(0)
+
+6
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+307
+319
+13
+java.lang.String.split
+Apply
+false
+0
+false
+x$1.split(",")
+
+7
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+332
+336
+14
+scala.Array.apply
+Apply
+false
+0
+false
+x$2.apply(0)
+
+8
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+381
+413
+17
+java.lang.String.equals
+Apply
+false
+0
+false
+line.substring(0, 1).equals("$")
+
+9
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+429
+449
+18
+java.lang.String.substring
+Apply
+false
+0
+false
+line.substring(1, 6)
+
+10
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+429
+455
+18
+scala.collection.immutable.StringLike.toInt
+Select
+false
+0
+false
+scala.Predef.augmentString(line.substring(1, 6)).toInt
+
+11
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+429
+455
+18
+scala.collection.immutable.StringLike.toInt
+Block
+true
+0
+false
+scala.Predef.augmentString(line.substring(1, 6)).toInt
+
+12
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+487
+497
+20
+scala.collection.immutable.StringLike.toInt
+Select
+false
+0
+false
+scala.Predef.augmentString(line).toInt
+
+13
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+487
+497
+20
+scala.collection.immutable.StringLike.toInt
+Block
+true
+0
+false
+scala.Predef.augmentString(line).toInt
+
+14
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+553
+560
+24
+<nosymbol>
+Literal
+false
+0
+false
+3563245
+
+15
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+564
+575
+24
+scala.Int.<
+Apply
+false
+0
+false
+r.<(4535256)
+
+16
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+549
+575
+24
+scala.Boolean.&&
+Apply
+false
+0
+false
+r.>(3563245).&&(r.<(4535256))
+
+17
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+577
+605
+24
+<nosymbol>
+Throw
+false
+0
+false
+throw new scala.`package`.RuntimeException()
+
+18
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+577
+605
+24
+<nosymbol>
+Block
+true
+0
+false
+throw new scala.`package`.RuntimeException()
+
+19
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+546
+546
+24
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+20
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+546
+546
+24
+<nosymbol>
+Block
+true
+0
+false
+()
+
+21
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+614
+621
+25
+scala.Int.<
+Apply
+false
+0
+false
+r.<(300)
+
+22
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+674
+679
+28
+scala.Int.+
+Apply
+false
+0
+false
+a.+(b)
+
+23
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+698
+701
+29
+<nosymbol>
+Literal
+false
+0
+false
+500
+
+24
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+705
+714
+29
+scala.Int.<
+Apply
+false
+0
+false
+sum.<(550)
+
+25
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+692
+714
+29
+scala.Boolean.&&
+Apply
+false
+0
+false
+sum.>(500).&&(sum.<(550))
+
+26
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+716
+744
+29
+<nosymbol>
+Throw
+false
+0
+false
+throw new scala.`package`.RuntimeException()
+
+27
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+716
+744
+29
+<nosymbol>
+Block
+true
+0
+false
+throw new scala.`package`.RuntimeException()
+
+28
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+688
+688
+29
+<nosymbol>
+Literal
+false
+0
+false
+()
+
+29
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+688
+688
+29
+<nosymbol>
+Block
+true
+0
+false
+()
+
+30
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+282
+764
+27
+abstraction.RDD.reduce
+Apply
+false
+0
+false
+sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) => x$1.split(",")))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]])).map[String](((x$2: Array[String]) => x$2.apply(0)))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String])).map[Int](((line: String) => if (line.substring(0, 1).equals("$"))
+  scala.Predef.augmentString(line.substring(1, 6)).toInt
+else
+  scala.Predef.augmentString(line).toInt))((ClassTag.Int: scala.reflect.ClassTag[Int])).filter(((r: Int) => {
+  if (r.>(3563245).&&(r.<(4535256)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  r.<(300)
+})).reduce(((a: Int, b: Int) => {
+  val sum: Int = a.+(b);
+  if (sum.>(500).&&(sum.<(550)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  sum
+}))
+
+31
+/home/ahmad/jazzer/src/main/scala/examples/faulty/FindSalary.scala
+examples.faulty
+FindSalary
+Object
+examples.faulty.FindSalary
+main
+770
+783
+33
+scala.Predef.println
+Apply
+false
+0
+false
+scala.Predef.println(data)
+

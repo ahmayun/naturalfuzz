@@ -1,0 +1,852 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          examples/faulty/LoanType.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package examples.faulty
+</span>2 <span style=''>
+</span>3 <span style=''>import abstraction.{SparkConf, SparkContext}
+</span>4 <span style=''>
+</span>5 <span style=''>object LoanType {
+</span>6 <span style=''>
+</span>7 <span style=''>  def main(args: Array[String]): Unit = {
+</span>8 <span style=''>    val conf = </span><span style='background: #AEF1AE'>new SparkConf()</span><span style=''>
+</span>9 <span style=''>    </span><span style='background: #AEF1AE'>conf.setMaster(&quot;local[*]&quot;)</span><span style=''>
+</span>10 <span style=''>    </span><span style='background: #AEF1AE'>conf.setAppName(&quot;LoanType&quot;)</span><span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>    val sc = </span><span style='background: #AEF1AE'>new SparkContext(conf)</span><span style=''>
+</span>13 <span style=''>    </span><span style='background: #AEF1AE'>sc.textFile(args(0)).map(_.split(&quot;,&quot;))
+</span>14 <span style=''></span><span style='background: #AEF1AE'>      .map { a =&gt;
+</span>15 <span style=''></span><span style='background: #AEF1AE'>        (a(0).toFloat, a(1).toInt, </span><span style='background: #F0ADAD'>a(2).toFloat</span><span style='background: #AEF1AE'>, </span><span style='background: #F0ADAD'>a(3)</span><span style='background: #AEF1AE'>)
+</span>16 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>17 <span style=''></span><span style='background: #AEF1AE'>      .map { s =&gt;
+</span>18 <span style=''></span><span style='background: #AEF1AE'>        var a = </span><span style='background: #F0ADAD'>s._1</span><span style='background: #AEF1AE'>
+</span>19 <span style=''></span><span style='background: #AEF1AE'>        if(</span><span style='background: #F0ADAD'>a &gt; 5635244 &amp;&amp; a &lt; 6875632</span><span style='background: #AEF1AE'>) </span><span style='background: #F0ADAD'>throw new RuntimeException()</span><span style='background: #AEF1AE'>
+</span>20 <span style=''></span><span style='background: #AEF1AE'>          </span><span style='background: #F0ADAD'>for (i &lt;- 1 to math.min(s._2, 100)) {
+</span>21 <span style=''></span><span style='background: #F0ADAD'>            a = a * (1 + s._3)</span><span style='background: #AEF1AE'>
+</span>22 <span style=''></span><span style='background: #AEF1AE'>          }
+</span>23 <span style=''></span><span style='background: #AEF1AE'>        </span><span style='background: #F0ADAD'>(a, s._2, s._3, s._4)</span><span style='background: #AEF1AE'>
+</span>24 <span style=''></span><span style='background: #AEF1AE'>      }</span><span style=''>
+</span>25 <span style=''>  }
+</span>26 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          147
+          -
+          162
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkConf()
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          167
+          -
+          193
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setMaster
+        </td>
+        <td style="background: #AEF1AE">
+          conf.setMaster(&quot;local[*]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          198
+          -
+          225
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setAppName
+        </td>
+        <td style="background: #AEF1AE">
+          conf.setAppName(&quot;LoanType&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          240
+          -
+          262
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkContext.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkContext(conf)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          279
+          -
+          286
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          args.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          292
+          -
+          304
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.split
+        </td>
+        <td style="background: #AEF1AE">
+          x$1.split(&quot;,&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          333
+          -
+          345
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toFloat
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(a.apply(0)).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          11
+        </td>
+        <td>
+          359
+          -
+          363
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #F0ADAD">
+          a.apply(2)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          332
+          -
+          378
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple4.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple4.apply[Float, Int, Float, String](scala.Predef.augmentString(a.apply(0)).toFloat, scala.Predef.augmentString(a.apply(1)).toInt, scala.Predef.augmentString(a.apply(2)).toFloat, a.apply(3))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          373
+          -
+          377
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #F0ADAD">
+          a.apply(3)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          333
+          -
+          337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          a.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          347
+          -
+          357
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.augmentString(a.apply(1)).toInt
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          347
+          -
+          351
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Array.apply
+        </td>
+        <td style="background: #AEF1AE">
+          a.apply(1)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          359
+          -
+          371
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toFloat
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.augmentString(a.apply(2)).toFloat
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          37
+        </td>
+        <td>
+          398
+          -
+          398
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          36
+        </td>
+        <td>
+          267
+          -
+          622
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          abstraction.RDD.map
+        </td>
+        <td style="background: #AEF1AE">
+          sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) =&gt; x$1.split(&quot;,&quot;)))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]])).map[(Float, Int, Float, String)](((a: Array[String]) =&gt; scala.Tuple4.apply[Float, Int, Float, String](scala.Predef.augmentString(a.apply(0)).toFloat, scala.Predef.augmentString(a.apply(1)).toInt, scala.Predef.augmentString(a.apply(2)).toFloat, a.apply(3))))((ClassTag.apply[(Float, Int, Float, String)](classOf[scala.Tuple4]): scala.reflect.ClassTag[(Float, Int, Float, String)])).map[(Float, Int, Float, String)](((s: (Float, Int, Float, String)) =&gt; {
+  var a: Float = s._1;
+  if (a.&gt;(5635244).&amp;&amp;(a.&lt;(6875632)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  scala.Predef.intWrapper(1).to(scala.math.`package`.min(s._2, 100)).foreach[Unit](((i: Int) =&gt; a = a.*(1.+(s._3))));
+  scala.Tuple4.apply[Float, Int, Float, String](a, s._2, s._3, s._4)
+}))((ClassTag.apply[(Float, Int, Float, String)](classOf[scala.Tuple4]): scala.reflect.ClassTag[(Float, Int, Float, String)]))
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          421
+          -
+          425
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple4._1
+        </td>
+        <td style="background: #F0ADAD">
+          s._1
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          452
+          -
+          463
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Float.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          a.&lt;(6875632)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          465
+          -
+          493
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          22
+        </td>
+        <td>
+          434
+          -
+          434
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          16
+        </td>
+        <td>
+          441
+          -
+          448
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          5635244
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          465
+          -
+          493
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.RuntimeException()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          437
+          -
+          463
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          a.&gt;(5635244).&amp;&amp;(a.&lt;(6875632))
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          21
+        </td>
+        <td>
+          434
+          -
+          434
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          23
+        </td>
+        <td>
+          514
+          -
+          515
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          26
+        </td>
+        <td>
+          519
+          -
+          538
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.math.min
+        </td>
+        <td style="background: #F0ADAD">
+          scala.math.`package`.min(s._2, 100)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          31
+        </td>
+        <td>
+          504
+          -
+          572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.Range.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.intWrapper(1).to(scala.math.`package`.min(s._2, 100)).foreach[Unit](((i: Int) =&gt; a = a.*(1.+(s._3))))
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          25
+        </td>
+        <td>
+          534
+          -
+          537
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          100
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          24
+        </td>
+        <td>
+          528
+          -
+          532
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple4._2
+        </td>
+        <td style="background: #F0ADAD">
+          s._2
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          29
+        </td>
+        <td>
+          563
+          -
+          571
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #F0ADAD">
+          1.+(s._3)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          567
+          -
+          571
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple4._3
+        </td>
+        <td style="background: #F0ADAD">
+          s._3
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          27
+        </td>
+        <td>
+          563
+          -
+          564
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          30
+        </td>
+        <td>
+          558
+          -
+          572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Float.*
+        </td>
+        <td style="background: #F0ADAD">
+          a.*(1.+(s._3))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          32
+        </td>
+        <td>
+          597
+          -
+          601
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple4._2
+        </td>
+        <td style="background: #F0ADAD">
+          s._2
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          35
+        </td>
+        <td>
+          593
+          -
+          614
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple4.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple4.apply[Float, Int, Float, String](a, s._2, s._3, s._4)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          34
+        </td>
+        <td>
+          609
+          -
+          613
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple4._4
+        </td>
+        <td style="background: #F0ADAD">
+          s._4
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          33
+        </td>
+        <td>
+          603
+          -
+          607
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple4._3
+        </td>
+        <td style="background: #F0ADAD">
+          s._3
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

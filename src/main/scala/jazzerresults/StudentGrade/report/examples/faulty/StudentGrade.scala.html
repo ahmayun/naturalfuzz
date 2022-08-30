@@ -1,0 +1,329 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          examples/faulty/StudentGrade.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package examples.faulty
+</span>2 <span style=''>
+</span>3 <span style=''>import abstraction.{SparkConf, SparkContext}
+</span>4 <span style=''>
+</span>5 <span style=''>object StudentGrade {
+</span>6 <span style=''>
+</span>7 <span style=''>  def main(args: Array[String]): Unit = {
+</span>8 <span style=''>    val conf = </span><span style='background: #AEF1AE'>new SparkConf()</span><span style=''>
+</span>9 <span style=''>    </span><span style='background: #AEF1AE'>conf.setMaster(&quot;local[*]&quot;)</span><span style=''>
+</span>10 <span style=''>    </span><span style='background: #AEF1AE'>conf.setAppName(&quot;StudentGrade&quot;)</span><span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>    val sc = </span><span style='background: #AEF1AE'>new SparkContext(conf)</span><span style=''>
+</span>13 <span style=''>
+</span>14 <span style=''>    val data = </span><span style='background: #AEF1AE'>sc.textFile(args(0)).map(_.split(&quot;,&quot;)) // &quot;datasets/fuzzing_seeds/commute/trips&quot;
+</span>15 <span style=''></span><span style='background: #AEF1AE'>      .map { a =&gt;
+</span>16 <span style=''></span><span style='background: #AEF1AE'>        val ret = (a(0), a(1).toInt)
+</span>17 <span style=''></span><span style='background: #AEF1AE'>        if (a(1).toInt &gt; 7325622 &amp;&amp; a(1).toInt &lt; 8463215) throw new RuntimeException()
+</span>18 <span style=''></span><span style='background: #AEF1AE'>        ret
+</span>19 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>20 <span style=''></span><span style='background: #AEF1AE'>      .map { a =&gt;
+</span>21 <span style=''></span><span style='background: #AEF1AE'>        if (a._2 &gt; 9325622 &amp;&amp; a._2 &lt; 10463215) throw new RuntimeException()
+</span>22 <span style=''></span><span style='background: #AEF1AE'>        if (a._2 &gt; 40)
+</span>23 <span style=''></span><span style='background: #AEF1AE'>          (a._1 + &quot; Pass&quot;, 1)
+</span>24 <span style=''></span><span style='background: #AEF1AE'>        else
+</span>25 <span style=''></span><span style='background: #AEF1AE'>          (a._1 + &quot; Fail&quot;, 1)
+</span>26 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>27 <span style=''></span><span style='background: #AEF1AE'>      .reduceByKey{
+</span>28 <span style=''></span><span style='background: #AEF1AE'>        (a, b) =&gt;
+</span>29 <span style=''></span><span style='background: #AEF1AE'>          val ret = a+b
+</span>30 <span style=''></span><span style='background: #AEF1AE'>          if (ret &gt; 7325622 &amp;&amp; ret &lt; 8463215) throw new RuntimeException()
+</span>31 <span style=''></span><span style='background: #AEF1AE'>          ret
+</span>32 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>33 <span style=''></span><span style='background: #AEF1AE'>      .filter { v =&gt;
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        if (v._2 &gt; 8 &amp;&amp; v._2 &lt; 10) throw new RuntimeException()
+</span>35 <span style=''></span><span style='background: #AEF1AE'>        v._2 &gt; 5
+</span>36 <span style=''></span><span style='background: #AEF1AE'>      }.collect()
+</span>37 <span style=''></span><span style='background: #AEF1AE'>      .foreach{case (a, b) =&gt; println(s&quot;$a, $b&quot;)}</span><span style=''>
+</span>38 <span style=''>  }
+</span>39 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          151
+          -
+          166
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkConf()
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          171
+          -
+          197
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setMaster
+        </td>
+        <td style="background: #AEF1AE">
+          conf.setMaster(&quot;local[*]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          202
+          -
+          233
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setAppName
+        </td>
+        <td style="background: #AEF1AE">
+          conf.setAppName(&quot;StudentGrade&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          248
+          -
+          270
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkContext.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkContext(conf)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          287
+          -
+          1006
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.RDD.collect
+        </td>
+        <td style="background: #AEF1AE">
+          abstraction.this.RDD.toPairRDD[String, Int](sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) =&gt; x$1.split(&quot;,&quot;)))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]])).map[(String, Int)](((a: Array[String]) =&gt; {
+  val ret: (String, Int) = scala.Tuple2.apply[String, Int](a.apply(0), scala.Predef.augmentString(a.apply(1)).toInt);
+  if (scala.Predef.augmentString(a.apply(1)).toInt.&gt;(7325622).&amp;&amp;(scala.Predef.augmentString(a.apply(1)).toInt.&lt;(8463215)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  ret
+}))((ClassTag.apply[(String, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Int)])).map[(String, Int)](((a: (String, Int)) =&gt; {
+  if (a._2.&gt;(9325622).&amp;&amp;(a._2.&lt;(10463215)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  if (a._2.&gt;(40))
+    scala.Tuple2.apply[String, Int](a._1.+(&quot; Pass&quot;), 1)
+  else
+    scala.Tuple2.apply[String, Int](a._1.+(&quot; Fail&quot;), 1)
+}))((ClassTag.apply[(String, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Int)])))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.Int: scala.reflect.ClassTag[Int])).reduceByKey(((a: Int, b: Int) =&gt; {
+  val ret: Int = a.+(b);
+  if (ret.&gt;(7325622).&amp;&amp;(ret.&lt;(8463215)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  ret
+})).filter(((v: (String, Int)) =&gt; {
+  if (v._2.&gt;(8).&amp;&amp;(v._2.&lt;(10)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  v._2.&gt;(5)
+})).collect()
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          287
+          -
+          1056
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IndexedSeqOptimized.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.refArrayOps[(String, Int)](abstraction.this.RDD.toPairRDD[String, Int](sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) =&gt; x$1.split(&quot;,&quot;)))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]])).map[(String, Int)](((a: Array[String]) =&gt; {
+  val ret: (String, Int) = scala.Tuple2.apply[String, Int](a.apply(0), scala.Predef.augmentString(a.apply(1)).toInt);
+  if (scala.Predef.augmentString(a.apply(1)).toInt.&gt;(7325622).&amp;&amp;(scala.Predef.augmentString(a.apply(1)).toInt.&lt;(8463215)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  ret
+}))((ClassTag.apply[(String, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Int)])).map[(String, Int)](((a: (String, Int)) =&gt; {
+  if (a._2.&gt;(9325622).&amp;&amp;(a._2.&lt;(10463215)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  if (a._2.&gt;(40))
+    scala.Tuple2.apply[String, Int](a._1.+(&quot; Pass&quot;), 1)
+  else
+    scala.Tuple2.apply[String, Int](a._1.+(&quot; Fail&quot;), 1)
+}))((ClassTag.apply[(String, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Int)])))((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.Int: scala.reflect.ClassTag[Int])).reduceByKey(((a: Int, b: Int) =&gt; {
+  val ret: Int = a.+(b);
+  if (ret.&gt;(7325622).&amp;&amp;(ret.&lt;(8463215)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  ret
+})).filter(((v: (String, Int)) =&gt; {
+  if (v._2.&gt;(8).&amp;&amp;(v._2.&lt;(10)))
+    throw new scala.`package`.RuntimeException()
+  else
+    ();
+  v._2.&gt;(5)
+})).collect()).foreach[Unit](((x0$1: (String, Int)) =&gt; x0$1 match {
+  case (_1: String, _2: Int)(String, Int)((a @ _), (b @ _)) =&gt; scala.Predef.println(scala.StringContext.apply(&quot;&quot;, &quot;, &quot;, &quot;&quot;).s(a, b))
+}))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          1037
+          -
+          1055
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.println
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.println(scala.StringContext.apply(&quot;&quot;, &quot;, &quot;, &quot;&quot;).s(a, b))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          1045
+          -
+          1054
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;&quot;, &quot;, &quot;, &quot;&quot;).s(a, b)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          1059
+          -
+          1059
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

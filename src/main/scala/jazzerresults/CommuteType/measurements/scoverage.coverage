@@ -1,0 +1,623 @@
+# Coverage data, format version: 2.0
+# Statement data:
+# - id
+# - source path
+# - package name
+# - class name
+# - class type (Class, Object or Trait)
+# - full class name
+# - method name
+# - start offset
+# - end offset
+# - line number
+# - symbol name
+# - tree name
+# - is branch
+# - invocations count
+# - is ignored
+# - description (can be multi-line)
+# '' sign
+# ------------------------------------------
+1
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+274
+289
+14
+abstraction.SparkConf.<init>
+Apply
+false
+0
+false
+new abstraction.SparkConf()
+
+2
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+294
+320
+15
+abstraction.SparkConf.setMaster
+Apply
+false
+0
+false
+conf.setMaster("local[*]")
+
+3
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+325
+355
+16
+abstraction.SparkConf.setAppName
+Apply
+false
+0
+false
+conf.setAppName("CommuteType")
+
+4
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+371
+393
+19
+abstraction.SparkContext.<init>
+Apply
+false
+0
+false
+new abstraction.SparkContext(conf)
+
+5
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+427
+434
+21
+scala.Array.apply
+Apply
+false
+0
+false
+args.apply(0)
+
+6
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+440
+452
+21
+java.lang.String.split
+Apply
+false
+0
+false
+x$1.split(",")
+
+7
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+415
+453
+21
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) => x$1.split(",")))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]]))
+
+8
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+558
+565
+24
+scala.Array.apply
+Apply
+false
+0
+false
+cols.apply(1)
+
+9
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+567
+574
+24
+scala.Array.apply
+Apply
+false
+0
+false
+cols.apply(3)
+
+10
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+585
+592
+24
+scala.Array.apply
+Apply
+false
+0
+false
+cols.apply(4)
+
+11
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+585
+600
+24
+scala.collection.immutable.StringLike.toFloat
+Select
+false
+0
+false
+scala.Predef.augmentString(cols.apply(4)).toFloat
+
+12
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+567
+600
+24
+scala.Float./
+Apply
+false
+0
+false
+scala.Predef.augmentString(cols.apply(3)).toFloat./(scala.Predef.augmentString(cols.apply(4)).toFloat)
+
+13
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+557
+601
+24
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, Float](cols.apply(1), scala.Predef.augmentString(cols.apply(3)).toFloat./(scala.Predef.augmentString(cols.apply(4)).toFloat))
+
+14
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+514
+611
+23
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+tripLines.map[(String, Float)](((cols: Array[String]) => scala.Tuple2.apply[String, Float](cols.apply(1), scala.Predef.augmentString(cols.apply(3)).toFloat./(scala.Predef.augmentString(cols.apply(4)).toFloat))))((ClassTag.apply[(String, Float)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Float)]))
+
+15
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+678
+682
+28
+scala.Tuple2._2
+Select
+false
+0
+false
+s._2
+
+16
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+696
+706
+29
+scala.Float.<=
+Apply
+false
+0
+false
+speed.<=(0)
+
+17
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+765
+780
+31
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, Float]("error", 1.0)
+
+18
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+765
+780
+31
+scala.Tuple2.apply
+Block
+true
+0
+false
+scala.Tuple2.apply[String, Float]("error", 1.0)
+
+19
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+802
+812
+32
+scala.Float.>
+Apply
+false
+0
+false
+speed.>(40)
+
+20
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+828
+842
+33
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, Float]("car", speed)
+
+21
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+828
+842
+33
+scala.Tuple2.apply
+Block
+true
+0
+false
+scala.Tuple2.apply[String, Float]("car", speed)
+
+22
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+864
+874
+34
+scala.Float.>
+Apply
+false
+0
+false
+speed.>(15)
+
+23
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+890
+907
+35
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, Float]("public", speed)
+
+24
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+890
+907
+35
+scala.Tuple2.apply
+Block
+true
+0
+false
+scala.Tuple2.apply[String, Float]("public", speed)
+
+25
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+939
+956
+37
+scala.Tuple2.apply
+Apply
+false
+0
+false
+scala.Tuple2.apply[String, Float]("onfoot", speed)
+
+26
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+939
+956
+37
+scala.Tuple2.apply
+Block
+true
+0
+false
+scala.Tuple2.apply[String, Float]("onfoot", speed)
+
+27
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+860
+968
+34
+<nosymbol>
+If
+true
+0
+false
+if (speed.>(15))
+  scala.Tuple2.apply[String, Float]("public", speed)
+else
+  scala.Tuple2.apply[String, Float]("onfoot", speed)
+
+28
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+798
+968
+32
+<nosymbol>
+If
+true
+0
+false
+if (speed.>(40))
+  scala.Tuple2.apply[String, Float]("car", speed)
+else
+  if (speed.>(15))
+    scala.Tuple2.apply[String, Float]("public", speed)
+  else
+    scala.Tuple2.apply[String, Float]("onfoot", speed)
+
+29
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+630
+978
+27
+abstraction.RDD.map
+ApplyToImplicitArgs
+false
+0
+false
+trips.map[(String, Float)](((s: (String, Float)) => {
+  val speed: Float = s._2;
+  if (speed.<=(0))
+    scala.Tuple2.apply[String, Float]("error", 1.0)
+  else
+    if (speed.>(40))
+      scala.Tuple2.apply[String, Float]("car", speed)
+    else
+      if (speed.>(15))
+        scala.Tuple2.apply[String, Float]("public", speed)
+      else
+        scala.Tuple2.apply[String, Float]("onfoot", speed)
+}))((ClassTag.apply[(String, Float)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(String, Float)]))
+
+30
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+1119
+1578
+55
+scala.collection.IndexedSeqOptimized.take
+Apply
+false
+0
+false
+scala.Predef.refArrayOps[(String, Double)](abstraction.this.RDD.toPairRDD[String, Float](types)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.Float: scala.reflect.ClassTag[Float])).aggregateByKey[(Double, Int)](scala.Tuple2.apply[Double, Int](0.0, 0))(((x0$1: (Double, Int), x1$1: Float) => scala.Tuple2.apply[(Double, Int), Float](x0$1, x1$1) match {
+  case (_1: (Double, Int), _2: Float)((Double, Int), Float)((_1: Double, _2: Int)(Double, Int)((sum @ _), (count @ _)), (next @ _)) => {
+    if (sum.>(2456573).&&(sum.<(3456573)))
+      throw new scala.`package`.RuntimeException()
+    else
+      ();
+    scala.Tuple2.apply[Double, Int](sum.+(next), count.+(1))
+  }
+}), ((x0$2: (Double, Int), x1$2: (Double, Int)) => scala.Tuple2.apply[(Double, Int), (Double, Int)](x0$2, x1$2) match {
+  case (_1: (Double, Int), _2: (Double, Int))((Double, Int), (Double, Int))((_1: Double, _2: Int)(Double, Int)((sum1 @ _), (count1 @ _)), (_1: Double, _2: Int)(Double, Int)((sum2 @ _), (count2 @ _))) => scala.Tuple2.apply[Double, Int](sum1.+(sum2), count1.+(count2))
+}))((ClassTag.apply[(Double, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(Double, Int)])).mapValues[Double](((x0$3: (Double, Int)) => x0$3 match {
+  case (_1: Double, _2: Int)(Double, Int)((sum @ _), (count @ _)) => {
+    if (sum.>(10.0).&&(sum.<(14.0)))
+      throw new scala.`package`.RuntimeException()
+    else
+      ();
+    sum./(count)
+  }
+})).collect()).take(10)
+
+31
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+1587
+1594
+55
+scala.Predef.println
+Apply
+false
+0
+false
+scala.Predef.println(x)
+
+32
+/home/ahmad/jazzer/src/main/scala/examples/faulty/CommuteType.scala
+examples.faulty
+CommuteType
+Object
+examples.faulty.CommuteType
+main
+1119
+1595
+55
+scala.collection.IndexedSeqOptimized.foreach
+Apply
+false
+0
+false
+scala.Predef.refArrayOps[(String, Double)](scala.Predef.refArrayOps[(String, Double)](abstraction.this.RDD.toPairRDD[String, Float](types)((ClassTag.apply[String](classOf[java.lang.String]): scala.reflect.ClassTag[String]), (ClassTag.Float: scala.reflect.ClassTag[Float])).aggregateByKey[(Double, Int)](scala.Tuple2.apply[Double, Int](0.0, 0))(((x0$1: (Double, Int), x1$1: Float) => scala.Tuple2.apply[(Double, Int), Float](x0$1, x1$1) match {
+  case (_1: (Double, Int), _2: Float)((Double, Int), Float)((_1: Double, _2: Int)(Double, Int)((sum @ _), (count @ _)), (next @ _)) => {
+    if (sum.>(2456573).&&(sum.<(3456573)))
+      throw new scala.`package`.RuntimeException()
+    else
+      ();
+    scala.Tuple2.apply[Double, Int](sum.+(next), count.+(1))
+  }
+}), ((x0$2: (Double, Int), x1$2: (Double, Int)) => scala.Tuple2.apply[(Double, Int), (Double, Int)](x0$2, x1$2) match {
+  case (_1: (Double, Int), _2: (Double, Int))((Double, Int), (Double, Int))((_1: Double, _2: Int)(Double, Int)((sum1 @ _), (count1 @ _)), (_1: Double, _2: Int)(Double, Int)((sum2 @ _), (count2 @ _))) => scala.Tuple2.apply[Double, Int](sum1.+(sum2), count1.+(count2))
+}))((ClassTag.apply[(Double, Int)](classOf[scala.Tuple2]): scala.reflect.ClassTag[(Double, Int)])).mapValues[Double](((x0$3: (Double, Int)) => x0$3 match {
+  case (_1: Double, _2: Int)(Double, Int)((sum @ _), (count @ _)) => {
+    if (sum.>(10.0).&&(sum.<(14.0)))
+      throw new scala.`package`.RuntimeException()
+    else
+      ();
+    sum./(count)
+  }
+})).collect()).take(10)).foreach[Unit]({
+  ((x: Any) => scala.Predef.println(x))
+})
+

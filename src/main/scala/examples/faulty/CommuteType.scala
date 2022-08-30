@@ -27,8 +27,8 @@ object CommuteType {
         .map { s =>
           val speed = s._2
           if(speed <= 0) {
-//            throw new RuntimeException()
-            ("error", 1.0f)
+            throw new RuntimeException()
+//            ("error", 1.0f)
           } else if (speed > 40) {
             ("car", speed)
           } else if (speed > 15) {

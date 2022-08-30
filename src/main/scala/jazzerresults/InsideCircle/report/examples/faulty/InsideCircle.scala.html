@@ -1,0 +1,385 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          examples/faulty/InsideCircle.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package examples.faulty
+</span>2 <span style=''>
+</span>3 <span style=''>import abstraction.{SparkConf, SparkContext}
+</span>4 <span style=''>
+</span>5 <span style=''>object InsideCircle {
+</span>6 <span style=''>
+</span>7 <span style=''>  def inside(x:Int, y:Int, z:Int): Boolean ={
+</span>8 <span style=''>    if(</span><span style='background: #F0ADAD'>z &gt; 3425625 &amp;&amp; z &lt; 4364234</span><span style=''>) </span><span style='background: #F0ADAD'>throw new Exception()</span><span style=''>
+</span>9 <span style=''>    </span><span style='background: #F0ADAD'>x*x+y*y&lt;z*z</span><span style=''>
+</span>10 <span style=''>  }
+</span>11 <span style=''>
+</span>12 <span style=''>  def main(args: Array[String]): Unit = {
+</span>13 <span style=''>
+</span>14 <span style=''>    val conf = </span><span style='background: #AEF1AE'>new SparkConf().setMaster(&quot;local&quot;).setAppName(&quot;InsideCircle&quot;)</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>    val sc = </span><span style='background: #AEF1AE'>new SparkContext(conf)</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>    </span><span style='background: #AEF1AE'>sc.textFile(args(0)).map(_.split(&quot;,&quot;))
+</span>20 <span style=''></span><span style='background: #AEF1AE'>      .map {
+</span>21 <span style=''></span><span style='background: #AEF1AE'>        cols =&gt;
+</span>22 <span style=''></span><span style='background: #AEF1AE'>          (cols(0).toInt, cols(1).toInt, cols(2).toInt)
+</span>23 <span style=''></span><span style='background: #AEF1AE'>      }.filter(s =&gt; inside(s._1, s._2, s._3))
+</span>24 <span style=''></span><span style='background: #AEF1AE'>      .collect().foreach(</span><span style='background: #F0ADAD'>println</span><span style='background: #AEF1AE'>)</span><span style=''>
+</span>25 <span style=''>
+</span>26 <span style=''>  }
+</span>27 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          162
+          -
+          173
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          z.&lt;(4364234)
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          175
+          -
+          196
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.Exception()
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          175
+          -
+          196
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.Exception()
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          144
+          -
+          144
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          151
+          -
+          158
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          3425625
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          147
+          -
+          173
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          z.&gt;(3425625).&amp;&amp;(z.&lt;(4364234))
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          144
+          -
+          144
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          205
+          -
+          208
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.*
+        </td>
+        <td style="background: #F0ADAD">
+          y.*(y)
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          201
+          -
+          212
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          x.*(x).+(y.*(y)).&lt;(z.*(z))
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          209
+          -
+          212
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.*
+        </td>
+        <td style="background: #F0ADAD">
+          z.*(z)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          11
+        </td>
+        <td>
+          276
+          -
+          337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkConf.setAppName
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkConf().setMaster(&quot;local&quot;).setAppName(&quot;InsideCircle&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          352
+          -
+          374
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.SparkContext.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new abstraction.SparkContext(conf)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          576
+          -
+          583
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.println
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.println(x)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          381
+          -
+          567
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abstraction.RDD.collect
+        </td>
+        <td style="background: #AEF1AE">
+          sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) =&gt; x$1.split(&quot;,&quot;)))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]])).map[(Int, Int, Int)](((cols: Array[String]) =&gt; scala.Tuple3.apply[Int, Int, Int](scala.Predef.augmentString(cols.apply(0)).toInt, scala.Predef.augmentString(cols.apply(1)).toInt, scala.Predef.augmentString(cols.apply(2)).toInt)))((ClassTag.apply[(Int, Int, Int)](classOf[scala.Tuple3]): scala.reflect.ClassTag[(Int, Int, Int)])).filter(((s: (Int, Int, Int)) =&gt; InsideCircle.this.inside(s._1, s._2, s._3))).collect()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          381
+          -
+          584
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IndexedSeqOptimized.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.refArrayOps[(Int, Int, Int)](sc.textFile(args.apply(0)).map[Array[String]](((x$1: String) =&gt; x$1.split(&quot;,&quot;)))((ClassTag.apply[Array[String]](scala.runtime.ScalaRunTime.arrayClass(classOf[java.lang.String])): scala.reflect.ClassTag[Array[String]])).map[(Int, Int, Int)](((cols: Array[String]) =&gt; scala.Tuple3.apply[Int, Int, Int](scala.Predef.augmentString(cols.apply(0)).toInt, scala.Predef.augmentString(cols.apply(1)).toInt, scala.Predef.augmentString(cols.apply(2)).toInt)))((ClassTag.apply[(Int, Int, Int)](classOf[scala.Tuple3]): scala.reflect.ClassTag[(Int, Int, Int)])).filter(((s: (Int, Int, Int)) =&gt; InsideCircle.this.inside(s._1, s._2, s._3))).collect()).foreach[Unit]({
+  ((x: Any) =&gt; scala.Predef.println(x))
+})
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

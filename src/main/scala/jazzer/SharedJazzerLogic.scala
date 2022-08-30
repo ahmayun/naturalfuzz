@@ -49,7 +49,7 @@ object SharedJazzerLogic {
                         f: Array[String] => Unit
                       ): Unit = {
 
-    val newDatasets = createMutatedDatasets(data, datasets)
+    val newDatasets = createMutatedDatasets(data, datasets.map(s => s".$s"))
     f(newDatasets)
   }
 
