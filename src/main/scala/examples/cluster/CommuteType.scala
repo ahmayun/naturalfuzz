@@ -9,7 +9,7 @@ object CommuteType extends Serializable {
     conf.setMaster(args(1))
     conf.setAppName("CommuteType Original")
     val sc = new SparkContext(conf)
-    sc.setLogLevel("ERROR")
+//    sc.setLogLevel("ERROR")
     val tripLines = sc.textFile(args(0)).map(_.split(",")) //"datasets/commute/trips/part-000[0-4]*"
     try {
       val trips = tripLines.map { cols =>

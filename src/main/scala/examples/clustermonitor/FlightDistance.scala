@@ -17,7 +17,7 @@ object FlightDistance extends Serializable {
     val airports_data = args(1) // "datasets/fuzzing_seeds/FlightDistance/airports_data" // "/home/ahmad/Documents/VT/project1/cs5614-hw/data/airports_data"
     val sc = new SparkContext(sparkConf)
     val ctx = new SparkContextWithDP(sc)
-    ctx.setLogLevel("ERROR")
+//    ctx.setLogLevel("ERROR")
     Provenance.setProvenanceType("dual")
     val flights = ctx.textFileProv(flights_data,_.split(','))
     val airports = ctx.textFileProv(airports_data,_.split(','))

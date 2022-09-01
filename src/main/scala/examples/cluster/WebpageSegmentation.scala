@@ -14,7 +14,7 @@ object WebpageSegmentation extends Serializable  {
     val before_data = args(0) // "datasets/fuzzing_seeds/webpage_segmentation/before"
     val after_data = args(1) // "datasets/fuzzing_seeds/webpage_segmentation/after"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage
-    ctx.setLogLevel("ERROR")
+//    ctx.setLogLevel("ERROR")
     val before = ctx.textFile(before_data).map(_.split(','))
     val after = ctx.textFile(after_data).map(_.split(','))
 

@@ -5,7 +5,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import provenance.rdd.ProvenanceRDD.toPairRDD
 import sparkwrapper.SparkContextWithDP
 
-object IncomeAggregation {
+object IncomeAggregation extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")

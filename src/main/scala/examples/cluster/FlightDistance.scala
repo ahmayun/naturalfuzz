@@ -14,7 +14,7 @@ object FlightDistance extends Serializable {
     val flights_data = args(0) //"datasets/fuzzing_seeds/FlightDistance/flights"
     val airports_data = args(1) //"datasets/fuzzing_seeds/FlightDistance/airports_data"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage
-    ctx.setLogLevel("ERROR")
+//    ctx.setLogLevel("ERROR")
     val flights = ctx.textFile(flights_data).map(_.split(','))
     // === Sample ===
     //    flight_id,flight_no,scheduled_departure,scheduled_arrival,departure_airport,arrival_airport,status,aircraft_code,actual_departure,actual_arrival

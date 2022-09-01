@@ -13,7 +13,7 @@ object Customers extends Serializable {
     val customers_data = args(0)// "datasets/fuzzing_seeds/orders/customers"
     val orders_data = args(1) // "datasets/fuzzing_seeds/orders/orders"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage
-    ctx.setLogLevel("ERROR")
+//    ctx.setLogLevel("ERROR")
     val customers = ctx.textFile(customers_data).map(_.split(","))
     val orders = ctx.textFile(orders_data).map(_.split(","))
     //  ---------------------------------------------------------------------------------------

@@ -14,7 +14,7 @@ object Customers extends Serializable {
     val customers_data = args(0)
     val orders_data = args(1)
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
-    ctx.setLogLevel("ERROR")
+//    ctx.setLogLevel("ERROR")
     Provenance.setProvenanceType("dual")
     val customers = ctx.textFileProv(customers_data, _.split(',')) //.map(_.split(","))
     val orders = ctx.textFileProv(orders_data, _.split(',')) //.map(_.split(","))

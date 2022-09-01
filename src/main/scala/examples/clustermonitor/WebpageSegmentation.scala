@@ -19,7 +19,7 @@ object WebpageSegmentation extends Serializable {
     val after_data = args(1)
     val sc = new SparkContext(sparkConf)
     val ctx = new SparkContextWithDP(sc)
-    ctx.setLogLevel("ERROR")
+//    ctx.setLogLevel("ERROR")
     //    Provenance.setProvenanceType("dual")
     val before = ctx.textFileProv(before_data, _.split(','))
     val after = ctx.textFileProv(after_data, _.split(','))
