@@ -2,7 +2,6 @@ package utils
 
 
 import fuzzer.{InstrumentedProgram, ProvInfo, Schema}
-import generators.GenSegmentationData.deleteDir
 
 import java.io.{BufferedWriter, File, FileWriter}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -54,31 +53,10 @@ object ProvFuzzUtils {
       }.toArray
   }
 
-  def Probe(program: InstrumentedProgram, probing_dataset: Array[Seq[String]]): (ProvInfo, Long, Long) = {
+  def Probe(program: InstrumentedProgram): (ProvInfo, Long, Long) = {
     val t_start = System.currentTimeMillis()
     val prov_info = program.main(program.args)
     (prov_info, t_start, System.currentTimeMillis())
-  }
-
-  def CreateProbingDatasets(schema: Array[Array[Schema[Any]]]): Array[Seq[String]] = {
-    Array(
-        Seq(
-        """32120,PG0425,"2017-08-03 09:55:00.000","2017-08-03 12:35:00.000",SGC,VKT,Arrived,CN1,"2017-08-03 09:58:00.000","2017-08-03 12:39:00.000"""",
-        """32123,PG0425,"2017-07-21 09:55:00.000","2017-07-21 12:35:00.000",SGC,VKT,Arrived,CN1,"2017-07-21 09:57:00.000","2017-07-21 12:38:00.000"""",
-        """32121,PG0424,"2017-07-21 05:20:00.000","2017-07-21 08:00:00.000",SGC,VKT,Arrived,CN1,"2017-07-21 05:24:00.000","2017-07-21 08:04:00.000"""",
-        """32122,PG0424,"2017-08-03 05:20:00.000","2017-08-03 08:00:00.000",SGC,VKT,Arrived,CN1,"2017-08-03 05:22:00.000","2017-08-03 07:59:00.000"""",
-        """32123,PG0425,"2017-07-21 09:55:00.000","2017-07-21 12:35:00.000",SGC,VKT,Arrived,CN1,"2017-07-21 09:57:00.000","2017-07-21 12:38:00.000""""
-      ),
-      Seq(
-        """UUD,"Ulan-Ude Airport (Mukhino)",Ulan-ude,107.438003540039,51.8078002929687,Asia/Irkutsk""",
-          """MMK,"Murmansk Airport",Murmansk,32.7508010864258,68.7817001342773,Europe/Moscow""",
-          """ABA,"Abakan Airport",Abakan,91.3850021362305,53.7400016784668,Asia/Krasnoyarsk""",
-          """BAX,"Barnaul Airport",Barnaul,83.5384979248047,53.3638000488281,Asia/Krasnoyarsk""",
-          """AAQ,"Anapa Vityazevo Airport",Anapa,37.347301483154,45.002101898193,Europe/Moscow""",
-          """CNN,"Chulman Airport",Neryungri,124.91400146484,56.913898468018,Asia/Yakutsk"""
-
-      )
-    )
   }
 
   def blockFor[T](f: () => T, millis: Int): T = {
@@ -94,5 +72,14 @@ object ProvFuzzUtils {
       case _ => ret
     }
   }
+
+  def deleteDir(file: File): Unit = {
+    val contents = file.listFiles
+    if (contents != null) for (f <- contents) {
+      deleteDir(f)
+    }
+    file.delete
+  }
+
 
 }

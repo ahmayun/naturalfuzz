@@ -2,7 +2,10 @@ package guidance
 
 import fuzzer.{Global, Guidance, Schema}
 import scoverage.Coverage
+import scoverage.Platform.FileWriter
 import utils.QueriedRDDs
+
+import java.io.File
 
 class RIGGuidance(
                    val inputFiles: Array[String],
@@ -32,11 +35,14 @@ class RIGGuidance(
     Global.iteration >= this.maxRuns
   }
 
-  override def updateCoverage(coverage: Coverage, crashed: Boolean = true): Boolean = {
-    if(Global.iteration != 0 && coverage.statementCoveragePercent <= this.coverage.statementCoveragePercent && !crashed) {
-      return true
+  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
+    if(Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
+      this.coverage = cov
+      new FileWriter(new File(s"$outDir/cumulative.csv"), true)
+        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
+        .append("\n")
+        .flush()
     }
-    this.coverage = coverage
     true
   }
 }

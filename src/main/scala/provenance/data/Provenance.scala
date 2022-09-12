@@ -53,7 +53,7 @@ object Provenance {
   }
 
   private var provenanceFactory: ProvenanceFactory = _
-  setProvenanceFactory(RoaringBitmapProvenance)
+  setProvenanceFactory(DualRBProvenance)
   //setProvenanceFactory(SetProvenance)
 
 
@@ -69,6 +69,7 @@ object Provenance {
   }
   
   def setProvenanceType(provenanceFactoryStr: String): Unit = {
+    println("Set provenance called")
     val newFactory = provenanceFactoryStr match {
       case "dummy" => DummyProvenance
       case "bitmap" => RoaringBitmapProvenance

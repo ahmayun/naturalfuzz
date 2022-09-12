@@ -1,15 +1,12 @@
 package examples.monitored
 
 import fuzzer.ProvInfo
-
-import scala.reflect.runtime.universe._
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.{TaintedInt, TaintedString}
-import taintedprimitives.SymImplicits._
 
-object Customers {
+object Customers extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val sparkConf = new SparkConf()
     sparkConf.setMaster("local[6]")

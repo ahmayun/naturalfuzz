@@ -1,14 +1,19 @@
 package fuzzer
 
+import org.apache.spark.rdd.RDD
 import provenance.data.Provenance
 import runners.Config
+import taintedprimitives.Utils
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 
 //depsInfo: [[(ds, col, row), (ds, col, row)], [(ds, col, row)] .... [(ds, col, row)]]
-class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
+class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) extends Serializable {
+
+  val reducedDS: ListBuffer[RDD[String]] = ListBuffer()
+
   def update(id: Int, provenances: ListBuffer[Provenance]): Unit = {
     depsInfo.append(provenances.flatMap(_.convertToTuples))
   }
@@ -42,7 +47,7 @@ class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
   }
 
   def getRandom: ProvInfo = {
-    new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head)) // TODO IMPORTANT: MAKE RANDOM
+    new ProvInfo(ListBuffer(Random.shuffle(depsInfo).head))
   }
 
   def getCoDependentRegions: ListBuffer[ListBuffer[(Int,Int,Int)]] = { depsInfo }
@@ -76,6 +81,7 @@ class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) {
   }
 
   override def toString: String = {
+//    depsInfo.toString
     depsInfo
       .map{
         deps =>

@@ -15,7 +15,7 @@ object Delays {
     //<id>,<departure_time>,<advertised_departure>
     val station1 = sc.textFile(args(0))
       .map(_.split(','))
-      .map(r => (r(0), (r(1).toLong, r(2).toLong, r(3))))
+      .map(r => (r(0), (r(1).toInt, r(2).toInt, r(3))))
 
     //<id>,<arrival_time>,<advertised_arrival>
     val station2 = sc.textFile(args(1))
@@ -24,7 +24,7 @@ object Delays {
 
     station1
       .join(station2)
-      .map{case (_, ((dep, adep, rid), (arr, aarr, _))) => (buckets((arr.toLong-aarr.toLong) - (dep-adep)), rid)} //bug idea, don't cater for early arrivals
+      .map{case (_, ((dep, adep, rid), (arr, aarr, _))) => (buckets((arr.toInt-aarr.toInt) - (dep-adep)), rid)} //bug idea, don't cater for early arrivals
       .groupByKey()
       .filter(filter1) // filter delays more than an hour
       .flatMap(flatMap1)
@@ -34,21 +34,21 @@ object Delays {
       .foreach(println)
   }
 
-  def buckets(v: Long): Long = v / 1800 // groups of 30 min delays
-  def filter1(tup: (Long, Any)): Boolean = if(tup._1 > 2) true else false
-  def flatMap1(s: (Long, Seq[String])) = {
-    if(s._1 > 400000 && s._1 < 500000) {
-      println("error 41")
-      throw new RuntimeException()
-    }
+  def buckets(v: Int): Int = v / 1800 // groups of 30 min delays
+  def filter1(tup: (Int, Any)): Boolean = {
+    if(tup._1 > 1240690 && tup._1 < 2942678) throw new RuntimeException() // synthetic bug
+    if(tup._1 > 2) true else false
+  }
+  def flatMap1(s: (Int, Seq[String])) = {
+    if(s._1 > 5823574 && s._1 < 6903842) throw new RuntimeException() // synthetic bug
     s._2
   }
   def map1(s: String) = {
-    println(s)
+    if(s.substring(1, 3).equals("#%")) throw new RuntimeException() // synthetic bug
     (s, 1)
   }
   def rbk1(a: Int, b: Int) = {
-    if(a >= 4){ throw new RuntimeException()}
+    if(a >= 4) throw new RuntimeException() // synthetic bug
     a+b
   }
 

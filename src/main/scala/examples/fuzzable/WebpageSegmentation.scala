@@ -52,16 +52,16 @@ object WebpageSegmentation {
   def intersects(rect1: IndexedSeq[Int],
                  rect2: IndexedSeq[Int]): Option[(Int, Int, Int, Int)] = {
 
-    val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
-    val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
-    val endpointax = aSWx + aWidth
-    val startpointax = aSWx
-    val endpointay = aSWy + aHeight
-    val startpointay = aSWy
-    val endpointbx = bSWx + bWidth
-    val startpointbx = bSWx
-    val endpointby = bSWy + bHeight
-    val startpointby = bSWy
+    val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1 // bug: last column missing in both datasets will trigger match error
+    val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2 // bug
+    val endpointax = aSWx + aWidth;
+    val startpointax = aSWx;
+    val endpointay = aSWy + aHeight;
+    val startpointay = aSWy;
+    val endpointbx = bSWx + bWidth;
+    val startpointbx = bSWx;
+    val endpointby = bSWy + bHeight;
+    val startpointby = bSWy;
 
 
     println("-------")

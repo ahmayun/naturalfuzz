@@ -12,6 +12,7 @@ object Invoker {
 
   private val MeasurementsPrefix = s"scoverage.measurements."
   private val threadFiles = new ThreadLocal[mutable.HashMap[String, FileWriter]]
+  private val savedWriter = new mutable.HashMap[Int, FileWriter]()
 
   // For each data directory we maintain a thread-safe set tracking the ids that we've already
   // seen and recorded. We're using a map as a set, so we only care about its keys and can ignore
@@ -64,7 +65,7 @@ object Invoker {
 //        dataDir,
 //        new FileWriter(measurementFile(dataDir), true)
 //      )
-      val writer = new FileWriter(measurementFile(dataDir), true)
+      val writer = savedWriter.getOrElseUpdate(1, new FileWriter(measurementFile(dataDir), true))
       if (reportTestName)
         writer
           .append(Integer.toString(id))
@@ -86,11 +87,11 @@ object Invoker {
       .getOrElse("")
 
   def measurementFile(dataDir: File): File = measurementFile(
-    dataDir.getAbsolutePath()
+    dataDir.getAbsolutePath
   )
   def measurementFile(dataDir: String): File = new File(
     dataDir,
-    MeasurementsPrefix + s"${fuzzer.Global.iteration}." + runtimeUUID + "." + Thread.currentThread.getId
+    MeasurementsPrefix + runtimeUUID + "." + Thread.currentThread.getId
   )
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(
@@ -99,7 +100,7 @@ object Invoker {
   def findMeasurementFiles(dataDir: File): Array[File] =
     dataDir.listFiles(new FileFilter {
       override def accept(pathname: File): Boolean =
-        pathname.getName().startsWith(MeasurementsPrefix)
+        pathname.getName.startsWith(MeasurementsPrefix)
     })
 
   // loads all the invoked statement ids from the given files
@@ -108,7 +109,7 @@ object Invoker {
     files.foreach { file =>
       val reader = Source.fromFile(file)
       for (line <- reader.getLines()) {
-        if (!line.isEmpty) {
+        if (line.nonEmpty) {
           acc += line.toInt
         }
       }

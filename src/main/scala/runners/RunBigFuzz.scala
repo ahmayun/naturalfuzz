@@ -23,7 +23,8 @@ object RunBigFuzz {
 
     val guidance = new BigFuzzGuidance(input_files, schema, runs)
     val benchmark_path = s"src/main/scala/${benchmark_class.split('.').mkString("/")}.scala"
-    val output_dir = Config.scoverageResultsDir
+    val outDir = s"${Config.resultsDir}/BigFuzz"
+    val scoverageOutputDir = s"$outDir/scoverage-results"
     val program = new Program(benchmark_name,
       benchmark_class,
       benchmark_path,
@@ -31,14 +32,14 @@ object RunBigFuzz {
       input_files)
 
     // Preprocessing and Fuzzing
-    val (stats, ts_fuzz, te_fuzz) = Fuzzer.Fuzz(program, guidance, output_dir)
+    val (stats, ts_fuzz, te_fuzz) = Fuzzer.Fuzz(program, guidance, outDir)
 
-    val coverage = Serializer.deserialize(new File(s"$output_dir/scoverage.coverage"))
-    val measurementFiles = IOUtils.findMeasurementFiles(output_dir)
+    val coverage = Serializer.deserialize(new File(s"$scoverageOutputDir/scoverage.coverage"))
+    val measurementFiles = IOUtils.findMeasurementFiles(scoverageOutputDir)
     val measurements = IOUtils.invoked(measurementFiles)
 
     coverage.apply(measurements)
-    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(output_dir)).write(coverage)
+    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageOutputDir)).write(coverage)
 
     val fuzz_time = (te_fuzz - ts_fuzz) / 1000.0
 
@@ -76,7 +77,7 @@ object RunBigFuzz {
     val pattern = s"""${filename}.scala:(\\d+)"""
     pattern.r.findFirstIn(trace) match {
       case Some(str) => str.split(':').last
-      case _ => "-"
+      case _ => "-1"
     }
   }
 }

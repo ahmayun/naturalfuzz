@@ -10,9 +10,14 @@ class BaseRDD[T:ClassTag](val data: Seq[T]) extends RDD[T]{
     new Random().shuffle(data).take(n).toArray
   }
 
-
   def filter(f:T=>Boolean): BaseRDD[T] = {
     new BaseRDD(data.filter(f))
+  }
+
+  override def reduce(f: (T, T) => T): T = {
+    if(data.isEmpty)
+      throw new UnsupportedOperationException()
+    data.reduce(f)
   }
 
   def map[U:ClassTag](f: T => U): BaseRDD[U] = {

@@ -2,12 +2,12 @@ package examples.benchmarks
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object WebpageSegmentation {
+object WebpageSegmentation extends Serializable {
 
   def main(args: Array[String]): Unit = {
     println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
-    sparkConf.setMaster("local[6]")
+    sparkConf.setMaster("local[*]")
     sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
     val before_data = args(0) // "datasets/fuzzing_seeds/webpage_segmentation/before"
     val after_data = args(1) // "datasets/fuzzing_seeds/webpage_segmentation/after"
@@ -27,17 +27,20 @@ object WebpageSegmentation {
       .filter{
         case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
       }
-      .map{
-        case (k, ((_, a), (url, _))) =>
+      .map {
+        case (k, (_, (url, a))) =>
           val Array(_, cid, ctype) = k.split('*')
           (url, (a, cid, ctype))
       }
 
-    println("-------")
+//    println("-------")
     val inter = changed.join(boxes_after_by_site)
     inter.map{
       case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
     }.collect().foreach(println)
+    //    val iRects =  pairs.map{ case (id, (rect1, rect2)) => (id, intersects(rect1, rect2))}
+    //    iRects.collect().foreach(println)
+//    ctx.stop()
   }
 
   def intersects(rect1: IndexedSeq[Int],
@@ -113,7 +116,7 @@ object WebpageSegmentation {
       iHeight = (top - iSWy)
     }
 
-    Some((iSWx, iSWy, iHeight, iWidth))
+    Some(iSWx, iSWy, iHeight, iWidth)
   }
 
 }

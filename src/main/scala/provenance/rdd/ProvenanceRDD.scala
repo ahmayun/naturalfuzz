@@ -8,6 +8,8 @@ import scala.reflect.ClassTag
 
 /** Trait to ensure consistent base API between Pair and non-Pair */
 trait ProvenanceRDD[T] extends Serializable {
+  def reduce(f: (T, T) => T): T = ???
+
   def foreach(f: (T) => Unit): Unit
 
   def map[U: ClassTag](f: T => U, enableUDFAwareProv: Option[Boolean] = None): ProvenanceRDD[U]

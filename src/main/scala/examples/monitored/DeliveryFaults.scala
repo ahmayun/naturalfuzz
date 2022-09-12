@@ -6,7 +6,7 @@ import provenance.data.Provenance
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.{TaintedFloat, TaintedInt, TaintedString}
 import taintedprimitives.SymImplicits._
-object DeliveryFaults {
+object DeliveryFaults extends Serializable {
   def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     conf.setMaster("local[*]")

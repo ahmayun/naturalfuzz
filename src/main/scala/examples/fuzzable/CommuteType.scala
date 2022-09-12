@@ -42,6 +42,5 @@ object CommuteType {
         { case ((sum, count), next) => (sum + next, count + 1) },
         { case ((sum1, count1), (sum2, count2)) => (sum1 + sum2, count1 + count2) }
       ).mapValues({ case (sum, count) => sum.toDouble / count }).collect().take(10).foreach(println)
-
   }
 }

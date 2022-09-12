@@ -135,7 +135,68 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_OTHER),
       new Schema(Schema.TYPE_OTHER),
       new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_NUMERICAL, (0, 10))
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+  val STUDENTGRADE = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+  val MOVIERATING = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+    val NUMBERSERIES = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+    val AGEANALYSIS = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+    val WORDCOUNT = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER)
+    )
+  )
+
+    val EXTERNALCALL = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER)
+    )
+  )
+
+    val FINDSALARY = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+    val INSIDECIRCLE = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+    val MAPSTRING = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER)
     )
   )
 
@@ -145,6 +206,22 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_OTHER),
       new Schema(Schema.TYPE_NUMERICAL),
       new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_OTHER)
+    )
+  )
+
+  val INCOMEAGGREGATION = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
+  val LOANTYPE = Array[Array[Schema[Any]]](
+    Array(
       new Schema(Schema.TYPE_NUMERICAL),
       new Schema(Schema.TYPE_NUMERICAL),
       new Schema(Schema.TYPE_NUMERICAL),

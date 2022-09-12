@@ -70,6 +70,10 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
     TaintedString(value.substring(arg0.value, arg1.value), newProvenance(arg0.getProvenance(), arg1.getProvenance()))
   }
 
+  def substring(arg0: Int, arg1: Int): TaintedString = {
+    TaintedString(value.substring(arg0, arg1), getProvenance())
+  }
+
   def lastIndexOf(elem: Char): TaintedInt = {
     TaintedInt(value.lastIndexOf(elem), getProvenance())
   }

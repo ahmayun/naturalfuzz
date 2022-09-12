@@ -99,6 +99,14 @@ class FlatProvenanceDefaultRDD[T: ClassTag](override val rdd: RDD[ProvenanceRow[
   def sample(withReplacement: Boolean, fraction: Double): FlatProvenanceDefaultRDD[T]  = {
     new FlatProvenanceDefaultRDD(rdd.sample(withReplacement, fraction))
   }
+
+  override def reduce(f: (T, T) => T): T = {
+    val (v, _) = rdd.reduce{
+      case ((v1, p1), (v2, p2)) =>
+        (f(v1, v2), p1.merge(p2))
+    }
+    v
+  }
 }
 
 object FlatProvenanceDefaultRDD {

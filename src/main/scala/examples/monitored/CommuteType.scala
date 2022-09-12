@@ -1,23 +1,20 @@
 package examples.monitored
 
-import fuzzer.ProvInfo
-
-import scala.reflect.runtime.universe._
 import org.apache.spark.{SparkConf, SparkContext}
 import provenance.data.Provenance.setProvenanceType
 import sparkwrapper.SparkContextWithDP
-import taintedprimitives.Utils
-object CommuteType {
-  def main(args: Array[String]): ProvInfo = {
+
+object CommuteType extends Serializable {
+  def main(args: Array[String]): Unit = {
     val conf = new SparkConf()
     conf.setMaster("local[*]")
-    conf.setAppName("CommuteTime")
-    val data1 = Array(",, ,0,1", ",, ,16,1", ",, ,41,1", " , , ,", " , , , ,0", " , , , ,", "", "", "", ",A, ,-0,1", ",A, ,-0,1")
-    val data2 = Array(",Palms", ",Palms", ",Palms", "", "", "", "", ",", ",", "", "")
+    conf.setAppName("CommuteType")
+
     val sco = new SparkContext(conf)
     val sc = new SparkContextWithDP(sco)
+    sc.setLogLevel("ERROR")
     setProvenanceType("dual")
-    val tripLines = sc.textFileProv(args(0), _.split(',')) //"datasets/commute/trips/part-000[0-4]*"
+    val tripLines = sc.textFileProv(args(0), _.split(",")) //"datasets/commute/trips/part-000[0-4]*"
     try {
       val trips = tripLines.map { cols =>
         (cols(1), cols(3).toInt / cols(4).toInt)
@@ -46,7 +43,7 @@ object CommuteType {
       case e: Exception =>
         e.printStackTrace()
     }
-    sco.stop()
+//    sco.stop()
     _root_.monitoring.Monitors.finalizeProvenance()
   }
 }

@@ -1,6 +1,7 @@
 package utils
 
 import _root_.scoverage._
+import runners.Config
 
 import java.io.File
 import java.io.FileNotFoundException
@@ -51,7 +52,7 @@ object ScoverageCompiler {
 
   private def sbtCompileDir: File = {
     val dir = new File(
-      s"./target/scala-2.11/classes"
+      s"./target/scala-${Config.scalaVersion}/classes"
     )
     if (!dir.exists)
       throw new FileNotFoundException(
@@ -61,10 +62,10 @@ object ScoverageCompiler {
   }
 
   private def runtimeClasses: File = new File(
-    s"./scalac-scoverage-runtime/jvm/target/scala-2.11/classes"
+    s"./scalac-scoverage-runtime/jvm/target/scala-${Config.scalaVersion}/classes"
   )
 
-  private def findScalaJar(artifactId: String): File =
+  private def findScalaJar(artifactId: String): File = {
     findIvyJar("org.scala-lang", artifactId, ScalaVersion)
       .orElse(findCoursierJar(artifactId, ScalaVersion))
       .getOrElse {
@@ -72,6 +73,7 @@ object ScoverageCompiler {
           s"Could not locate $artifactId/$ScalaVersion"
         )
       }
+  }
 
   private def findCoursierJar(
                                artifactId: String,

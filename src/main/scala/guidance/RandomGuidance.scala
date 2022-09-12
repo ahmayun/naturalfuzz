@@ -1,14 +1,18 @@
 package guidance
 
-import fuzzer.{Guidance, Schema}
+import fuzzer.{Global, Guidance, Schema}
 import scoverage.Coverage
-import utils.FileUtils
+import scoverage.Platform.FileWriter
 import utils.MutationUtils._
 
+import java.io.File
+import scala.concurrent.duration._
 
-class RandomGuidance(val input_files: Array[String], val schemas: Array[Array[Schema[Any]]], val max_runs: Int) extends Guidance {
+
+class RandomGuidance(val input_files: Array[String], val schemas: Array[Array[Schema[Any]]], val duration: Int) extends Guidance {
   var last_input = input_files
   var coverage: Coverage = new Coverage
+  val deadline = duration.seconds.fromNow
   var runs = 0
   val max_row_dups = 10
   val max_col_dups = 10
@@ -41,12 +45,17 @@ class RandomGuidance(val input_files: Array[String], val schemas: Array[Array[Sc
   }
 
   override def isDone(): Boolean = {
-    runs += 1
-    runs > this.max_runs
+    !deadline.hasTimeLeft()
   }
 
-  override def updateCoverage(coverage: Coverage, crashed: Boolean = true): Boolean = {
-    this.coverage = coverage
+  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
+    if(Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
+      this.coverage = cov
+      new FileWriter(new File(s"$outDir/cumulative.csv"), true)
+        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
+        .append("\n")
+        .flush()
+    }
     true
   }
 }

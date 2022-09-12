@@ -18,20 +18,17 @@ object CommuteType {
 
     val sc = new SparkContext(conf)
 
-    val tripLines = sc.textFile(args(0)) // "datasets/fuzzing_seeds/commute/trips"
+    val tripLines = sc.textFile(args(0)).map(_.split(",")) // "datasets/fuzzing_seeds/commute/trips"
       val trips = tripLines
-        .map { s =>
-          val cols = s.split(",")
-          if(Integer.parseInt(cols(4)) == 0){
-            throw new RuntimeException()
-          }
-          (cols(1), Integer.parseInt(cols(3)) / Integer.parseInt(cols(4)))
+        .map { cols =>
+          (cols(1), cols(3).toFloat / cols(4).toFloat)
         }
       val types = trips
         .map { s =>
           val speed = s._2
-          if(speed < 0) {
+          if(speed <= 0) {
             throw new RuntimeException()
+//            ("error", 1.0f)
           } else if (speed > 40) {
             ("car", speed)
           } else if (speed > 15) {
@@ -45,6 +42,7 @@ object CommuteType {
       // other functions to consider: intstreaming
       types.aggregateByKey((0.0, 0))(
         { case ((sum, count), next) =>
+          if (sum > 2456573 && sum < 3456573) throw new RuntimeException()
           (sum + next, count + 1)
         },
         { case ((sum1, count1), (sum2, count2)) =>
@@ -52,9 +50,7 @@ object CommuteType {
         }
       ).mapValues({
         case (sum, count) =>
-          if(sum > 10.0 && sum < 14.0) {
-            throw new RuntimeException()
-          }
+          if(sum > 10.0 && sum < 14.0) throw new RuntimeException()
           sum / count
       }).collect().take(10).foreach(println)
 

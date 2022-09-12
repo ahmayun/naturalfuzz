@@ -52,20 +52,20 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
   }
 
   def /(x: TaintedInt): TaintedInt = {
-    TaintedInt(value / x.value, newProvenance(x.getProvenance()), expr / x.expr)
+    TaintedInt(value / x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr / x.expr)
   }
 
 
   def +(x: TaintedInt): TaintedInt = {
-    TaintedInt(value + x.value, newProvenance(x.getProvenance()), expr + x.expr)
+    TaintedInt(value + x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr + x.expr)
   }
 
   def -(x: TaintedInt): TaintedInt = {
-    TaintedInt(value - x.value, newProvenance(x.getProvenance()), expr - x.expr)
+    TaintedInt(value - x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr - x.expr)
   }
 
   def *(x: TaintedInt): TaintedInt = {
-    TaintedInt(value * x.value, newProvenance(x.getProvenance()), expr * x.expr)
+    TaintedInt(value * x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr * x.expr)
   }
 
   def %(x: Int): TaintedInt = {

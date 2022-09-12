@@ -46,6 +46,7 @@ object MonitorAttacher extends Transformer {
     (dfoName match {
       case Constants.KEY_JOIN => s"${Constants.MAP_TRANSFORMS(Constants.KEY_JOIN)}($rddName, ${args.mkString(",")}, $id)".parse[Term].get
       case Constants.KEY_GBK => s"${Constants.MAP_TRANSFORMS(Constants.KEY_GBK)}($rddName, $id)".parse[Term].get
+      case Constants.KEY_RBK => s"${Constants.MAP_TRANSFORMS(Constants.KEY_RBK)}($rddName, ${args.mkString(",")}, $id)".parse[Term].get
 //      case Constants.KEY_FILTER => s"${Constants.MAP_TRANSFORMS(Constants.KEY_FILTER)}($rddName, ${args.mkString(",")}, $id)".parse[Term].get
       case _ => dfo
     }, id+1)
