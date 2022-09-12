@@ -43,7 +43,7 @@ object RunRIGFuzz {
       inputFiles)
 
     // Preprocessing and Fuzzing
-    val pathExpressions= SymbolicExecutor.execute(symProgram)
+    val pathExpressions = SymbolicExecutor.execute(symProgram)
     val filterQueries = RIGUtils.createFilterQueries(pathExpressions)
     filterQueries.filterQueries.zipWithIndex.foreach{case (q, i) => println(i, q.tree)}
     val satRDDs = filterQueries.createSatVectors(program.args) // create RDD with bit vector and bit counts

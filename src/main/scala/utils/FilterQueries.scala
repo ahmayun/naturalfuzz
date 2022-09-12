@@ -17,7 +17,7 @@ class FilterQueries(val symExResult: SymExResult) {
     val sc = new SparkContext(null)
     val rdds = datasets.map(sc.textFile)
     val filterFns = filterQueries.map(_.tree.createFilterFn(0)) // TODO IMPORTANT: This assumes application uses only one dataset
-    val satRDD = Array( rdds(0).map {
+    val satRDD = Array(rdds(0).map {
       row =>
         val cols = row.split(Config.delimiter)
         val sat = makeSatVector(filterFns, cols)
