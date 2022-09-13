@@ -20,7 +20,7 @@ object Config {
   val scoverageResultsDir = "target/scoverage-results"
   val faultTest = false
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "WebpageSegmentation"
+  val benchmarkName = "RIGTest"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val deepFaults = false
   val seedType = "mixmatch" //either full, reduced or weak

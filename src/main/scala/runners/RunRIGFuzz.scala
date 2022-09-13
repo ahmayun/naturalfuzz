@@ -27,7 +27,10 @@ object RunRIGFuzz {
     // ========================================================
 
     val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
-    val coverageOutDir = Config.scoverageResultsDir
+
+    val outputDir = s"${Config.resultsDir}/RIGFuzz"
+    val scoverageResultsDir = s"$outputDir/scoverage-results"
+
     val program = new Program(
       benchmarkName,
       benchmarkClass,
@@ -45,7 +48,7 @@ object RunRIGFuzz {
     // Preprocessing and Fuzzing
     val pathExpressions = SymbolicExecutor.execute(symProgram)
     val filterQueries = RIGUtils.createFilterQueries(pathExpressions)
-    filterQueries.filterQueries.zipWithIndex.foreach{case (q, i) => println(i, q.tree)}
+    filterQueries.filterQueries.zipWithIndex.foreach {case (q, i) => println(i, q.tree)}
     val satRDDs = filterQueries.createSatVectors(program.args) // create RDD with bit vector and bit counts
     val minSatRDDs = satRDDs.getRandMinimumSatSet()
     val brokenRDDs: List[QueryResult] = minSatRDDs.breakIntoQueryRDDs() // not ideal, but allows me to leverage my own existing code
@@ -54,14 +57,14 @@ object RunRIGFuzz {
 //    val (queryRDDs, _) = timeFunction(() => filterQueries.getRows(program.args))
     val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(brokenRDDs))
 
-    val (stats, _, _) = Fuzzer.Fuzz(program, guidance, coverageOutDir)
+    val (stats, _, _) = Fuzzer.Fuzz(program, guidance, outputDir)
     
-    val coverage = Serializer.deserialize(new File(s"$coverageOutDir/scoverage.coverage"))
-    val measurementFiles = IOUtils.findMeasurementFiles(coverageOutDir)
+    val coverage = Serializer.deserialize(new File(s"$scoverageResultsDir/scoverage.coverage"))
+    val measurementFiles = IOUtils.findMeasurementFiles(scoverageResultsDir)
     val measurements = IOUtils.invoked(measurementFiles)
 
     coverage.apply(measurements)
-    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverageOutDir)).write(coverage)
+    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageResultsDir)).write(coverage)
     println("=== qrdds ====")
     brokenRDDs.foreach{
       q =>

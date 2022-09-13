@@ -4,7 +4,7 @@ import sparkwrapper.SparkContextWithDP
 import symbolicexecution.SymExResult
 import taintedprimitives._
 
-object RIGTest {
+object RIGTest extends Serializable {
   def main(args: Array[String]): SymExResult = {
     println(s"WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
