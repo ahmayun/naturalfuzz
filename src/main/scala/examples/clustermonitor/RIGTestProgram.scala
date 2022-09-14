@@ -12,7 +12,7 @@ object RIGTestProgram extends Serializable {
     if (args.length < 2) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(1))
     sparkConf.setAppName("RIGTestProgram")
-    val testData = "mixmatch-data/rig-test/boxes"
+    val testData = args(0)
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
     val testRDD = ctx.textFileProv(testData, _.split(','))
     val testBoxes = testRDD.map(r => r.slice(1, r.length).map(_.toInt).toVector)
