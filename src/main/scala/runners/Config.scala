@@ -83,7 +83,7 @@ object Config {
     "FlightDistance" -> Array("seeds/weak_seed/FlightDistance/flights", "seeds/weak_seed/FlightDistance/airports_data"),
     "WebpageSegmentation" -> Array("seeds/weak_seed/webpage_segmentation/before", "seeds/weak_seed/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/weak_seed/commute/trips"),
-    "CommuteTypeFull" ->  Array(),
+    "CommuteTypeFull" ->  Array("seeds/weak_seed/commute_type/trips", "seeds/weak_seed/commute_type/locations"),
     "Delays" -> Array("seeds/weak_seed/delays/station1", "seeds/weak_seed/delays/station2"),
     "Customers" -> Array("seeds/weak_seed/orders/customers", "seeds/weak_seed/orders/orders"),
     "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries"),
