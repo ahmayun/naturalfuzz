@@ -113,6 +113,20 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_NUMERICAL),
       new Schema(Schema.TYPE_NUMERICAL),
       new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
       new Schema(Schema.TYPE_OTHER)
     )
   )
