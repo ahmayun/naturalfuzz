@@ -45,6 +45,7 @@ object Config {
     "DeliveryFaults" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,2)), ListBuffer((0,0,13)), ListBuffer((0,0,16)), ListBuffer((0,0,27)), ListBuffer((0,0,28)))),
     "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,10)), ListBuffer((1,0,14)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,6), (1,5,5), (1,5,6), (1,6,5), (1,6,6)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,7), (1,5,5), (1,5,7), (1,6,5), (1,6,7)), ListBuffer((1,4,5), (1,1,5)), ListBuffer((1,4,6), (1,1,6)), ListBuffer((1,4,7), (1,1,7)), ListBuffer((1,4,8), (1,1,8)), ListBuffer((1,4,9), (1,1,9)), ListBuffer((1,2,8), (1,3,8)), ListBuffer((1,2,9), (1,3,9)))),
     "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,1)), ListBuffer((0,3,2)), ListBuffer((0,3,3)), ListBuffer((0,3,4)))),
+    "CommuteTypeFull" ->  new ProvInfo(),
     "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,5)), ListBuffer((0,1,0)), ListBuffer((0,1,6)), ListBuffer((0,1,1)), ListBuffer((0,1,7)), ListBuffer((0,1,2)), ListBuffer((0,1,8)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
     "OldExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,1)),ListBuffer((0,0,2)))),
@@ -65,6 +66,7 @@ object Config {
     "DeliveryFaults" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)))),
     "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,0)), ListBuffer((1,0,0)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,6,0), (1,5,0), (1,0,0)))),
     "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)))),
+    "CommuteTypeFull" ->  new ProvInfo(),
     "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
     "OldExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,0)),ListBuffer((0,0,0)))),
@@ -81,6 +83,7 @@ object Config {
     "FlightDistance" -> Array("seeds/weak_seed/FlightDistance/flights", "seeds/weak_seed/FlightDistance/airports_data"),
     "WebpageSegmentation" -> Array("seeds/weak_seed/webpage_segmentation/before", "seeds/weak_seed/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/weak_seed/commute/trips"),
+    "CommuteTypeFull" ->  Array(),
     "Delays" -> Array("seeds/weak_seed/delays/station1", "seeds/weak_seed/delays/station2"),
     "Customers" -> Array("seeds/weak_seed/orders/customers", "seeds/weak_seed/orders/orders"),
     "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries"),
@@ -100,6 +103,7 @@ object Config {
   val mapInputFilesFull: Map[String, Array[String]] = Map(
     "WebpageSegmentation" -> Array("seeds/full_data/webpage_segmentation/before", "seeds/full_data/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/full_data/trips"),
+    "CommuteTypeFull" ->  Array("seeds/full_data/commute_type/trips","seeds/full_data/commute_type/locations"),
     "Customers" -> Array("seeds/full_data/customers/customers", "seeds/full_data/customers/orders"),
     "FlightDistance" -> Array("seeds/full_data/LongFlights/flights", "seeds/full_data/LongFlights/airports"),
     "DeliveryFaults" -> Array("seeds/full_data/deliveries"),
@@ -109,6 +113,7 @@ object Config {
   val mapInputFilesReduced: Map[String, Array[String]] = Map(
     "WebpageSegmentation" -> Array("seeds/reduced_data/webpage_segmentation/before", "seeds/reduced_data/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/reduced_data/trips"),
+    "CommuteTypeFull" ->  Array(),
     "Customers" -> Array("seeds/reduced_data/customers/customers", "seeds/reduced_data/customers/orders"),
     "FlightDistance" -> Array("seeds/reduced_data/LongFlights/flights", "seeds/reduced_data/LongFlights/airports"),
     "DeliveryFaults" -> Array("seeds/reduced_data/deliveries"),
@@ -134,13 +139,14 @@ object Config {
 
 
   def Switch(normal: Array[String] => Unit, faulty: Array[String] => Unit, switch: Boolean): Array[String] => Unit = {
-    if (switch) faulty else normal
+    if (switch) faulty else throw new Exception("You want to fuzz the faulty one") // normal
   }
 
   val mapFunFuzzables: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](elems =
     "FlightDistance" -> Switch(fuzzable.FlightDistance.main, faulty.FlightDistance.main, faultTest),
     "WebpageSegmentation" -> Switch(fuzzable.WebpageSegmentation.main, faulty.WebpageSegmentation.main, faultTest),
     "CommuteType" -> Switch(fuzzable.CommuteType.main, faulty.CommuteType.main, faultTest),
+    "CommuteTypeFull" ->  Switch(null, faulty.CommuteTypeFull.main, faultTest),
     "Delays" -> Switch(fuzzable.Delays.main, faulty.Delays.main, faultTest),
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
     "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
@@ -170,7 +176,8 @@ object Config {
   val mapFunProbeAble: Map[String, Array[String] => ProvInfo] = Map[String, Array[String] => ProvInfo](elems =
     "FlightDistance" -> monitored.FlightDistance.main,
     "WebpageSegmentation" -> monitored.WebpageSegmentation.main,
-//    "CommuteType" -> monitored.CommuteType.main,
+    "CommuteType" -> monitored.CommuteType.main,
+    "CommuteTypeFull" -> monitored.CommuteTypeFull.main,
     "Delays" -> monitored.Delays.main,
     "Customers" -> monitored.Customers.main,
     "DeliveryFaults" -> monitored.DeliveryFaults.main,
@@ -189,6 +196,7 @@ object Config {
     "FlightDistance" -> BenchmarkSchemas.SYNTHETIC3,
     "WebpageSegmentation" -> BenchmarkSchemas.SEGMENTATION,
     "CommuteType" -> BenchmarkSchemas.COMMUTE,
+    "CommuteType" -> BenchmarkSchemas.COMMUTEFULL,
     "Delays" -> BenchmarkSchemas.DELAYS,
     "Customers" -> BenchmarkSchemas.CUSTOMERS,
     "DeliveryFaults" -> BenchmarkSchemas.FAULTS,

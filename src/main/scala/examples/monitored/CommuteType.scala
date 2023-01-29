@@ -8,7 +8,7 @@ import provenance.data.Provenance.setProvenanceType
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives.Utils
 object CommuteType extends Serializable {
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     conf.setMaster("local[*]")
     conf.setAppName("CommuteTime")

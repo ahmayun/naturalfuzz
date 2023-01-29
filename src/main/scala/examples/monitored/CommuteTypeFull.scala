@@ -7,7 +7,7 @@ import taintedprimitives.SymImplicits._
 import fuzzer.ProvInfo
 
 object CommuteTypeFull extends Serializable {
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): ProvInfo = {
     val conf = new SparkConf()
     conf.setMaster("local[*]")
     conf.setAppName("CommuteTime")

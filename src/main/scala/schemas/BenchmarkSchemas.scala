@@ -101,6 +101,22 @@ object BenchmarkSchemas {
     )
   )
 
+  val COMMUTEFULL = Array[Array[Schema[Any]]](
+    Array(
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL)
+    ),
+    Array(
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_NUMERICAL),
+      new Schema(Schema.TYPE_OTHER)
+    )
+  )
+
   val DELAYS = Array[Array[Schema[Any]]](
     Array(
       new Schema(Schema.TYPE_OTHER),
