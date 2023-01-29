@@ -57,23 +57,23 @@ popd || exit 1
 #          seeds/weak_seed/webpage_segmentation/*
 
 START_TIME=$(date +"%T %D")
-echo -e "Subject:[START] Jazzer $(hostname)\n$NAME $START_TIME" | sendmail ahmad35@vt.edu
+#echo -e "Subject:[START] Jazzer $(hostname)\n$NAME $START_TIME" | sendmail ahmad35@vt.edu
 
 timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
                 -v "$(pwd)"/seeds:/seeds \
                 -v "$(pwd)"/$DIR_JAZZER_OUT/reproducers:/reproducers \
-                -v "$(pwd)"/$DIR_JAZZER_OUT/log:/log \
                 -v "$(pwd)"/target/inputs:/inputs \
                 cifuzz/jazzer \
                 -len_control=0 \
                 --cp=/fuzzing/ProvFuzz-assembly-1.0.jar \
                 --target_class=$CLASS_TARGET \
                 --reproducer_path=/reproducers \
-                --log_dir=/log \
                 --target_args="$DIR_JAZZER_OUT/measurements $MODE $PACKAGE" \
                 --keep_going=200
+#                -v "$(pwd)"/$DIR_JAZZER_OUT/log:/log \
+#                --log_dir=/log \
 
-echo -e "Subject:[END] Jazzer $(hostname)\n$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
+#echo -e "Subject:[END] Jazzer $(hostname)\n$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
 
 chown -R $(whoami):$(whoami) target/scala-$SCALA_VER/target
 chown $(whoami):$(whoami) target/scala-$SCALA_VER/crash*
