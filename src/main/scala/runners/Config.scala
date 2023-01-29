@@ -45,7 +45,7 @@ object Config {
     "DeliveryFaults" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,2)), ListBuffer((0,0,13)), ListBuffer((0,0,16)), ListBuffer((0,0,27)), ListBuffer((0,0,28)))),
     "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,10)), ListBuffer((1,0,14)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,6), (1,5,5), (1,5,6), (1,6,5), (1,6,6)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,7), (1,5,5), (1,5,7), (1,6,5), (1,6,7)), ListBuffer((1,4,5), (1,1,5)), ListBuffer((1,4,6), (1,1,6)), ListBuffer((1,4,7), (1,1,7)), ListBuffer((1,4,8), (1,1,8)), ListBuffer((1,4,9), (1,1,9)), ListBuffer((1,2,8), (1,3,8)), ListBuffer((1,2,9), (1,3,9)))),
     "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,1)), ListBuffer((0,3,2)), ListBuffer((0,3,3)), ListBuffer((0,3,4)))),
-    "CommuteTypeFull" ->  new ProvInfo(),
+    "CommuteTypeFull" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,310087), (1,0,30627)), ListBuffer((0,1,310087), (1,0,30627)), ListBuffer((0,1,310087), (1,0,30627)), ListBuffer((0,1,310087), (1,0,30627)), ListBuffer((0,1,310087), (1,0,30627)))),
     "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,5)), ListBuffer((0,1,0)), ListBuffer((0,1,6)), ListBuffer((0,1,1)), ListBuffer((0,1,7)), ListBuffer((0,1,2)), ListBuffer((0,1,8)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
     "OldExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,1)),ListBuffer((0,0,2)))),
