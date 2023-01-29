@@ -165,12 +165,8 @@ object Monitors extends Serializable {
   def finalizeProvenance(): ProvInfo = {
     val x = provInfo.simplify()
     println(x)
-    println("done")
-    this.minData.foreach {
-      case (ds, data) =>
-        println(s"=== DS:$ds ====")
-        println(data.mkString("\n"))
-    }
+    println("min-data")
+
     x
   }
 
