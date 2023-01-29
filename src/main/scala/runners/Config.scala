@@ -113,7 +113,7 @@ object Config {
   val mapInputFilesReduced: Map[String, Array[String]] = Map(
     "WebpageSegmentation" -> Array("seeds/reduced_data/webpage_segmentation/before", "seeds/reduced_data/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/reduced_data/trips"),
-    "CommuteTypeFull" ->  Array(),
+    "CommuteTypeFull" ->  Array("seeds/reduced_data/commute_type/trips", "seeds/reduced_data/commute_type/locations"),
     "Customers" -> Array("seeds/reduced_data/customers/customers", "seeds/reduced_data/customers/orders"),
     "FlightDistance" -> Array("seeds/reduced_data/LongFlights/flights", "seeds/reduced_data/LongFlights/airports"),
     "DeliveryFaults" -> Array("seeds/reduced_data/deliveries"),
