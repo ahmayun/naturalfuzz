@@ -166,7 +166,11 @@ object Monitors extends Serializable {
     val x = provInfo.simplify()
     println(x)
     println("min-data")
-
+    this.minData.foreach {
+      case (ds, data) =>
+        println(s"=== DS:$ds ====")
+        println(data.mkString("\n"))
+    }
     x
   }
 
