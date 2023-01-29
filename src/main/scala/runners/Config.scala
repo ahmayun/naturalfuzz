@@ -196,7 +196,7 @@ object Config {
     "FlightDistance" -> BenchmarkSchemas.SYNTHETIC3,
     "WebpageSegmentation" -> BenchmarkSchemas.SEGMENTATION,
     "CommuteType" -> BenchmarkSchemas.COMMUTE,
-    "CommuteType" -> BenchmarkSchemas.COMMUTEFULL,
+    "CommuteTypeFull" -> BenchmarkSchemas.COMMUTEFULL,
     "Delays" -> BenchmarkSchemas.DELAYS,
     "Customers" -> BenchmarkSchemas.CUSTOMERS,
     "DeliveryFaults" -> BenchmarkSchemas.FAULTS,
