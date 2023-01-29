@@ -78,11 +78,13 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
 chown -R $(whoami):$(whoami) target/scala-$SCALA_VER/target
 chown $(whoami):$(whoami) target/scala-$SCALA_VER/crash*
 
-mv target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
-mv target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
+mv -v -f target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
+mv -v -f target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
 
+echo "Removing target/scala-$SCALA_VER/target"
 rm -rf target/scala-$SCALA_VER/target
 
+echo "Consolidating measurements"
 java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.CoverageMeasurementConsolidator \
           $DIR_JAZZER_OUT/measurements \
@@ -90,6 +92,7 @@ java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           $DIR_JAZZER_OUT/report
 
 
+echo "Killing watchers"
 kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
 
 
