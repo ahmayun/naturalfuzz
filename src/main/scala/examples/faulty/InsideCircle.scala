@@ -5,7 +5,7 @@ import abstraction.{SparkConf, SparkContext}
 object InsideCircle {
 
   def inside(x:Int, y:Int, z:Int): Boolean ={
-    if(z > 3425625 && z < 4364234) throw new Exception()
+    if(z > 3425625 && z < 4364234) throw new RuntimeException()
     x*x+y*y<z*z
   }
 

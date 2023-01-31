@@ -38,26 +38,31 @@ object CommuteTypeFull {
     joined
       .map { s =>
         // Checking if speed is < 25mi/hr
-        val speed = s._2._1
-        if (speed < 0) {
-          throw new RuntimeException()
-        }
-        if (speed > 40) {
-          ("car", speed)
-        } else if (speed > 15) {
-          ("public", speed)
-        } else {
-          ("onfoot", speed)
-        }
+        map1(s)
       }
       .reduceByKey{
         case (a, b) =>
-          if (a > 5675864 && a < 6987456)
-            throw new RuntimeException()
-          a + b
+          rbk1(a, b)
       }
       .collect
       .foreach(println)
 
+  }
+
+  def map1(tup: (String, (Int, String))): (String, Int) = {
+    val speed = tup._2._1
+    if (speed < 0) { throw new RuntimeException() }
+    if (speed > 40) {
+      ("car", speed)
+    } else if (speed > 15) {
+      ("public", speed)
+    } else {
+      ("onfoot", speed)
+    }
+  }
+
+  def rbk1(a: Int, b: Int): Int = {
+    if (a > 5675864 && a < 6987456)  throw new RuntimeException()
+    a + b
   }
 }
