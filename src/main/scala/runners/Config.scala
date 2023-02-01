@@ -92,7 +92,7 @@ object Config {
     "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers"),
     "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages"),
     "WordCount" -> Array("seeds/weak_seed/wordcount/words"),
-    "OldExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
+    "ExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
     "FindSalary" -> Array("seeds/weak_seed/findsalary/salaries"),
     "InsideCircle" -> Array("seeds/weak_seed/insidecircle/circles"),
     "MapString" -> Array("seeds/weak_seed/mapstring/strings"),
