@@ -23,9 +23,9 @@ object CommuteType {
       }
       val types = trips.map { s => 
         val speed = s._2
-        if (_root_.monitoring.Monitors.monitorPredicate(speed > 40, (List[Any](speed), List[Any]()), 0)) {
+        if (_root_.monitoring.Monitors.monitorPredicateSymEx(speed > 40, (List[Any](speed), List[Any]()), 0)) {
           ("car", speed)
-        } else if (_root_.monitoring.Monitors.monitorPredicate(speed > 15, (List[Any](speed), List[Any](speed)), 1)) {
+        } else if (_root_.monitoring.Monitors.monitorPredicateSymEx(speed > 15, (List[Any](speed), List[Any](speed)), 1)) {
           ("public", speed)
         } else {
           ("onfoot", speed)

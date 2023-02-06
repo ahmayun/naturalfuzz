@@ -2,7 +2,7 @@ package examples.fuzzable
 
 import abstraction.{SparkConf, SparkContext}
 
-object RIGTest {
+object RIGTestProgram {
 
   def main(args: Array[String]): Unit = {
     println(s"WebpageSegmentation args ${args.mkString(",")}")

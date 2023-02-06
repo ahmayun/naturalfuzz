@@ -25,7 +25,7 @@ object Customers {
     //  10308,2,1996-09-18
 
     val o = orders
-      .map{
+      .map {
         case Array(_,cid,date,iid) => (cid, (iid, date.toInt))
       }
 

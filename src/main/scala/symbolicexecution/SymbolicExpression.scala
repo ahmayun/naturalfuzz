@@ -4,7 +4,7 @@ import abstraction.BaseRDD
 import runners.Config
 import utils.{Query, RDDLocations}
 
-case class SymbolicExpression (expr: SymbolicTree) {
+case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
 
   def or(symbolicExpression: SymbolicExpression): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("||"), symbolicExpression.expr))
@@ -50,6 +50,10 @@ case class SymbolicExpression (expr: SymbolicTree) {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("<"), x.expr))
   }
 
+  def <(x: Int): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("<"), new SymbolicInteger(x).expr))
+  }
+
   def <=(x: SymbolicExpression): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("<="), x.expr))
   }
@@ -60,6 +64,14 @@ case class SymbolicExpression (expr: SymbolicTree) {
 
   def >=(x: SymbolicExpression): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode(">="), x.expr))
+  }
+
+  def ==(x: SymbolicExpression): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("=="), x.expr))
+  }
+
+  def ==(x: Int): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("=="), new SymbolicInteger(x).expr))
   }
 
   def toCNF: SymbolicExpression = {

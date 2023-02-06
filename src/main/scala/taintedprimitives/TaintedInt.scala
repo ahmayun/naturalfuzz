@@ -80,7 +80,13 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
     * Operators not supported yet
     */
 
-  def ==(x: Int): Boolean = value == x
+  def ==(x: Int): TaintedBoolean = {
+    TaintedBoolean(value == x, getProvenance(), expr == x)
+  }
+
+  def ==(x: TaintedInt): TaintedBoolean = {
+    TaintedBoolean(value == x.value, newProvenance(x.getProvenance()), expr == x.expr)
+  }
 
   def toByte: Byte = value.toByte
 
@@ -148,7 +154,9 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
 
   def <(x: Char): Boolean = value < x
 
-  def <(x: Int): Boolean = value < x
+  def <(x: Int): TaintedBoolean = {
+    TaintedBoolean(value < x, getProvenance(), expr < x)
+  }
   def <(x: TaintedInt): TaintedBoolean = {
     TaintedBoolean(value < x.value, newProvenance(x.getProvenance()), expr < x.expr)
   }
@@ -301,6 +309,8 @@ case class TaintedInt(override val value: Int, p : Provenance, expr: SymbolicExp
 }
 
 object TaintedInt {
+
+  val MaxValue = new TaintedInt(Int.MaxValue)
   implicit def lift = Liftable[TaintedInt] { si =>
     q"(_root_.taintedprimitives.TaintedInt(${si.value}, ${si.p}))"
   }

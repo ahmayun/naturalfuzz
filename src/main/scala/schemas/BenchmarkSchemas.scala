@@ -101,36 +101,6 @@ object BenchmarkSchemas {
     )
   )
 
-  val COMMUTEFULL = Array[Array[Schema[Any]]](
-    Array(
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_NUMERICAL)
-    ),
-    Array(
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_NUMERICAL),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER),
-      new Schema(Schema.TYPE_OTHER)
-    )
-  )
-
   val DELAYS = Array[Array[Schema[Any]]](
     Array(
       new Schema(Schema.TYPE_OTHER),
@@ -241,6 +211,19 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_OTHER)
     )
   )
+
+  val RIGTESTJOIN = Array[Array[Schema[Any]]](
+    // http://www.youtube.com,1000,100,100,920,2,advertisement
+    Array(
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL)
+    ),
+    Array(
+      new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_NUMERICAL)
+    )
+  )
+
 
   val INCOMEAGGREGATION = Array[Array[Schema[Any]]](
     Array(

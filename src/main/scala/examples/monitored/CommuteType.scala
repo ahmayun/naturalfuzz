@@ -5,7 +5,7 @@ import provenance.data.Provenance.setProvenanceType
 import sparkwrapper.SparkContextWithDP
 
 object CommuteType extends Serializable {
-  def main(args: Array[String]): ProvInfo = {
+  def main(args: Array[String]): Unit = {
     val conf = new SparkConf()
     conf.setMaster("local[*]")
     conf.setAppName("CommuteType")

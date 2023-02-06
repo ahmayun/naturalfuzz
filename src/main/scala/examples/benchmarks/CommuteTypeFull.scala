@@ -2,47 +2,47 @@ package examples.benchmarks
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object CommuteTypeFull extends Serializable {
+object CommuteTypeFull {
 
   def main(args: Array[String]) {
     val conf = new SparkConf()
     conf.setMaster("local[*]")
     conf.setAppName("CommuteTime")
-    val sc = new SparkContext(conf)
-    sc.setLogLevel("ERROR")
 
-    val trips = sc.textFile(args(0)).map(s => s.split(","))
-      .map { cols =>
+
+    val sc = new SparkContext(conf)
+    //val tripLines = sc.textFileProv("datasets/commute/trips") //sc.parallelize(Array(data1(i)))
+    // halving dataset size for program stability in Titian/BigSift
+    val tripLines = sc.textFile(args(0)) // "datasets/commute/trips"
+    try {
+      val trips = tripLines
+        .map { s =>
+          val cols = s.split(",")
           (cols(1), Integer.parseInt(cols(3)) / Integer.parseInt(cols(4)))
         }
-    val locations = sc.textFile(args(1)).map(s => s.filter(_ != '\"').split(","))
-      .map { cols =>
-        (cols(0), cols(3))
-      }
-      .filter {
-        s =>
-          s._2.equals("Los Angeles")
-      }
-
-    val joined = trips.join(locations)
-    joined
-      .map { s =>
-        // Checking if speed is < 25mi/hr
-        val speed = s._2._1
-        if (speed > 40) {
-          ("car", speed)
-        } else if (speed > 15) {
-          ("public", speed)
-        } else {
-          ("onfoot", speed)
+      val types = trips
+        .map { s =>
+          val speed = s._2
+          if (speed > 40) {
+            ("car", speed)
+          } else if (speed > 15) {
+            ("public", speed)
+          } else {
+            ("onfoot", speed)
+          }
         }
-      }
-      .reduceByKey {
-        case (a, b) =>
-          a + b
-      }
-      .collect
-      .foreach(println)
-  }
 
+      //val out = AggregationFunctions.sumByKey(types)// types.reduceByKey(_ + _)
+      // other functions to consider: intstreaming
+      val out = types.aggregateByKey((0.0, 0))(
+        { case ((sum, count), next) => (sum + next, count + 1) },
+        { case ((sum1, count1), (sum2, count2)) => (sum1 + sum2, count1 + count2) }
+      ).mapValues({ case (sum, count) => sum.toDouble / count }).collect().take(10).foreach(println)
+
+    }
+    catch {
+      case e: Exception =>
+        e.printStackTrace()
+    }
+  }
 }

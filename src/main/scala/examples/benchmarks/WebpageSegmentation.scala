@@ -46,7 +46,7 @@ object WebpageSegmentation extends Serializable {
   def intersects(rect1: IndexedSeq[Int],
                  rect2: IndexedSeq[Int]): Option[(Int, Int, Int, Int)] = {
 //  Path condition for reaching this function
-//  boxes_before(0) == boxes_after(0) && boxes_before(1)(1) != boxes_after(1)(1) && after(0) == after(0)
+//  boxes_before.row(x).col(0) == boxes_after.row(y).col(0) && boxes_before.row(x).col(1) != boxes_after.row(y).col(1) && after.row(0) == after(0)
     val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
     val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
     val endpointax = aSWx + aWidth // before(1+4)

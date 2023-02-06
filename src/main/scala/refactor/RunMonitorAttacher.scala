@@ -9,7 +9,7 @@ object RunMonitorAttacher {
   def main(args: Array[String]): Unit = {
     val outputFolder = "src/main/scala/examples/symbolic"
     val inputFolder = "src/main/scala/examples/benchmarks"
-    val testName = "RIGTest"
+    val testName = "RIGTestProgram"
     new File(outputFolder).mkdirs()
     val inputFile = s"$inputFolder/$testName.scala"
 

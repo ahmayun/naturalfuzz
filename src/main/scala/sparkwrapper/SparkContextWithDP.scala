@@ -28,6 +28,10 @@ class SparkContextWithDP(sc: SparkContext) {
     sc.setLogLevel(s)
   }
 
+  def stop(): Unit = {
+    sc.stop()
+  }
+
   private def textFileProvenanceCreator[T: ClassTag](filepath: String,
                                            followup: (String, Provenance) => T): RDD[T] = {
     val rdd = sc.textFile(filepath)

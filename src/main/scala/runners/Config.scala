@@ -19,12 +19,13 @@ object Config {
   val iterations = 10
   val scoverageResultsDir = "target/scoverage-results"
   val faultTest = false
+  val benchmarkPkg = "faulty"
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "RIGTest"
+  val benchmarkName = "CommuteType"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val deepFaults = false
   val seedType = "mixmatch" //either full, reduced or weak
-  val benchmarkClass = s"examples.${if (faultTest) "faulty" else "fuzzable"}.$benchmarkName"
+  val benchmarkClass = s"examples.$benchmarkPkg.$benchmarkName"
 
   val delimiter = ","
   val mutateProbs = Array( // 0:M1, 1:M2 ... 5:M6
@@ -52,11 +53,11 @@ object Config {
     "DeliveryFaults" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,2)), ListBuffer((0,0,13)), ListBuffer((0,0,16)), ListBuffer((0,0,27)), ListBuffer((0,0,28)))),
     "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,10)), ListBuffer((1,0,14)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,6), (1,5,5), (1,5,6), (1,6,5), (1,6,6)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,0,5), (1,0,7), (1,5,5), (1,5,7), (1,6,5), (1,6,7)), ListBuffer((1,4,5), (1,1,5)), ListBuffer((1,4,6), (1,1,6)), ListBuffer((1,4,7), (1,1,7)), ListBuffer((1,4,8), (1,1,8)), ListBuffer((1,4,9), (1,1,9)), ListBuffer((1,2,8), (1,3,8)), ListBuffer((1,2,9), (1,3,9)))),
     "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,1)), ListBuffer((0,3,2)), ListBuffer((0,3,3)), ListBuffer((0,3,4)))),
-    "CommuteTypeFull" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0), (1,0,0)), ListBuffer((0,1,0), (1,0,1)), ListBuffer((0,1,0), (1,0,2)), ListBuffer((0,1,0), (1,0,3)), ListBuffer((0,1,0), (1,0,4)))),
+    "CommuteTypeFull" ->  new ProvInfo(ListBuffer()),
     "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,5)), ListBuffer((0,1,0)), ListBuffer((0,1,6)), ListBuffer((0,1,1)), ListBuffer((0,1,7)), ListBuffer((0,1,2)), ListBuffer((0,1,8)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
-    "ExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
+    "OldExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,1)),ListBuffer((0,0,2)))),
-    "IncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,1)), ListBuffer((0,1,2)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
+    "OldIncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,1)), ListBuffer((0,1,2)), ListBuffer((0,1,3)), ListBuffer((0,1,4)))),
     "InsideCircle" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,1,0)),ListBuffer((0,2,0)))),
     "LoanType" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "MapString" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
@@ -73,11 +74,10 @@ object Config {
     "DeliveryFaults" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)), ListBuffer((0,0,0)))),
     "WebpageSegmentation" ->  new ProvInfo(ListBuffer(ListBuffer((1,0,0)), ListBuffer((1,0,0)), ListBuffer((0,0,0), (0,5,0), (0,6,0), (1,6,0), (1,5,0), (1,0,0)))),
     "CommuteType" ->  new ProvInfo(ListBuffer(ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)), ListBuffer((0,3,0)))),
-    "CommuteTypeFull" ->  new ProvInfo(),
     "AgeAnalysis" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
-    "ExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
+    "OldExternalCall" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "FindSalary" ->  new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,0,0)),ListBuffer((0,0,0)))),
-    "IncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
+    "OldIncomeAggregation" ->  new ProvInfo(ListBuffer(ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)), ListBuffer((0,1,0)))),
     "InsideCircle" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)),ListBuffer((0,1,0)),ListBuffer((0,2,0)))),
     "LoanType" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
     "MapString" -> new ProvInfo(ListBuffer(ListBuffer((0,0,0)))), // temp
@@ -90,7 +90,6 @@ object Config {
     "FlightDistance" -> Array("seeds/weak_seed/FlightDistance/flights", "seeds/weak_seed/FlightDistance/airports_data"),
     "WebpageSegmentation" -> Array("seeds/weak_seed/webpage_segmentation/before", "seeds/weak_seed/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/weak_seed/commute/trips"),
-    "CommuteTypeFull" ->  Array("seeds/weak_seed/commute_type/trips", "seeds/weak_seed/commute_type/locations"),
     "Delays" -> Array("seeds/weak_seed/delays/station1", "seeds/weak_seed/delays/station2"),
     "Customers" -> Array("seeds/weak_seed/orders/customers", "seeds/weak_seed/orders/orders"),
     "DeliveryFaults" -> Array("seeds/weak_seed/deliveryfaults/deliveries"),
@@ -99,18 +98,17 @@ object Config {
     "NumberSeries" -> Array("seeds/weak_seed/numberseries/numbers"),
     "AgeAnalysis" -> Array("seeds/weak_seed/ageanalysis/ages"),
     "WordCount" -> Array("seeds/weak_seed/wordcount/words"),
-    "ExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
+    "OldExternalCall" -> Array("seeds/weak_seed/externalcall/calls"),
     "FindSalary" -> Array("seeds/weak_seed/findsalary/salaries"),
     "InsideCircle" -> Array("seeds/weak_seed/insidecircle/circles"),
     "MapString" -> Array("seeds/weak_seed/mapstring/strings"),
-    "IncomeAggregation" -> Array("seeds/weak_seed/incomeaggregation/income"),
+    "OldIncomeAggregation" -> Array("seeds/weak_seed/incomeaggregation/income"),
     "LoanType" -> Array("seeds/weak_seed/loantype/info")
   )
 
   val mapInputFilesFull: Map[String, Array[String]] = Map(
     "WebpageSegmentation" -> Array("seeds/full_data/webpage_segmentation/before", "seeds/full_data/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/full_data/trips"),
-    "CommuteTypeFull" ->  Array("seeds/full_data/commute_type/trips","seeds/full_data/commute_type/locations"),
     "Customers" -> Array("seeds/full_data/customers/customers", "seeds/full_data/customers/orders"),
     "FlightDistance" -> Array("seeds/full_data/LongFlights/flights", "seeds/full_data/LongFlights/airports"),
     "DeliveryFaults" -> Array("seeds/full_data/deliveries"),
@@ -120,14 +118,13 @@ object Config {
   val mapInputFilesReduced: Map[String, Array[String]] = Map(
     "WebpageSegmentation" -> Array("seeds/reduced_data/webpage_segmentation/before", "seeds/reduced_data/webpage_segmentation/after"),
     "CommuteType" -> Array("seeds/reduced_data/trips"),
-    "CommuteTypeFull" ->  Array("seeds/reduced_data/commute_type/trips", "seeds/reduced_data/commute_type/locations"),
     "Customers" -> Array("seeds/reduced_data/customers/customers", "seeds/reduced_data/customers/orders"),
     "FlightDistance" -> Array("seeds/reduced_data/LongFlights/flights", "seeds/reduced_data/LongFlights/airports"),
     "DeliveryFaults" -> Array("seeds/reduced_data/deliveries"),
     "Delays" -> Array("seeds/reduced_data/delays/station1", "seeds/reduced_data/delays/station2"),
     "AgeAnalysis" -> Array("seeds/reduced_data/ageanalysis/ages"),
-    "ExternalCall" -> Array("seeds/reduced_data/externalcall/calls"),
-    "IncomeAggregation" -> Array("seeds/reduced_data/incomeaggregation/income"),
+    "OldExternalCall" -> Array("seeds/reduced_data/externalcall/calls"),
+    "OldIncomeAggregation" -> Array("seeds/reduced_data/incomeaggregation/income"),
     "InsideCircle" -> Array("seeds/reduced_data/insidecircle/circles"),
     "MapString" -> Array("seeds/reduced_data/mapstring/strings"),
     "MovieRating" -> Array("seeds/reduced_data/movierating/ratings"),
@@ -139,7 +136,8 @@ object Config {
   )
 
   val mapInputFilesMixMatch = Map(
-    "RIGTest" -> Array("mixmatch-data/rig-test/boxes"),
+    "RIGTestProgram" -> Array("mixmatch-data/rig-test/boxes"),
+    "RIGTestJoin" -> Array("mixmatch-data/rig-test-join/boxes1", "mixmatch-data/rig-test-join/boxes2"),
     "CommuteType" -> Array("seeds/weak_seed/commute/trips")
   )
 
@@ -152,14 +150,13 @@ object Config {
 
 
   def Switch(normal: Array[String] => Unit, faulty: Array[String] => Unit, switch: Boolean): Array[String] => Unit = {
-    if (switch) faulty else throw new Exception("You want to fuzz the faulty one") // normal
+    if (switch) faulty else normal
   }
 
   val mapFunFuzzables: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](elems =
     "FlightDistance" -> Switch(fuzzable.FlightDistance.main, faulty.FlightDistance.main, faultTest),
     "WebpageSegmentation" -> Switch(fuzzable.WebpageSegmentation.main, faulty.WebpageSegmentation.main, faultTest),
     "CommuteType" -> Switch(fuzzable.CommuteType.main, faulty.CommuteType.main, faultTest),
-    "CommuteTypeFull" ->  Switch(null, faulty.CommuteTypeFull.main, faultTest),
     "Delays" -> Switch(fuzzable.Delays.main, faulty.Delays.main, faultTest),
     "Customers" -> Switch(fuzzable.Customers.main, faulty.Customers.main, faultTest),
     "DeliveryFaults" -> Switch(fuzzable.DeliveryFaults.main, faulty.DeliveryFaults.main, faultTest),
@@ -168,20 +165,20 @@ object Config {
     "NumberSeries" -> Switch(null, faulty.NumberSeries.main, faultTest),
     "AgeAnalysis" -> Switch(null, faulty.AgeAnalysis.main, faultTest),
     "WordCount" -> Switch(null, faulty.WordCount.main, faultTest),
-    "ExternalCall" -> Switch(null, faulty.ExternalCall.main, faultTest),
+    "OldExternalCall" -> Switch(null, faulty.ExternalCall.main, faultTest),
     "FindSalary" -> Switch(null, faulty.FindSalary.main, faultTest),
     "InsideCircle" -> Switch(null, faulty.InsideCircle.main, faultTest),
     "MapString" -> Switch(null, faulty.MapString.main, faultTest),
-    "IncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
+    "OldIncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
     "LoanType" -> Switch(null, faulty.LoanType.main, faultTest),
-    "RIGTest" -> fuzzable.RIGTest.main
+    "RIGTestProgram" -> fuzzable.RIGTestProgram.main,
+    "RIGTestJoin" -> fuzzable.RIGTestJoin.main
   )
 
   val mapFunSymEx: Map[String, Array[String] => SymExResult] = Map[String, Array[String] => SymExResult](elems =
-    "RIGTest" -> examples.symbolic.RIGTest.main,
+    "RIGTestProgram" -> examples.symbolic.RIGTestProgram.main,
+    "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
     "CommuteType" -> examples.symbolic.CommuteType.main
-    "IncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
-    "LoanType" -> Switch(null, faulty.LoanType.main, faultTest)
   )
 
 
@@ -197,14 +194,13 @@ object Config {
   val mapFunProbeAble: Map[String, Array[String] => ProvInfo] = Map[String, Array[String] => ProvInfo](elems =
     "FlightDistance" -> monitored.FlightDistance.main,
     "WebpageSegmentation" -> monitored.WebpageSegmentation.main,
-    "CommuteType" -> monitored.CommuteType.main,
-    "CommuteTypeFull" -> monitored.CommuteTypeFull.main,
+//    "CommuteType" -> monitored.CommuteType.main,
     "Delays" -> monitored.Delays.main,
     "Customers" -> monitored.Customers.main,
     "DeliveryFaults" -> monitored.DeliveryFaults.main,
     "AgeAnalysis" -> monitored.AgeAnalysis.main,
-    "IncomeAggregation" -> monitored.IncomeAggregation.main,
-    "ExternalCall" -> monitored.ExternalCall.main,
+    "OldIncomeAggregation" -> monitored.IncomeAggregation.main,
+    "OldExternalCall" -> monitored.ExternalCall.main,
     "InsideCircle" -> monitored.InsideCircle.main,
     "MovieRating" -> monitored.MovieRating.main,
     "FindSalary" -> monitored.FindSalary.main,
@@ -217,21 +213,21 @@ object Config {
     "FlightDistance" -> BenchmarkSchemas.SYNTHETIC3,
     "WebpageSegmentation" -> BenchmarkSchemas.SEGMENTATION,
     "CommuteType" -> BenchmarkSchemas.COMMUTE,
-    "CommuteTypeFull" -> BenchmarkSchemas.COMMUTEFULL,
     "Delays" -> BenchmarkSchemas.DELAYS,
     "Customers" -> BenchmarkSchemas.CUSTOMERS,
     "DeliveryFaults" -> BenchmarkSchemas.FAULTS,
-    "RIGTest" -> BenchmarkSchemas.RIGTEST,
+    "RIGTestProgram" -> BenchmarkSchemas.RIGTEST,
+    "RIGTestJoin" -> BenchmarkSchemas.RIGTESTJOIN,
     "StudentGrade" -> BenchmarkSchemas.STUDENTGRADE,
     "MovieRating" -> BenchmarkSchemas.MOVIERATING,
     "NumberSeries" -> BenchmarkSchemas.NUMBERSERIES,
     "AgeAnalysis" -> BenchmarkSchemas.AGEANALYSIS,
     "WordCount" -> BenchmarkSchemas.WORDCOUNT,
-    "ExternalCall" -> BenchmarkSchemas.EXTERNALCALL,
+    "OldExternalCall" -> BenchmarkSchemas.EXTERNALCALL,
     "FindSalary" -> BenchmarkSchemas.FINDSALARY,
     "InsideCircle" -> BenchmarkSchemas.INSIDECIRCLE,
     "MapString" -> BenchmarkSchemas.MAPSTRING,
-    "IncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
+    "OldIncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
     "LoanType" -> BenchmarkSchemas.LOANTYPE
   )
 

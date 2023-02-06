@@ -4,8 +4,8 @@ import fuzzer.ProvInfo
 import org.apache.spark.rdd.RDD
 import provenance.data.{DualRBProvenance, Provenance}
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
-import symbolicexecution.{SymExResult, SymbolicExpression, SymbolicTree}
-import taintedprimitives.{TaintedBase, TaintedBoolean, Utils}
+import symbolicexecution.{OperationNode, ProvValueNode, SymExResult, SymTreeNode, SymbolicExpression, SymbolicTree}
+import taintedprimitives.{TaintedAny, TaintedBase, TaintedBoolean, Utils}
 import runners.Config
 import taintedprimitives.SymImplicits._
 
@@ -78,7 +78,7 @@ object Monitors extends Serializable {
     println("Join Prov")
     println(provInfo)
 
-    joint.map{
+    joint.map {
       case (k1, (v1, (k2, v2))) =>
         k1.setProvenance(k1.getProvenance().merge(k2.getProvenance()))
         (k1, (v1, v2))
@@ -117,7 +117,41 @@ object Monitors extends Serializable {
   //    bool
   //  }
 
-  def monitorPredicate(bool: TaintedBoolean, prov: (List[Any], List[Any]), id: Int, currentPathConstraint: SymbolicExpression = SymbolicExpression(new SymbolicTree())): Boolean = {
+  def monitorJoinSymEx[K <: TaintedBase : ClassTag, V1, V2](d1: PairProvenanceDefaultRDD[K, V1],
+                                                       d2: PairProvenanceDefaultRDD[K, V2],
+                                                       id: Int): PairProvenanceRDD[K, (V1, V2)] = {
+
+    val joint = d1.join(d2.map { case (k, v) => (k, (k, v)) })
+
+    // update global path constraints
+
+    val samples = joint
+      .map { case (k1, (_, (k2, _))) => ListBuffer(k1, k2) }
+      .take(5)
+      .to[ListBuffer]
+
+    samples.foreach { p =>
+      // update join table
+    }
+
+    samples.take(1).foreach { p =>
+      // add piece to bit vector
+      constraints.append(SymbolicExpression(
+        SymbolicTree(
+          new SymbolicTree(new ProvValueNode(p.last,p.last.getProvenance())),
+          new OperationNode("contains"),
+          new SymbolicTree(new ProvValueNode(p.head,p.head.getProvenance()))))
+      )
+    }
+
+    joint.map {
+      case (k1, (v1, (k2, v2))) =>
+//        k1.setProvenance(k1.getProvenance().merge(k2.getProvenance()))
+        (k1, (v1, v2))
+    }
+  }
+
+  def monitorPredicateSymEx(bool: TaintedBoolean, prov: (List[Any], List[Any]), id: Int, currentPathConstraint: SymbolicExpression = SymbolicExpression(new SymbolicTree())): Boolean = {
     if (bool) {
       prov._1.foreach {
         case v: TaintedBase => // this.provInfo.update(id, ListBuffer(v.getProvenance()))
@@ -135,6 +169,7 @@ object Monitors extends Serializable {
       constraints.append(pc)
       cache(id) = true
     }
+
     bool
   }
 
@@ -155,19 +190,14 @@ object Monitors extends Serializable {
     dataset.groupByKey()
   }
 
-  def monitorReduceByKey[K, V](
-                                dataset: PairProvenanceDefaultRDD[K, V],
-                                func: (V, V) => V, id: Int)
+  def monitorReduceByKey[K<:TaintedBase:ClassTag,V](
+                                                     dataset: PairProvenanceDefaultRDD[K,V],
+                                                     func: (V, V) => V, id: Int)
   : PairProvenanceRDD[K, V] = {
 
     dataset
       .sample(false, Config.percentageProv)
-      .map {
-        case (k: TaintedBase, _) =>
-          ListBuffer(k.getProvenance())
-        case _ =>
-          ListBuffer[Provenance]()
-      }
+      .map { case (k, _) => ListBuffer(k.getProvenance()) }
       .take(5)
       .to[ListBuffer]
       .foreach { p =>
@@ -187,15 +217,7 @@ object Monitors extends Serializable {
 
   // called at the end of main function
   def finalizeProvenance(): ProvInfo = {
-    val x = provInfo.simplify()
-    println(x)
-    println("min-data")
-    this.minData.foreach {
-      case (ds, data) =>
-        println(s"=== DS:$ds ====")
-        println(data.mkString("\n"))
-    }
-    x
+    provInfo.simplify()
   }
 
   def finalizeSymEx(): SymExResult = {

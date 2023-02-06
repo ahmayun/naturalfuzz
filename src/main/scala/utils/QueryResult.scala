@@ -4,7 +4,7 @@ import abstraction.BaseRDD
 import runners.Config
 import utils.MutationUtils.flipCoin
 
-class QueryResult(val filterQueryRDDs: Array[BaseRDD[String]], val query: Seq[Query], val locs: RDDLocations) {
+class QueryResult(val filterQueryRDDs: Array[BaseRDD[String]], val query: Seq[Query], val locs: RDDLocations) extends Serializable {
 
   def replaceCols(cols: Array[String], rdd: BaseRDD[String], locs: RDDLocations, ds: Int): Array[String] = {
     if (flipCoin(Config.dropMixProb))

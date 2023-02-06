@@ -6,14 +6,16 @@ import scoverage.Platform.FileWriter
 import utils.QueriedRDDs
 
 import java.io.File
+import scala.concurrent.duration.DurationInt
 
 class RIGGuidance(
                    val inputFiles: Array[String],
                    val schemas: Array[Array[Schema[Any]]],
-                   val maxRuns: Int,
+                   val duration: Int,
                    val qrdds: QueriedRDDs) extends Guidance {
   var last_input = inputFiles
   var coverage: Coverage = new Coverage
+  val deadline = duration.seconds.fromNow
   var runs = 0
 
   def mutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
@@ -32,7 +34,7 @@ class RIGGuidance(
   }
 
   override def isDone(): Boolean = {
-    Global.iteration >= this.maxRuns
+    !deadline.hasTimeLeft()
   }
 
   override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {

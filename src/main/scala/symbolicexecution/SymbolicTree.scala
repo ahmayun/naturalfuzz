@@ -2,32 +2,55 @@ package symbolicexecution
 
 import abstraction.BaseRDD
 import fuzzer.Schema
+import org.apache.commons.lang.builder.HashCodeBuilder
 import provenance.data.{DummyProvenance, Provenance}
-import runners.Config
+import runners.Config.benchmarkName
+import runners.{Config, RunRIGFuzz}
 import taintedprimitives.TaintedBase
 import utils.{Query, RDDLocations}
 
+import java.util.Objects
 import scala.collection.mutable.ListBuffer
 
 
-abstract case class SymTreeNode(s: Any) {
+abstract case class SymTreeNode(s: Any) extends Serializable {
 
   def getValue: Any = s
 
   override def toString: String = s.toString
 }
 
-class OperationNode(override val s: Any) extends SymTreeNode(s) {
+class OperationNode(override val s: Any) extends SymTreeNode(s) with Serializable {
 
 }
 
-class ConcreteValueNode(override val s: Any) extends SymTreeNode(s) {
+class ConcreteValueNode(override val s: Any) extends SymTreeNode(s) with Serializable {
 
 }
 
-class ProvValueNode(override val s: Any, prov: Provenance) extends SymTreeNode(s) {
+class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val offset: Int = 0) extends SymTreeNode(s) with Serializable {
 
-  def getProv: ListBuffer[(Int, Int, Int)] = prov.convertToTuples
+  def modifyProv(_ds: Int, _offset: Int): ProvValueNode = {
+    new ProvValueNode(s, prov, _ds, _offset)
+  }
+
+
+  val getProv: ListBuffer[(Int, Int, Int)] = prov.convertToTuples.map {
+    case loc @ (_ds, col, row) =>
+      if (_ds == ds) {
+        (_ds, col + offset, row)
+      } else {
+        loc
+      }
+  }
+
+  override def hashCode(): Int = {
+    // Assuming a value only has one column as provenance
+    new HashCodeBuilder()
+      .append(getProv.head._1)
+      .append(getProv.head._2.hashCode())
+      .toHashCode
+  }
 
   def getCol: Int = {
     getProv match {
@@ -43,11 +66,24 @@ class ProvValueNode(override val s: Any, prov: Provenance) extends SymTreeNode(s
     }
   }
 
-  override def toString: String = getProv.map{case (ds, col, row) => s"rdd[$ds,$col,$row]"}.mkString("|") + s"{$s}"
+  override def toString: String = getProv.map{case (ds, col, row) => s"rdd[d$ds,c$col]"}.mkString("|") //+ s"{$s}"
 
 }
 
-case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTree) {
+case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTree) extends Serializable {
+  def offsetLocs(ds: Int, offset: Int): SymbolicTree = {
+    val offsetNode = node match {
+      case n : ProvValueNode =>
+        n.modifyProv(ds, offset)
+      case _ => node
+    }
+
+    val l = if (left != null) left.offsetLocs(ds, offset) else null
+    val r = if (right != null) right.offsetLocs(ds, offset) else null
+
+    SymbolicTree(l, offsetNode, r)
+  }
+
 
   def this() = {
     this(null, null, null)
@@ -64,6 +100,19 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case (l, null) => 1 + l.height
       case _ => 1 + math.max(left.height, right.height)
     }
+  }
+
+  override def hashCode(): Int = {
+    val builder = new HashCodeBuilder()
+      .append(node.hashCode())
+
+    if(left != null)
+      builder.append(left.hashCode())
+
+    if(right != null)
+      builder.append(right.hashCode())
+
+    builder.toHashCode
   }
 
   def isOp(op: String): Boolean = {
@@ -87,49 +136,71 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
   }
 
   def isMultiDatasetQuery: Boolean = {
-    false // TODO: implement this check
+    new RDDLocations(getProv.toArray).isMultiDataset
   }
 
   def isMultiColumnQuery: Boolean = {
     false // TODO: implement this check
   }
 
-  def eval(row: Array[String], ds: Int): Any = {
+  def eval(row: Array[String], ds: Array[Int], offsetDS2: Int = 0): Any = {
+
     if(height == 0) {
       return node match {
         case n: ConcreteValueNode => n.s
-        case n: ProvValueNode if n.getDS == ds =>
+        case n: ProvValueNode if ds.contains(n.getDS) =>
           // TODO: Add a callback to
-          row(n.getCol).toInt //TODO: Remove hardcoded type conversion. Lookup using schema?
-        case _ => true
+          val nodeDS = n.getDS
+          val col = n.getCol
+          val Some(schema) = Config.mapSchemas.get(benchmarkName)
+          val offset = if(ds.length == 2 && nodeDS == ds(1)) offsetDS2 else 0
+          if(schema(nodeDS)(col-offset).dataType == Schema.TYPE_NUMERICAL) {
+            row(col).toInt //TODO: Remove hardcoded type conversion to INT
+          } else {
+            row(n.getCol)
+          }
+        case _ => 0
       }
     }
 
-    val leval = left.eval(row, ds)
-    val reval = right.eval(row, ds)
+
+
+    val leval = left.eval(row, ds, offsetDS2)
+    val reval = right.eval(row, ds, offsetDS2)
 
     if(leval.isInstanceOf[Boolean] || reval.isInstanceOf[Boolean]) {
-      return true
+      return encode(true)
     }
 
     (leval, reval, node.s.toString) match {
-      case (l: Int, r: Int, "<") => l < r
-      case (l: Int, r: Int, ">") => l > r
-      case (l: Int, r: Int, "<=") => l <= r
-      case (l: Int, r: Int, ">=") => l >= r
-      case (l: Int, r: Int, "==") => l == r
+      case (l: Int, r: Int, "<") => encode(l < r)
+      case (l: Int, r: Int, ">") => encode(l > r)
+      case (l: Int, r: Int, "<=") => encode(l <= r)
+      case (l: Int, r: Int, ">=") => encode(l >= r)
+      case (l: Int, r: Int, "==") => encode(l == r)
       case (l: Int, r: Int, "+") => l + r
       case (l: Int, r: Int, "-") => l - r
       case (l: Int, r: Int, "/") => l / r
+      case (_, _, "contains") => encode(true)
+      case (_, _, "nop") => 0
+      case n => throw new Exception(s"n=$n imd=$isMultiDatasetQuery")
     }
   }
 
-  def createFilterFn(ds: Int): Array[String] => Boolean = {
+  def encode(bool: Boolean): Int = if(bool) 2 else 1 // TODO: Interesting that 0x10 and 0x01 causes issues so have to do 2 and 1. Not sure why
+
+  def createFilterFn(ds: Array[Int], offsetDs2: Int = 0): Array[String] => Int = {
     node match {
-      case _: OperationNode => row => eval(row, ds).asInstanceOf[Boolean]
+      case _ if isNopTree => _ => 0
+      case _ : OperationNode => row => {
+//        println(s"running filter fn for $this")
+        eval(row, ds, offsetDs2).asInstanceOf[Int]
+      }
       case _ => throw new Exception("toQuery called on malformed tree")
     }
   }
+
+  def isNopTree: Boolean = node.s == "nop"
 
   def getProv: ListBuffer[(Int, Int, Int)] = {
 
@@ -144,18 +215,19 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
   def toQuery: Query = {
     if(!isAtomic)
       throw new Exception("Attempted to convert non-atomic expression to query")
-    else if(isMultiDatasetQuery)
-      throw new Exception("Multi-Dataset queries not yet supported")
+//    else if(isMultiDatasetQuery)
+//      throw new Exception("Multi-Dataset queries not yet supported")
 
     def fq(rdds: Array[BaseRDD[String]]): Array[BaseRDD[String]] = {
-      val filterFns = rdds.zipWithIndex.map{case (_, i) => this.createFilterFn(i)}
-      val filterdrdds = rdds.zipWithIndex.map{case (ds, i) => ds.filter(row => filterFns(i)(row.split(',')))}
-      println(s"filtered by $this")
-      filterdrdds.foreach{
-        println
-      }
-      println("filtered end")
-      filterdrdds
+      rdds
+//      val filterFns = rdds.zipWithIndex.map{case (_, i) => this.createFilterFn(i)}
+//      val filterdrdds = rdds.zipWithIndex.map{case (ds, i) => ds.filter(row => filterFns(i)(row.split(',')))}
+//      println(s"filtered by $this")
+//      filterdrdds.foreach{
+//        println
+//      }
+//      println("filtered end")
+//      filterdrdds
     }
 
     new Query(fq, new RDDLocations(getProv.toArray), this)
@@ -175,3 +247,8 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
   }
 }
 
+object SymbolicTree {
+  def nopTree(): SymbolicTree = {
+    SymbolicTree(null, new OperationNode("nop"), null)
+  }
+}

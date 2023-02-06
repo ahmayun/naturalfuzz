@@ -4,7 +4,7 @@ import sparkwrapper.SparkContextWithDP
 import symbolicexecution.SymExResult
 import taintedprimitives._
 
-object RIGTest extends Serializable {
+object RIGTestProgram extends Serializable {
   def main(args: Array[String]): SymExResult = {
     println(s"WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
@@ -18,13 +18,14 @@ object RIGTest extends Serializable {
     testBoxes.map(intersects).collect().foreach(println)
     _root_.monitoring.Monitors.finalizeSymEx()
   }
+
   def intersects(rect1: IndexedSeq[TaintedInt]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
     val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
     println("-------")
     println(s"RECT (${rect1.toVector})")
-    if (_root_.monitoring.Monitors.monitorPredicate(aSWx < aSWy && aHeight < aWidth, (List[Any](aSWx, aSWy, aHeight, aWidth), List[Any]()), 0)) {
+    if (_root_.monitoring.Monitors.monitorPredicateSymEx(aSWx < aSWy && aHeight < aWidth, (List[Any](aSWx, aSWy, aHeight, aWidth), List[Any]()), 0)) {
       println("if 1")
-    } else if (_root_.monitoring.Monitors.monitorPredicate(aSWx > aSWy && aHeight > aWidth, (List[Any](aSWx, aSWy, aHeight, aWidth), List[Any]()), 1)) {
+    } else if (_root_.monitoring.Monitors.monitorPredicateSymEx(aSWx > aSWy && aHeight > aWidth, (List[Any](aSWx, aSWy, aHeight, aWidth), List[Any]()), 1)) {
       println("if 2")
     }
     println("-------")

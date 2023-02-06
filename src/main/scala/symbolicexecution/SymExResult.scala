@@ -7,7 +7,7 @@ import utils.{Query, RDDLocations}
 
 import scala.collection.mutable.ListBuffer
 
-class SymExResult(val program: Program, val pathExpressions: ListBuffer[SymbolicExpression]) {
+class SymExResult(val program: Program, val pathExpressions: ListBuffer[SymbolicExpression]) extends Serializable {
   def getPathQueries: List[Query] = {
 
     pathExpressions.flatMap(_.toCNF.toQueries).toList
