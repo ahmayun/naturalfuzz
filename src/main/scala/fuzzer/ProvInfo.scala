@@ -81,7 +81,7 @@ class ProvInfo(val depsInfo: ListBuffer[ListBuffer[(Int,Int,Int)]]) extends Seri
   }
 
   override def toString: String = {
-//    depsInfo.toString
+    return depsInfo.toString
     depsInfo
       .map{
         deps =>

@@ -155,14 +155,19 @@ object Monitors extends Serializable {
     dataset.groupByKey()
   }
 
-  def monitorReduceByKey[K<:TaintedBase:ClassTag,V](
-                                                     dataset: PairProvenanceDefaultRDD[K,V],
-                                                     func: (V, V) => V, id: Int)
+  def monitorReduceByKey[K, V](
+                                dataset: PairProvenanceDefaultRDD[K, V],
+                                func: (V, V) => V, id: Int)
   : PairProvenanceRDD[K, V] = {
 
     dataset
       .sample(false, Config.percentageProv)
-      .map { case (k, _) => ListBuffer(k.getProvenance()) }
+      .map {
+        case (k: TaintedBase, _) =>
+          ListBuffer(k.getProvenance())
+        case _ =>
+          ListBuffer[Provenance]()
+      }
       .take(5)
       .to[ListBuffer]
       .foreach { p =>
@@ -184,7 +189,12 @@ object Monitors extends Serializable {
   def finalizeProvenance(): ProvInfo = {
     val x = provInfo.simplify()
     println(x)
-    println("done")
+    println("min-data")
+    this.minData.foreach {
+      case (ds, data) =>
+        println(s"=== DS:$ds ====")
+        println(data.mkString("\n"))
+    }
     x
   }
 

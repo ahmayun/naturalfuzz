@@ -25,16 +25,24 @@ object MovieRating {
         (movie_str, ratings.toInt) // Error 1: Number format exception
       }
       .filter { v =>
-        if(v._2 > 2462525 && v._2 < 3489799) throw new RuntimeException()
-        v._2 > 4
+        filter1(v)
       }
       .reduceByKey { (r1, r2) =>
-        val sum = r1+r2
-        if (sum > 8965632 && sum < 9965632) throw new RuntimeException()
-        sum
+        rbk1(r1, r2)
       }
       .collect()
       .foreach(println)
 
+  }
+
+  def filter1(v: (String, Int)): Boolean = {
+    if (v._2 > 2462525 && v._2 < 3489799) throw new RuntimeException()
+    v._2 > 4
+  }
+
+  def rbk1(r1:Int, r2:Int): Int = {
+    val sum = r1 + r2
+    if (sum > 8965632 && sum < 9965632) throw new RuntimeException()
+    sum
   }
 }
