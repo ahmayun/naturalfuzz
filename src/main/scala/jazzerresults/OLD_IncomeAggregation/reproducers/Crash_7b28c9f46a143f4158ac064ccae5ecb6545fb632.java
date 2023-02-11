@@ -1,19 +1,19 @@
-package jazzerresults.AgeAnalysis.reproducers;
+package jazzerresults.OLD_IncomeAggregation.reproducers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-//Crash_5601150c923d24219e2798b5d593d6679ff343c7
-public class line17nff2 {
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdADkPj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj41NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1Pj4+Pj8+Pj4+Pj4+Pj4+Pj4+Pjs+Pj4+Pj4+Pj4sPj4+Pj4+Pj4+Pj4+Pj4+Pj4+f39/f39/f39/f39/wIDAgMCAwIDAgMCAwIDAgMCAwIA+Pj4+Pj4KeA==");
+
+public class Crash_7b28c9f46a143f4158ac064ccae5ecb6545fb632 {
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAACLC94");
 
     public static void main(String[] args) throws Throwable {
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
         try {
-            Method fuzzerInitialize = jazzer.JazzerTargetAgeAnalysis.class.getMethod("fuzzerInitialize");
+            Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);
         } catch (NoSuchMethodException ignored) {
             try {
-                Method fuzzerInitialize = jazzer.JazzerTargetAgeAnalysis.class.getMethod("fuzzerInitialize", String[].class);
+                Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize", String[].class);
                 fuzzerInitialize.invoke(null, (Object) args);
             } catch (NoSuchMethodException ignored1) {
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -25,6 +25,6 @@ public class line17nff2 {
             System.exit(1);
         }
         com.code_intelligence.jazzer.api.CannedFuzzedDataProvider input = new com.code_intelligence.jazzer.api.CannedFuzzedDataProvider(base64Bytes);
-        jazzer.JazzerTargetAgeAnalysis.fuzzerTestOneInput(input);
+        jazzer.JazzerTargetIncomeAggregation.fuzzerTestOneInput(input);
     }
 }

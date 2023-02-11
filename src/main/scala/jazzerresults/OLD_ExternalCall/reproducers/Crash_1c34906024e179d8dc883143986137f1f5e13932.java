@@ -1,19 +1,19 @@
-package jazzerresults.AgeAnalysis.reproducers;
+package jazzerresults.OLD_ExternalCall.reproducers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-//Crash_4af7ad9e0236bba5685dcfe81269d568e95b9798
-public class line17nff3 {
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAADLCwqeA==");
+
+public class Crash_1c34906024e179d8dc883143986137f1f5e13932 {
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAARMzMzMzMzMzMzMzMzMzMBwIB4");
 
     public static void main(String[] args) throws Throwable {
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
         try {
-            Method fuzzerInitialize = jazzer.JazzerTargetAgeAnalysis.class.getMethod("fuzzerInitialize");
+            Method fuzzerInitialize = jazzer.JazzerTargetExternalCall.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);
         } catch (NoSuchMethodException ignored) {
             try {
-                Method fuzzerInitialize = jazzer.JazzerTargetAgeAnalysis.class.getMethod("fuzzerInitialize", String[].class);
+                Method fuzzerInitialize = jazzer.JazzerTargetExternalCall.class.getMethod("fuzzerInitialize", String[].class);
                 fuzzerInitialize.invoke(null, (Object) args);
             } catch (NoSuchMethodException ignored1) {
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -25,6 +25,6 @@ public class line17nff3 {
             System.exit(1);
         }
         com.code_intelligence.jazzer.api.CannedFuzzedDataProvider input = new com.code_intelligence.jazzer.api.CannedFuzzedDataProvider(base64Bytes);
-        jazzer.JazzerTargetAgeAnalysis.fuzzerTestOneInput(input);
+        jazzer.JazzerTargetExternalCall.fuzzerTestOneInput(input);
     }
 }

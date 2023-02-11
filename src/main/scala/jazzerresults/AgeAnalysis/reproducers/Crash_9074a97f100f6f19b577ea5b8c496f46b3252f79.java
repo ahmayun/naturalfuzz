@@ -1,19 +1,19 @@
-package jazzerresults.IncomeAggregation.reproducers;
+package jazzerresults.AgeAnalysis.reproducers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Crash_da39a3ee5e6b4b0d3255bfef95601890afd80709 {// outofbounds,IncomeAggregation.scala:17
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAAeA==");
+public class Crash_9074a97f100f6f19b577ea5b8c496f46b3252f79 {//numberformat,AgeAnalysis.scala:17
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAKBcCAwIDAgCzAgHg=");
 
     public static void main(String[] args) throws Throwable {
-        Crash_da39a3ee5e6b4b0d3255bfef95601890afd80709.class.getClassLoader().setDefaultAssertionStatus(true);
+        Crash_9074a97f100f6f19b577ea5b8c496f46b3252f79.class.getClassLoader().setDefaultAssertionStatus(true);
         try {
-            Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize");
+            Method fuzzerInitialize = jazzer.JazzerTargetAgeAnalysis.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);
         } catch (NoSuchMethodException ignored) {
             try {
-                Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize", String[].class);
+                Method fuzzerInitialize = jazzer.JazzerTargetAgeAnalysis.class.getMethod("fuzzerInitialize", String[].class);
                 fuzzerInitialize.invoke(null, (Object) args);
             } catch (NoSuchMethodException ignored1) {
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -25,6 +25,6 @@ public class Crash_da39a3ee5e6b4b0d3255bfef95601890afd80709 {// outofbounds,Inco
             System.exit(1);
         }
         com.code_intelligence.jazzer.api.CannedFuzzedDataProvider input = new com.code_intelligence.jazzer.api.CannedFuzzedDataProvider(base64Bytes);
-        jazzer.JazzerTargetIncomeAggregation.fuzzerTestOneInput(input);
+        jazzer.JazzerTargetAgeAnalysis.fuzzerTestOneInput(input);
     }
 }

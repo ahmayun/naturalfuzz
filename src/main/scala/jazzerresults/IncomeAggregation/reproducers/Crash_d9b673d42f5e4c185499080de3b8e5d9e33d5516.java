@@ -3,11 +3,11 @@ package jazzerresults.IncomeAggregation.reproducers;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Crash_3b4fe915cba13679cc0731c70d69da6b52af7ffd {
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAIwIDAgCw0LDR4");
+public class Crash_d9b673d42f5e4c185499080de3b8e5d9e33d5516 {// numberformat,IncomeAggregation.scala:39
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAKGsCALDEsMSwxMXg=");
 
     public static void main(String[] args) throws Throwable {
-        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+        Crash_d9b673d42f5e4c185499080de3b8e5d9e33d5516.class.getClassLoader().setDefaultAssertionStatus(true);
         try {
             Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);

@@ -1,19 +1,19 @@
-package jazzerresults.ExternalCall.reproducers;
+package jazzerresults.StudentGrade.reproducers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Crash_1c34906024e179d8dc883143986137f1f5e13932 {
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAARMzMzMzMzMzMzMzMzMzMBwIB4");
+public class Crash_629aa4bf43ea3123b95f6a008c06060b2c2f7170 {// numberformat,StudentGrade.scala:32
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAOAQEBAQEBAQEDLAEBAS14");
 
     public static void main(String[] args) throws Throwable {
-        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+        Crash_629aa4bf43ea3123b95f6a008c06060b2c2f7170.class.getClassLoader().setDefaultAssertionStatus(true);
         try {
-            Method fuzzerInitialize = jazzer.JazzerTargetExternalCall.class.getMethod("fuzzerInitialize");
+            Method fuzzerInitialize = jazzer.JazzerTargetStudentGrade.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);
         } catch (NoSuchMethodException ignored) {
             try {
-                Method fuzzerInitialize = jazzer.JazzerTargetExternalCall.class.getMethod("fuzzerInitialize", String[].class);
+                Method fuzzerInitialize = jazzer.JazzerTargetStudentGrade.class.getMethod("fuzzerInitialize", String[].class);
                 fuzzerInitialize.invoke(null, (Object) args);
             } catch (NoSuchMethodException ignored1) {
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -25,6 +25,6 @@ public class Crash_1c34906024e179d8dc883143986137f1f5e13932 {
             System.exit(1);
         }
         com.code_intelligence.jazzer.api.CannedFuzzedDataProvider input = new com.code_intelligence.jazzer.api.CannedFuzzedDataProvider(base64Bytes);
-        jazzer.JazzerTargetExternalCall.fuzzerTestOneInput(input);
+        jazzer.JazzerTargetStudentGrade.fuzzerTestOneInput(input);
     }
 }

@@ -1,19 +1,17 @@
-package jazzerresults.IncomeAggregation.reproducers;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Crash_752f9d87cf56be011a89425ca0b26a4d70c49340 {
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAELCwvL3g=");
+public class Crash_6d55ff7073eba6f11c1e22e9cab5125403ab1e40 {// runtimeexception,NumberSeries.scala:47
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAArJRrAgMCAwIDAgMCAwIDAgMCAwIAIwIDAgMCAwIDAgMCAwIAsMjU3MTgyN3g=");
 
     public static void main(String[] args) throws Throwable {
-        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+        Crash_6d55ff7073eba6f11c1e22e9cab5125403ab1e40.class.getClassLoader().setDefaultAssertionStatus(true);
         try {
-            Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize");
+            Method fuzzerInitialize = jazzer.JazzerTargetNumberSeries.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);
         } catch (NoSuchMethodException ignored) {
             try {
-                Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize", String[].class);
+                Method fuzzerInitialize = jazzer.JazzerTargetNumberSeries.class.getMethod("fuzzerInitialize", String[].class);
                 fuzzerInitialize.invoke(null, (Object) args);
             } catch (NoSuchMethodException ignored1) {
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -25,6 +23,6 @@ public class Crash_752f9d87cf56be011a89425ca0b26a4d70c49340 {
             System.exit(1);
         }
         com.code_intelligence.jazzer.api.CannedFuzzedDataProvider input = new com.code_intelligence.jazzer.api.CannedFuzzedDataProvider(base64Bytes);
-        jazzer.JazzerTargetIncomeAggregation.fuzzerTestOneInput(input);
+        jazzer.JazzerTargetNumberSeries.fuzzerTestOneInput(input);
     }
 }

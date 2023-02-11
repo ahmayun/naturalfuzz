@@ -3,11 +3,11 @@ package jazzerresults.IncomeAggregation.reproducers;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Crash_da39a3ee5e6b4b0d3255bfef95601890afd80709 {// outofbounds,IncomeAggregation.scala:17
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAAeA==");
+public class Crash_c6b42adc2cd39f5bb05cba3d72704a3355acbe3e { //arithmeticexception,IncomeAggregation.scala:51
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAA3OTAwMjQsOTAwMjQsOSw0LDHAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIAsIXg=");
 
     public static void main(String[] args) throws Throwable {
-        Crash_da39a3ee5e6b4b0d3255bfef95601890afd80709.class.getClassLoader().setDefaultAssertionStatus(true);
+        Crash_c6b42adc2cd39f5bb05cba3d72704a3355acbe3e.class.getClassLoader().setDefaultAssertionStatus(true);
         try {
             Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);
