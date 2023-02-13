@@ -19,7 +19,7 @@ object Q12 extends Serializable {
     val rand = new Random(seed)
     val YEAR = rand.nextInt(2003 - 1998) + 1998
     val START_DATE = s"$YEAR-01-01"
-    val END_DATE = s"$YEAR-02-01"
+    val END_DATE = s"$YEAR-07-01"
     val CAT = List("Home", "Electronics", "Shoes") // many more
 
     val web_sales = sc.textFile(s"$datasetsPath/web_sales").map(_.split(","))
