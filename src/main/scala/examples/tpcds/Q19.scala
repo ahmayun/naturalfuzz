@@ -4,7 +4,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.util.Random
 
-object Q15 extends Serializable {
+object Q19 extends Serializable {
 
   def main(args: Array[String]) {
     val conf = new SparkConf()
@@ -16,55 +16,76 @@ object Q15 extends Serializable {
     val seed = "ahmad".hashCode()
     val rand = new Random(seed)
     val YEAR = rand.nextInt(2002 - 1998) + 1998
-    val QOY = rand.nextInt(1) + 1
-    val ZIPS = List("85669","86197","88274","83405","86475","85392","85460","80348","81792")
-    val STATES = List("CA", "WA", "GA")
+    val MONTH = rand.nextInt(2)+11
+    val MANAGER = "50"
 
-    val catalog_sales = sc.textFile(s"$datasetsPath/catalog_sales").map(_.split(","))
+    val date_dim = sc.textFile(s"$datasetsPath/date_dim").map(_.split(","))
+    val store_sales = sc.textFile(s"$datasetsPath/store_sales").map(_.split(","))
+    val item = sc.textFile(s"$datasetsPath/item").map(_.split(","))
     val customer = sc.textFile(s"$datasetsPath/customer").map(_.split(","))
     val customer_address = sc.textFile(s"$datasetsPath/customer_address").map(_.split(","))
-    val date_dim = sc.textFile(s"$datasetsPath/date_dim").map(_.split(","))
+    val store = sc.textFile(s"$datasetsPath/store").map(_.split(","))
+
+    val filtered_i = item
+      .filter {
+        row =>
+          val i_manager_id = row(row.length-2)
+          i_manager_id == MANAGER
+      }
 
     val filtered_dd = date_dim
       .filter {
         row =>
-          val d_qoy = row(10)
+          val d_moy = row(8)
           val d_year = row(6)
-          d_qoy == QOY.toString && d_year == YEAR.toString
+          d_moy == MONTH.toString && d_year == YEAR.toString
       }
-
-    catalog_sales
-      .map(row => (row(2)/*cs_bill_customer_sk*/, row))
+    date_dim
+      .map(row => (row.head, row))
+      .join(store_sales.map(row => (row.last /*ss_sold_date_sk*/, row)))
+      .map {
+        case (_, (dd_row, ss_row)) =>
+          (ss_row(1) /*ss_item_sk*/, (dd_row, ss_row))
+      }
+      .join(item.map(row => (row.head, row)))
+      .map {
+        case (_, ((dd_row, ss_row), i_row)) =>
+          (ss_row(2)/*ss_customer_sk*/, (dd_row, ss_row, i_row))
+      }
       .join(customer.map(row => (row.head, row)))
       .map {
-        case (_, (cs_row, c_row)) =>
-          (c_row(4)/*c_current_addr_sk*/, (cs_row, c_row))
+        case (_, ((dd_row, ss_row, i_row), c_row)) =>
+          (c_row(4)/*c_current_addr_sk*/, (dd_row, ss_row, i_row, c_row))
       }
       .join(customer_address.map(row => (row.head, row)))
       .map {
-        case (_, ((cs_row, c_row), ca_row)) =>
-          (cs_row.last/*cs_sold_date_sk*/, (cs_row, c_row, ca_row))
+        case (_, ((dd_row, ss_row, i_row, c_row), ca_row)) =>
+          (ss_row(6)/*ss_store_sk*/, (dd_row, ss_row, i_row, c_row, ca_row))
+      }
+      .join(store.map(row => (row.head, row)))
+      .map {
+        case (_, ((dd_row, ss_row, i_row, c_row, ca_row), s_row)) =>
+          (dd_row, ss_row, i_row, c_row, ca_row, s_row)
       }
       .filter {
-        case (_, (cs_row, c_row, ca_row)) =>
-          val ca_zip = try { ca_row(9) } catch { case _ => "error"} // took liberty here (if the row is malformed for some reason
-          val ca_state = try { ca_row(8) } catch { case _ => "error"}
-          val cs_sales_price = convertColToFloat(cs_row, 20)
-
-          ca_zip != "error" && ca_state != "error" &&
-            (ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500 || STATES.contains(ca_state))
+        case (_, _, _, _, ca_row, s_row) =>
+          val ca_zip = try { ca_row(9) } catch { case _ => "error"}
+          val s_zip = s_row(25)
+          ca_zip.take(5) != s_zip.take(5)
       }
-      .join(filtered_dd.map(row => (row.head, row)))
       .map {
-        case (_, ((cs_row, c_row, ca_row), dd_row)) =>
-          val cs_sales_price = convertColToFloat(cs_row, 20)
-          (ca_row(9)/*ca_zip*/, cs_sales_price)
+        case (_, ss_row, i_row, _, _, _) =>
+          val ss_ext_sales_price = convertColToFloat(ss_row, 14)
+          val i_brand_id = i_row(7)
+          val i_brand = i_row(8)
+          val i_manufact_id = i_row(13)
+          val i_manufact = i_row(14)
+          ((i_brand_id, i_brand, i_manufact_id, i_manufact), ss_ext_sales_price)
       }
       .reduceByKey(_+_)
       .sortBy(_._1)
       .take(10)
       .foreach(println)
-
     
   }
 
