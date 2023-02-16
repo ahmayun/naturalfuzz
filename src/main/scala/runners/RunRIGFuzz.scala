@@ -170,7 +170,7 @@ object RunRIGFuzz extends Serializable {
     rdds.zipWithIndex.foreach {
       case (rdd, i) =>
         println(s"\nRDD $i")
-        println(s"|\tds_row\t|\t${runnablePieces.filterQueries.map(_.tree).mkString("", "\t|\t", "\t|")}")
+        println(s"|\tds_row\t\t\t\t|\t${runnablePieces.filterQueries.map(_.tree).mkString("", "\t|\t", "\t|")}")
         rdd
           .collect()
           .foreach {

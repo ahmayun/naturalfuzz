@@ -216,6 +216,7 @@ object BenchmarkSchemas {
     // http://www.youtube.com,1000,100,100,920,2,advertisement
     Array(
       new Schema(Schema.TYPE_OTHER),
+      new Schema(Schema.TYPE_OTHER),
       new Schema(Schema.TYPE_NUMERICAL)
     ),
     Array(

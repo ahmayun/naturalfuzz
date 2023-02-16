@@ -18,45 +18,20 @@ object RIGTestJoin extends Serializable {
 
     val ds1 = ctx.textFileProv(ds1p, _.split(","))
 //      .map(row => Array(row.head) ++ row.tail.map(_.toInt))
-      .map(row => (row.head, row.tail.map(_.toInt)))
+      .map(row => (row.head, (row(1), row(2).toInt)))
       .filter {
         row =>
-          if(_root_.monitoring.Monitors.monitorPredicateSymEx(row._2(0) == 3, (List(row._2(0)), List()), 0)) {
-            true
-          } else {
-            true
-          }
+          _root_.monitoring.Monitors.monitorPredicateSymEx(row._2._2 == 3, (List(row._2._2), List()), 0)
       }
     val ds2 = ctx.textFileProv(ds2p, _.split(","))
 //      .map(row => Array(row.head) ++ row.tail.map(_.toInt))
-      .map(row => (row.head, row.tail.map(_.toInt)))
-      .filter {
-        row =>
-          if (_root_.monitoring.Monitors.monitorPredicateSymEx(row._2(0) == 1, (List(row._2(0)), List()), 1)) {
-            true
-          } else {
-            true
-          }
-      }
+      .map(row => (row.head, row.last))
 //    ds1.join(ds2)
 
     val joined = _root_.monitoring.Monitors.monitorJoinSymEx(ds1, ds2, 0) // PC: ds2.containsKey(ds1.col[0])
 
-    joined.map {
-      case row@(_, (a, b)) =>
-        if (_root_.monitoring.Monitors.monitorPredicateSymEx(a(0) > b(0), (List(a(0), b(0)), List()), 2)) { // PC ds2.containsKey() && ds1.col[1] > ds2.col[1]
-          if1()
-        } else if (_root_.monitoring.Monitors.monitorPredicateSymEx(a(0) < b(0), (List(a(0), b(0)), List()), 3)) { // PC ds2.containsKey() && ds1.col[1] < ds2.col[1]
-          if2()
-        } else if (_root_.monitoring.Monitors.monitorPredicateSymEx(a(0) == b(0), (List(a(0), b(0)), List()), 4)) { // PC ds2.containsKey() && ds1.col[1] == ds2.col[1]
-          if3()
-        }
-        row
-    }
-      .collect().foreach {
-      case (key, (a, b)) =>
-        println(key, a.mkString("-"), b.mkString("-"))
-    }
+    joined
+      .collect().foreach(println)
 
     _root_.monitoring.Monitors.finalizeSymEx()
   }
