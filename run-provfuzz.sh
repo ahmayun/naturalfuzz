@@ -9,7 +9,7 @@
 # . Process the measurement files produced using CoverageMeasurementConsolidator.scala
 
 # SAMPLE RUN:
-#       ./run-bigfuzz.sh DeliveryFaults faulty 86400; echo "Subject: $(hostname): bigfuzz (exit $?)" | sendmail ahmad35@vt.edu
+#       ./run-provfuzz.sh DeliveryFaults faulty 86400 full; echo "Subject: $(hostname): cofuzz (exit $?)" | sendmail ahmad35@vt.edu
 
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
