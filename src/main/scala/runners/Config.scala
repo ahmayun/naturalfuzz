@@ -17,14 +17,13 @@ object Config {
   val maxRepeats = 1
   val percentageProv = 0.1f
   val iterations = 10
-  val scoverageResultsDir = "target/scoverage-results"
-  val faultTest = false
-  val benchmarkPkg = "faulty"
   val fuzzDuration = 10 // 86400 // duration in seconds
   val benchmarkName = "RIGTestJoin"
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
+  val faultTest = true
   val deepFaults = false
   val seedType = "mixmatch" //either full, reduced or weak
+  val benchmarkPkg = "faulty"
   val benchmarkClass = s"examples.$benchmarkPkg.$benchmarkName"
 
   val delimiter = ","
