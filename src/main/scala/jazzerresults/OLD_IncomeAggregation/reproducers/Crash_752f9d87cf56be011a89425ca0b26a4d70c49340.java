@@ -1,13 +1,13 @@
-package jazzerresults.IncomeAggregation.reproducers;
+package jazzerresults.OLD_IncomeAggregation.reproducers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Crash_da39a3ee5e6b4b0d3255bfef95601890afd80709 {// outofbounds,IncomeAggregation.scala:17
-    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAAeA==");
+public class Crash_752f9d87cf56be011a89425ca0b26a4d70c49340 {
+    static final String base64Bytes = String.join("", "rO0ABXNyABNqYXZhLnV0aWwuQXJyYXlMaXN0eIHSHZnHYZ0DAAFJAARzaXpleHAAAAABdwQAAAABdAAELCwvL3g=");
 
     public static void main(String[] args) throws Throwable {
-        Crash_da39a3ee5e6b4b0d3255bfef95601890afd80709.class.getClassLoader().setDefaultAssertionStatus(true);
+        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
         try {
             Method fuzzerInitialize = jazzer.JazzerTargetIncomeAggregation.class.getMethod("fuzzerInitialize");
             fuzzerInitialize.invoke(null);
