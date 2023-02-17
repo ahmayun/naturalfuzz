@@ -70,7 +70,8 @@ def execute_command(command, wait=True):
     if process.returncode != 0:
         print(f"Command `{command}` failed with error:\n\t{error.decode()}")
         exit(process.returncode)
-    return output.decode()
+    print(output.decode())
+    print(error.decode())
 
 
 def get_current_time():
@@ -87,7 +88,7 @@ PATH_INSTRUMENTED_CLASSES=f"examples/{PACKAGE}/{NAME}*"
 DIR_BIGFUZZ_OUT=f"target/bigfuzz-output/{NAME}"
 
 remove_directory(DIR_BIGFUZZ_OUT)
-mkdirs_p(f"{DIR_BIGFUZZ_OUT}/"+"{scoverage-results,report,log,reproducers,crashes}")
+execute_command((f"mkdir -p {DIR_BIGFUZZ_OUT}/"+"{scoverage-results,report,log,reproducers,crashes}").split())
 
 
 #sbt assembly || exit 1
@@ -99,14 +100,14 @@ execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
           {DIR_BIGFUZZ_OUT}/scoverage-results""".split())
 
 execute_command(f"""pushd target/scala-2.12/classes && 
-                jar uvf ../ProvFuzz-assembly-1.0.jar {PATH_INSTRUMENTED_CLASSES}""")
+                jar uvf ../ProvFuzz-assembly-1.0.jar {PATH_INSTRUMENTED_CLASSES}""".split())
 
 START_TIME=get_current_time()
 
 execute_command(f"echo 'Subject:[START-RIG] {gethostname()}\\n\\nprogram: {NAME}\\nstart time: {START_TIME}' | sendmail {TO_EMAIL}".split())
 
 execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
-          runners.RunRIGFuzzJar
+          runners.RunBigFuzzJar
           {NAME}
           {PACKAGE}
           {DURATION}
