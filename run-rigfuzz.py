@@ -17,6 +17,10 @@ PACKAGE=sys.argv[2]
 DURATION=sys.argv[3]
 TO_EMAIL="ahmad35@vt.edu"
 
+PATH_SCALA_SRC=f"src/main/scala/examples/{PACKAGE}/{NAME}.scala"
+PATH_INSTRUMENTED_CLASSES=f"examples/{PACKAGE}/{NAME}*"
+DIR_RIGFUZZ_OUT=f"target/RIG-output/{NAME}"
+
 def remove_directory(directory_path):
     """
     Remove a directory and all of its contents.
@@ -82,22 +86,18 @@ def get_current_time():
     return now.strftime("%H:%M:%S %d-%m-%y")
 
 
-#CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
-PATH_SCALA_SRC=f"src/main/scala/examples/{PACKAGE}/{NAME}.scala"
-PATH_INSTRUMENTED_CLASSES=f"examples/{PACKAGE}/{NAME}*"
-DIR_BIGFUZZ_OUT=f"target/bigfuzz-output/{NAME}"
 
-remove_directory(DIR_BIGFUZZ_OUT)
-execute_command((f"mkdir -p {DIR_BIGFUZZ_OUT}/"+"{scoverage-results,report,log,reproducers,crashes}").split())
+remove_directory(DIR_RIGFUZZ_OUT)
+execute_command((f"mkdir -p {DIR_RIGFUZZ_OUT}/"+"{scoverage-results,report,log,reproducers,crashes}").split())
 
 
-#sbt assembly || exit 1
+# sbt assembly || exit 1
 
 
 execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
           utils.ScoverageInstrumenter
           {PATH_SCALA_SRC}
-          {DIR_BIGFUZZ_OUT}/scoverage-results""".split())
+          {DIR_RIGFUZZ_OUT}/scoverage-results""".split())
 
 execute_command(f"""pushd target/scala-2.12/classes && 
                 jar uvf ../ProvFuzz-assembly-1.0.jar {PATH_INSTRUMENTED_CLASSES}""".split())
@@ -107,11 +107,11 @@ START_TIME=get_current_time()
 execute_command(f"echo 'Subject:[START-RIG] {gethostname()}\\n\\nprogram: {NAME}\\nstart time: {START_TIME}' | sendmail {TO_EMAIL}".split())
 
 execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
-          runners.RunBigFuzzJar
+          runners.RunRIGFuzzJar
           {NAME}
           {PACKAGE}
           {DURATION}
-          {DIR_BIGFUZZ_OUT}""".split())
+          {DIR_RIGFUZZ_OUT}""".split())
 
 execute_command(f"echo 'Subject:[END-RIG] {gethostname()}\\n\\nprogram: {NAME}\\nstart time: {START_TIME}\\end time: {get_current_time()}' | sendmail {TO_EMAIL}".split())
 
