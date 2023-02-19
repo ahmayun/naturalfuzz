@@ -145,6 +145,9 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
 
   def eval(row: Array[String], ds: Array[Int], offsetDS2: Int = 0): Any = {
 
+    if (node.s.toString == "contains")
+      return encode(true)
+
     if(height == 0) {
       return node match {
         case n: ConcreteValueNode => n.s

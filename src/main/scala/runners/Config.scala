@@ -18,7 +18,7 @@ object Config {
   val percentageProv = 0.1f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  val benchmarkName = "RIGTestJoin"
+  var benchmarkName = "RIGTestJoin" // this value can be overridden by a runner
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
@@ -134,6 +134,11 @@ object Config {
     "WordCount" -> Array("seeds/reduced_data/wordcount/words")
   )
 
+  val mapInputFilesRIGReduced: Map[String, Array[String]] = Map(
+    "WebpageSegmentation" -> Array("seeds/reduced_data/webpage_segmentation/before", "seeds/reduced_data/webpage_segmentation/after"),
+    "FlightDistance" -> Array("seeds/reduced_data/LongFlights/flights", "seeds/reduced_data/LongFlights/airports")
+  )
+
   val mapInputFilesMixMatch = Map(
     "RIGTestProgram" -> Array("mixmatch-data/rig-test/boxes"),
     "RIGTestJoin" -> Array("mixmatch-data/rig-test-join/boxes1", "mixmatch-data/rig-test-join/boxes2"),
@@ -177,6 +182,8 @@ object Config {
   val mapFunSymEx: Map[String, Array[String] => SymExResult] = Map[String, Array[String] => SymExResult](elems =
     "RIGTestProgram" -> examples.symbolic.RIGTestProgram.main,
     "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
+    "FlightDistance" -> examples.symbolic.FlightDistance.main,
+    "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main,
     "CommuteType" -> examples.symbolic.CommuteType.main
   )
 

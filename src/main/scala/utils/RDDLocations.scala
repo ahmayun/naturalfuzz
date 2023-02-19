@@ -14,9 +14,21 @@ class RDDLocations(val locs: Array[(Int, Int, Int)]) extends Serializable {
 
 
   val dsCols: Map[(Int, Int), Array[Int]] = locs
-    .groupBy{case (ds, col, _) => (ds, col)}
+    .groupBy {case (ds, col, _) => (ds, col)}
     .mapValues(arr => arr.map{case (_, _, r) => r})
     .map(identity)
+
+  def to4Tuple: (Int, Int, List[Int], List[Int]) = {
+    val inter = locs
+      .map { case (ds, col, _) => (ds, col) }
+      .distinct
+      .groupBy { case (ds, _) => ds }
+      .map {
+        case (ds, arr) => (ds, arr.map(_._2).toList)
+      }
+
+    (inter.keys.toList(0), inter.keys.toList(1), inter.values.toList(0), inter.values.toList(1))
+  }
 
   def getCols(dsi: Int): Array[Int] = {
     dsCols

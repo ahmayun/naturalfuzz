@@ -10,7 +10,6 @@ import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
 import utils.MiscUtils.toBinaryStringWithLeadingZeros
 import utils.TimingUtils.timeFunction
-
 import java.io.File
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -27,7 +26,7 @@ object RunRIGFuzz extends Serializable {
           acc ++ List(e.toString)
         }
     }
-      s"|\t$row\t|\t\t${broken.mkString("", "\t\t\t\t|\t\t\t\t", "\t\t\t\t|")}"
+      s"|\t$row\t|\t\t${broken.zipWithIndex.mkString("", "\t\t\t\t|\t\t\t\t", "\t\t\t\t|")}"
   }
 
   def main(args: Array[String]): Unit = {
@@ -210,8 +209,6 @@ object RunRIGFuzz extends Serializable {
           reducedDatasets.append(red)
       }
 
-
-
     reducedDatasets.zipWithIndex.foreach {
       case (ds, i) =>
         println(s"==== Reduced DS: ${i + 1} =====")
@@ -263,8 +260,9 @@ object RunRIGFuzz extends Serializable {
 
 
     //    val (queryRDDs, _) = timeFunction(() => filterQueries.getRows(program.args))
-    //    val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(brokenRDDs))
-    //    val (stats, _, _) = Fuzzer.Fuzz(program, guidance, outputDir)
+//        val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(brokenRDDs))
+//        val (stats, _, _) = Fuzzer.Fuzz(program, guidance, outputDir)
+
 
     //    val coverage = Serializer.deserialize(new File(s"$scoverageResultsDir/scoverage.coverage"))
     //    val measurementFiles = IOUtils.findMeasurementFiles(scoverageResultsDir)

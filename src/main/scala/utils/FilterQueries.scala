@@ -14,6 +14,15 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
     filterQueries.filter(q => q.locs.involvesDS(i))
   }
 
+  def getJoinConditions: List[(Int, Int, List[Int], List[Int])] = {
+    filterQueries
+      .filter(_.isMultiDatasetQuery)
+      .map {q =>
+        q.locs.to4Tuple
+      }
+//    List((0, 1, List(0,5,6), List(0,5,6))) // get
+  }
+
   def getRows(datasets: Array[String]): List[QueryResult] = {
     val sc = new SparkContext(null)
     val rdds = datasets.map(sc.textFile)
@@ -21,16 +30,18 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
   }
 
   def createSatVectors(rdds: Array[RDD[String]]): Array[RDD[(String, Int)]] = {
-//    val sc = new SparkContext(null)
-//    val rdds = datasets.map(sc.textFile)
-    println("Pre Join filling started...")
+    if (filterQueries.length > 32 / 2)
+      println("Too many conditions, unable to encode as 32 bit integer. Skipping some.")
+
+    val filterQueries16 = filterQueries.take(16)
+
     val satRDD = rdds
       .zipWithIndex
       .map {
         case (rdd, i) => {
           rdd.map {
             row =>
-              val filterQueriesDS = filterQueries
+              val filterQueriesDS = filterQueries16
                 .map {
                   q =>
                     if (q.involvesDS(i)) q else Query.dummyQuery()
@@ -51,20 +62,24 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
                         savedJoins: Array[(RDD[(String, ((String, Long), (String, Long)))], Int, Int)]
                       ): Array[RDD[((String, Int), Long)]] =
   {
+    if (filterQueries.length > 32 / 2)
+      println("Too many conditions, unable to encode as 32 bit integer. Skipping some.")
 
-    println("Post Join filling started...")
+    val filterQueries16 = filterQueries.take(16)
+
     val savedJoinsWithPV = savedJoins.map { // j is the joined dataset, a and b are dataset ids of joined datasets
       case (rdd, dsA, dsB) =>
         (rdd.map {
           case (k, ((rowA, rowAi), (rowB, rowBi))) =>
             val combinedRow = s"$rowA,$rowB"
-            val filterQueriesDS = filterQueries
-              .map {
+            val filterQueriesDS = filterQueries16
+              .map { // create a list of only multi dataset queries involving dsA and dsB
+                    // the reason filter is not used is because we need to make sure the bit vector is filled at the right locations
                 q =>
                   if (q.involvesDS(dsA) && q.involvesDS(dsB)) {
                     q
                   } else {
-                    Query.dummyQuery()
+                    Query.dummyQuery() // this will result in a 00 at the location
                   }
               }
             val ds2Offset = rowA.split(Config.delimiter).length
@@ -83,11 +98,11 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
           (rdd.map {
             case (_, ((rowA, rowAi, pv1), _)) =>
               ((dsA,rowAi), (rowA, pv1))
-          }, dsA),
+          }.distinct, dsA),
           (rdd.map {
             case (_, (_, (rowB, rowBi, pv2))) =>
               ((dsB,rowBi), (rowB, pv2))
-          }, dsB)
+          }.distinct, dsB)
         )
     }
 
@@ -113,7 +128,7 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
       .map {
         case (rdd, i) =>
           filtered(i)
-            .foldLeft(rdd) {
+            .foldLeft(rdd) { // TODO: fix this, it might fail on a cluster
               case (acc, (e, _)) =>
                 acc
                   .leftOuterJoin(e)
@@ -193,14 +208,11 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
             if (rowi == row) acc | pv else acc
         }, {
           case (pvA, pvB) => pvA | pvB
-        }
-        )
+        })
     }
   }
 
   def makeSatVector(conditions: List[(Array[String] => Int, Query)], row: Array[String], combined: Boolean = false): Int = {
-    if (conditions.length > 32 / 2)
-      throw new Exception("Too many conditions, unable to encode as 32 bit integer")
 
     val pv = conditions
       .map {
