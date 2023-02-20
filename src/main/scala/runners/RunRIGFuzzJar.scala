@@ -25,8 +25,9 @@ object RunRIGFuzzJar {
     Config.benchmarkName = benchmarkName
     val duration = "10"// args(2)
     val outDir = "/dev/null"// args(3)
+    val sparkMaster = "local[*]"
 
-    val Some(inputFiles) = Config.mapInputFilesRIGReduced.get(benchmarkName)
+    val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
@@ -43,14 +44,14 @@ object RunRIGFuzzJar {
       benchmarkClass,
       benchmarkPath,
       funFaulty,
-      inputFiles)
+      pargs)
 
     val symProgram = new SymbolicProgram(
       benchmarkName,
       benchmarkClass,
       benchmarkPath,
       funSymEx,
-      inputFiles)
+      pargs:+sparkMaster)
 
     // Preprocessing and Fuzzing
     val pathExpressions = SymbolicExecutor.execute(symProgram)
@@ -66,7 +67,7 @@ object RunRIGFuzzJar {
 
     val sc = SparkContext.getOrCreate(new SparkConf())
     sc.setLogLevel("ERROR")
-    val rawDS = inputFiles
+    val rawDS = pargs
       .map(sc.textFile(_))
 
     val preJoinFill = branchConditions.createSatVectors(rawDS)

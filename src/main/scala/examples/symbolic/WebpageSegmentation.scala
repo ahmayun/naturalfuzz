@@ -11,10 +11,10 @@ import taintedprimitives.TaintedInt
 
 object WebpageSegmentation extends Serializable {
   def main(args: Array[String]): SymExResult = {
-    println(s"webpage WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
-    sparkConf.setMaster("local[*]")
-    sparkConf.setAppName("Webpage Segmentation")//.set("spark.executor.memory", "2g")
+    if (args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
+    sparkConf.setMaster(args(2))
+    sparkConf.setAppName("symbolic.WebpageSegmentation")//.set("spark.executor.memory", "2g")
     val before_data = args(0)
     val after_data = args(1)
     val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
