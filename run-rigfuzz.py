@@ -15,7 +15,7 @@ from socket import gethostname
 NAME=sys.argv[1]
 PACKAGE=sys.argv[2]
 DURATION=sys.argv[3]
-TO_EMAIL="ahmad35@vt.edu"
+TO_EMAIL=""
 
 PATH_SCALA_SRC=f"src/main/scala/examples/{PACKAGE}/{NAME}.scala"
 PATH_INSTRUMENTED_CLASSES=f"examples/{PACKAGE}/{NAME}*"
@@ -102,9 +102,10 @@ execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
 execute_command(f"""pushd target/scala-2.12/classes && 
                 jar uvf ../ProvFuzz-assembly-1.0.jar {PATH_INSTRUMENTED_CLASSES}""".split())
 
-START_TIME=get_current_time()
 
-execute_command(f"echo 'Subject:[START-RIG] {gethostname()}\\n\\nprogram: {NAME}\\nstart time: {START_TIME}' | sendmail {TO_EMAIL}".split())
+START_TIME=get_current_time()
+if TO_EMAIL:
+    execute_command(f"echo 'Subject:[START-RIG] {gethostname()}\\n\\nprogram: {NAME}\\nstart time: {START_TIME}' | sendmail {TO_EMAIL}".split())
 
 execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
           runners.RunRIGFuzzJar
@@ -113,5 +114,6 @@ execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
           {DURATION}
           {DIR_RIGFUZZ_OUT}""".split())
 
-execute_command(f"echo 'Subject:[END-RIG] {gethostname()}\\n\\nprogram: {NAME}\\nstart time: {START_TIME}\\end time: {get_current_time()}' | sendmail {TO_EMAIL}".split())
+if TO_EMAIL:
+    execute_command(f"echo 'Subject:[END-RIG] {gethostname()}\\n\\nprogram: {NAME}\\nstart time: {START_TIME}\\end time: {get_current_time()}' | sendmail {TO_EMAIL}".split())
 
