@@ -148,7 +148,7 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
         case (joined, i) =>
           println(s"JOINED $i")
           joined
-            .collect()
+            .take(10)
             .foreach(println)
       }
     println("\n END PRINTING JOINS \n")
