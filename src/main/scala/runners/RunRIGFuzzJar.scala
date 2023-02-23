@@ -25,9 +25,13 @@ object RunRIGFuzzJar {
     Config.benchmarkName = benchmarkName
     val duration = "10"// args(2)
     val outDir = "/dev/null"// args(3)
-    val sparkMaster = "local[*]"
+    val sparkMaster = "spark://zion-headnode:7077"
 
-    val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
+    // val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
+    val pargs = Array(
+      "hdfs://zion-headnode:9000/ahmad/FlightDistance_250000/flights",
+      "hdfs://zion-headnode:9000/ahmad/FlightDistance_250000/airports"
+      )
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
@@ -79,7 +83,7 @@ object RunRIGFuzzJar {
     savedJoins
       .head
       ._1
-      .collect()
+      .take(10)
       .foreach(println)
 
     val rdds = branchConditions.createSatVectors(preJoinFill.map(_.zipWithIndex()), savedJoins.toArray)
@@ -184,7 +188,7 @@ object RunRIGFuzzJar {
           println(s"RDD $i:")
           println(s"|\tds_row\t\t\t\t|\t${branchConditions.filterQueries.map(_.tree).zipWithIndex.mkString("", "\t|\t", "\t|")}")
           rdd
-            .collect()
+            .take(10)
             .foreach {
               case (row, pv) =>
                 println(prettify(row, toBinaryStringWithLeadingZeros(pv).take(branchConditions.filterQueries.length * 2), branchConditions))
