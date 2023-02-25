@@ -21,14 +21,16 @@ object RunRIGFuzzJar {
     println(args.mkString("\n"))
 
     // ==P.U.T. dependent configurations=======================
-    val benchmarkName = args(0)
+    val (benchmarkName, sparkMaster, pargs) =
+    if(!args.isEmpty) {
+      (args(0), args(1), args.slice(args.length-2, args.length))
+    } else {
+      ("FlightDistance", "local[*]", Array("flights", "airports").map{s => s"seeds/reduced_data/LongFlights/$s"})
+    }
+    val duration = "10" // args(2)
+    val outDir = "/dev/null" // args(3)
     Config.benchmarkName = benchmarkName
-    val duration = "10"// args(2)
-    val outDir = "/dev/null"// args(3)
-    val sparkMaster = args(1)
-
     // val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
-    val pargs = args.slice(args.length-2, args.length)
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)

@@ -69,24 +69,24 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
 
     val savedJoinsWithPV = savedJoins.map { // j is the joined dataset, a and b are dataset ids of joined datasets
       case (rdd, dsA, dsB) =>
+        val filterQueriesDS = filterQueries16
+          .map { // create a list of only multi dataset queries involving dsA and dsB
+            // the reason filter is not used is because we need to make sure the bit vector is filled at the right locations
+            q =>
+              if (q.involvesDS(dsA) && q.involvesDS(dsB)) {
+                q
+              } else {
+                Query.dummyQuery() // this will result in a 00 at the location
+              }
+          }
+        val ds2Offset = rdd.take(1)(0)._2._1._1.split(Config.delimiter).length
+        val filterFns = filterQueriesDS
+          .map { q => q.offsetLocs(dsB, ds2Offset) }
+          .map(_.tree.createFilterFn(Array(dsA, dsB), ds2Offset))
         (rdd.map {
           case (k, ((rowA, rowAi), (rowB, rowBi))) =>
-            val combinedRow = s"$rowA,$rowB"
-            val filterQueriesDS = filterQueries16
-              .map { // create a list of only multi dataset queries involving dsA and dsB
-                    // the reason filter is not used is because we need to make sure the bit vector is filled at the right locations
-                q =>
-                  if (q.involvesDS(dsA) && q.involvesDS(dsB)) {
-                    q
-                  } else {
-                    Query.dummyQuery() // this will result in a 00 at the location
-                  }
-              }
-            val ds2Offset = rowA.split(Config.delimiter).length
-            val filterFns = filterQueriesDS
-              .map {q => q.offsetLocs(dsB, ds2Offset)}
-              .map(_.tree.createFilterFn(Array(dsA, dsB), ds2Offset))
-            val pv = makeSatVector(filterFns.zip(filterQueriesDS), combinedRow.split(","), true)
+            val combinedRow = s"$rowA${Config.delimiter}$rowB"
+            val pv = makeSatVector(filterFns.zip(filterQueriesDS), combinedRow.split(Config.delimiter), true)
             println(s"jrow: $combinedRow - ${toBinaryStringWithLeadingZeros(pv)}")
             (k, ((rowA, rowAi, pv), (rowB, rowBi, pv)))
         }, dsA, dsB)
