@@ -28,10 +28,7 @@ object RunRIGFuzzJar {
     val sparkMaster = "spark://zion-headnode:7077"
 
     // val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
-    val pargs = Array(
-      "hdfs://zion-headnode:9000/ahmad/FlightDistance_250000/flights",
-      "hdfs://zion-headnode:9000/ahmad/FlightDistance_250000/airports"
-      )
+    val pargs = args.slice(args.length-2, args.length)
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)

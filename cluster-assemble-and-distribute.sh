@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # example usage:
-#   ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJar /ahmad/FlightDistance/{flights,airports}
+#   ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJar FlightDistance spark://zion-headnode:7077 /ahmad/FlightDistance/{flights,airports}
 
 exitScript() {
     mv ~/jazzerresults src/main/scala
@@ -9,8 +9,8 @@ exitScript() {
 }
 
 CLASS=$1
-shift
-MASTER
+MASTER=$2 #spark://zion-headnode:7077
+shift 2
 ARGS=$@
 
 mv src/main/scala/jazzerresults ~ # sbt gets stuck in infinite loop so move this out of directory
