@@ -21,11 +21,11 @@ object RunRIGFuzzJar {
     println(args.mkString("\n"))
 
     // ==P.U.T. dependent configurations=======================
-    val benchmarkName = "FlightDistance"// args(0)
+    val benchmarkName = args(0)
     Config.benchmarkName = benchmarkName
     val duration = "10"// args(2)
     val outDir = "/dev/null"// args(3)
-    val sparkMaster = "spark://zion-headnode:7077"
+    val sparkMaster = args(1)
 
     // val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
     val pargs = args.slice(args.length-2, args.length)
