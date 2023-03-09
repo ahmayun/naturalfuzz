@@ -29,8 +29,8 @@ object FlightDistance extends Serializable {
     val departure_flights = flights.map(r => (r(4), r(0)))
     val arrival_flights = flights.map(r => (r(5), r(0)))
     val airports_and_coords = airports.map(r => (r(0), (r(3), r(4))))
-    val dairports_and_coords = _root_.monitoring.Monitors.monitorJoinSymEx(departure_flights, airports_and_coords, 0)
-    val aairports_and_coords = _root_.monitoring.Monitors.monitorJoinSymEx(arrival_flights, airports_and_coords, 1)
+    val dairports_and_coords = _root_.monitoring.Monitors.monitorJoin(departure_flights, airports_and_coords, 0)
+    val aairports_and_coords = _root_.monitoring.Monitors.monitorJoin(arrival_flights, airports_and_coords, 1)
     val dflights_and_coords = dairports_and_coords.map({
       case (ap, (id, (lat, long))) =>
         (id, (ap, lat, long))
@@ -39,7 +39,7 @@ object FlightDistance extends Serializable {
       case (ap, (id, (lat, long))) =>
         (id, (ap, lat, long))
     })
-    val flights_and_coords = _root_.monitoring.Monitors.monitorJoinSymEx(dflights_and_coords, aflights_and_coords, 2)
+    val flights_and_coords = _root_.monitoring.Monitors.monitorJoin(dflights_and_coords, aflights_and_coords, 2)
     val flights_and_distances = flights_and_coords.map({
       case (fid, ((dap, dlat, dlong), (aap, alat, along))) =>
         (fid, (dap, aap, distance((dlat.toFloat, dlong.toFloat), (alat.toFloat, along.toFloat))))
