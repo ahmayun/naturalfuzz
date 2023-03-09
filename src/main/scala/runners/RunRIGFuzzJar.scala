@@ -57,7 +57,9 @@ object RunRIGFuzzJar {
       pargs:+sparkMaster)
 
     // Preprocessing and Fuzzing
+    println("Running monitored program")
     val pathExpressions = SymbolicExecutor.execute(symProgram)
+    println("Creating filter queries")
     val branchConditions = RIGUtils.createFilterQueries(pathExpressions)
     println("All pieces:")
     branchConditions
