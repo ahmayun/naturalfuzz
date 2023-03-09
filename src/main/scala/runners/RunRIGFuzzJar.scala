@@ -65,7 +65,9 @@ object RunRIGFuzzJar extends Serializable {
       pargs:+sparkMaster)
 
     // Preprocessing and Fuzzing
+    println("Running monitored program")
     val pathExpressions = SymbolicExecutor.execute(symProgram)
+    println("Creating filter queries")
     val branchConditions = RIGUtils.createFilterQueries(pathExpressions)
     println("All pieces:")
     branchConditions
@@ -170,7 +172,8 @@ object RunRIGFuzzJar extends Serializable {
         println("qr------")
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
-//    sys.exit(-1)
+
+    sys.exit(0)
 
     val guidance = new RIGGuidance(pargs, schema, 10, new QueriedRDDs(qrs))
 //    Fuzzer.Fuzz(program, guidance, outDir)
