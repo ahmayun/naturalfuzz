@@ -221,7 +221,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
 //    else if(isMultiDatasetQuery)
 //      throw new Exception("Multi-Dataset queries not yet supported")
 
-    def fq(rdds: Array[BaseRDD[String]]): Array[BaseRDD[String]] = {
+    def fq(rdds: Array[Seq[String]]): Array[Seq[String]] = {
       rdds
 //      val filterFns = rdds.zipWithIndex.map{case (_, i) => this.createFilterFn(i)}
 //      val filterdrdds = rdds.zipWithIndex.map{case (ds, i) => ds.filter(row => filterFns(i)(row.split(',')))}

@@ -1,10 +1,10 @@
 package utils
 
-import abstraction.BaseRDD
+import org.apache.spark.rdd.RDD
 
-class QueriedRDDs(val filteredRDDs: List[QueryResult]) {
+class QueriedRDDs(val filteredRDDs: List[QueryResult]) extends Serializable {
   def mixMatch(inputDatasets: Array[Seq[String]]): QueryResult = {
-    val inputToQR = new QueryResult(inputDatasets.map(ds => new BaseRDD[String](ds)),Seq(), new RDDLocations(Array()))
+    val inputToQR = new QueryResult(inputDatasets, Seq(), new RDDLocations(Array()))
     filteredRDDs.foldLeft(inputToQR){case (acc, e) => acc.mixMatchQueryResult(e, "random")}
   }
 

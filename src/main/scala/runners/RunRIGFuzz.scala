@@ -26,7 +26,7 @@ object RunRIGFuzz extends Serializable {
           acc ++ List(e.toString)
         }
     }
-      s"|\t$row\t|\t\t${broken.zipWithIndex.mkString("", "\t\t\t\t|\t\t\t\t", "\t\t\t\t|")}"
+      s"|\t$row\t|\t\t${broken.mkString("", "\t\t\t\t|\t\t\t\t", "\t\t\t\t|")}"
   }
 
   def main(args: Array[String]): Unit = {

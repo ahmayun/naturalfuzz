@@ -1,9 +1,8 @@
 package utils
 
-import abstraction.BaseRDD
 import runners.Config
 
-class SatRDDs(val rdds: Array[BaseRDD[String]], val filterQueries: List[Query]) {
+class SatRDDs(val rdds: Array[Seq[String]], val filterQueries: List[Query]) extends Serializable {
 
   def breakIntoQueryRDDs(): List[QueryResult] = {
     println(s"No. of queries ${filterQueries.length}")

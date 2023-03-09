@@ -10,6 +10,7 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
 
   val filterQueries: List[Query] = symExResult.getPathQueries.distinct
 
+  def getCount: Int = scala.math.min(filterQueries.length, 16)
   def filterPiecesForDS(i: Int): List[Query] = {
     filterQueries.filter(q => q.locs.involvesDS(i))
   }
@@ -23,11 +24,11 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
 //    List((0, 1, List(0,5,6), List(0,5,6))) // get
   }
 
-  def getRows(datasets: Array[String]): List[QueryResult] = {
-    val sc = new SparkContext(null)
-    val rdds = datasets.map(sc.textFile)
-    filterQueries.map(fq => fq.runQuery(rdds))
-  }
+//  def getRows(datasets: Array[String]): List[QueryResult] = {
+//    val sc = new SparkContext(null)
+//    val rdds = datasets.map(sc.textFile)
+//    filterQueries.map(fq => fq.runQuery(rdds))
+//  }
 
   def createSatVectors(rdds: Array[RDD[String]]): Array[RDD[(String, Int)]] = {
     if (filterQueries.length > 32 / 2)

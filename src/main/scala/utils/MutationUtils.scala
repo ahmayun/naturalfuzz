@@ -18,6 +18,11 @@ object MutationUtils {
     v
   }
 
+  def getRandomElement[T](seq: Seq[T]): T = {
+    val randomIndex = Random.nextInt(seq.length)
+    seq(randomIndex)
+  }
+
   def mutateChar(c: Char, prob: Float, rand: Random = Random): Char = {
     if(!flipCoin(prob, rand)) return c
     var gen = rand.nextPrintableChar()

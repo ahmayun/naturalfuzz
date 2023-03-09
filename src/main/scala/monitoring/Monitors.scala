@@ -130,9 +130,9 @@ object Monitors extends Serializable {
       .take(5)
       .to[ListBuffer]
 
-    samples.foreach { p =>
-      // update join table
-    }
+//    samples.foreach { p =>
+//      // update join table
+//    }
 
     samples.take(1).foreach { p =>
       // add piece to bit vector
