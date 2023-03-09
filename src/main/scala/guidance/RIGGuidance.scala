@@ -19,7 +19,7 @@ class RIGGuidance(
   var runs = 0
 
   def mutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
-    val mm = qrdds.mixMatch(inputDatasets).filterQueryRDDs.map(_.data)
+    val mm = qrdds.mixMatch(inputDatasets).filterQueryRDDs
     println("original")
     inputDatasets(0).foreach(println)
     println("")

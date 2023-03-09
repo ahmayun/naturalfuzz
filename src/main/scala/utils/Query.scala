@@ -1,14 +1,13 @@
 package utils
 
-import abstraction.BaseRDD
 import symbolicexecution.SymbolicTree
 
-class Query(val queryFunc: Array[BaseRDD[String]] => Array[BaseRDD[String]], val locs: RDDLocations, val tree: SymbolicTree) extends Serializable {
+class Query(val queryFunc: Array[Seq[String]] => Array[Seq[String]], val locs: RDDLocations, val tree: SymbolicTree) extends Serializable {
   def offsetLocs(ds: Int, length: Int): Query = {
     new Query(queryFunc, locs.offsetLocs(ds, length), tree.offsetLocs(ds, length))
   }
 
-  def runQuery(rdds: Array[BaseRDD[String]]): QueryResult = {
+  def runQuery(rdds: Array[Seq[String]]): QueryResult = {
     new QueryResult(queryFunc(rdds), Seq(), locs)
   }
 
