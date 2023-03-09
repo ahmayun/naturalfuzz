@@ -12,7 +12,7 @@ object FlightDistance extends Serializable {
     val sparkConf = new SparkConf()
     if(args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
-    sparkConf.setAppName(s"FlightDistance Monitored ${args.mkString(',')}")
+    sparkConf.setAppName(s"FlightDistance Monitored ${args.mkString(",")}")
     val flights_data = args(0)// "datasets/fuzzing_seeds/FlightDistance/flights" // "/home/ahmad/Documents/VT/project1/cs5614-hw/data/flights"
     val airports_data = args(1) // "datasets/fuzzing_seeds/FlightDistance/airports_data" // "/home/ahmad/Documents/VT/project1/cs5614-hw/data/airports_data"
     val sc = new SparkContext(sparkConf)
