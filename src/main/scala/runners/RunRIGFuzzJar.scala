@@ -43,7 +43,7 @@ object RunRIGFuzzJar extends Serializable {
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = s"examples.faulty.$benchmarkName"
-//    val Some(funProbeAble) = Config.mapFunProbeAble.get(benchmarkName)
+//    val Some(funProbeAble) = Config.mapFunProbeAble.gget(benchmarkName)
     val Some(provInfo) = Config.provInfos.get(benchmarkName)
     // ========================================================
 

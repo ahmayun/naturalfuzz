@@ -9,8 +9,9 @@ exitScript() {
 }
 
 CLASS=$1
-MASTER=$2 #spark://zion-headnode:7077
-shift 2
+PROGRAM=$2 #spark://zion-headnode:7077
+MASTER=$3
+shift 3
 ARGS=$@
 
 mv src/main/scala/jazzerresults ~ # sbt gets stuck in infinite loop so move this out of directory
@@ -20,5 +21,5 @@ cp target/scala-2.12/ProvFuzz-assembly-1.0.jar ~ || exit 1
 
 pushd $SPARK_HOME || exit 1
 ./copyProvFuzzToNodes.sh ~ ProvFuzz-assembly-1.0.jar
-./runProvFuzzJob.sh ~/ProvFuzz-assembly-1.0.jar $CLASS $ARGS
+./runProvFuzzJob.sh ~/ProvFuzz-assembly-1.0.jar $CLASS $PROGRAM $MASTER $ARGS
 popd || exit 1

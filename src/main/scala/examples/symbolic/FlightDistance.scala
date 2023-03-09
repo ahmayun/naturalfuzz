@@ -11,6 +11,10 @@ import taintedprimitives.TaintedFloat
 object FlightDistance extends Serializable {
   def main(args: Array[String]): SymExResult = {
     val sparkConf = new SparkConf()
+
+    println("symbolic.FlightDistance called with following args:")
+    println(args.mkString("\n"))
+
     if (args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
     sparkConf.setAppName("symbolic.FlightDistance")//.set("spark.executor.memory", "2g")
