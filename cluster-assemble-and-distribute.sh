@@ -15,7 +15,7 @@ shift 3
 ARGS=$@
 
 mv src/main/scala/jazzerresults ~ # sbt gets stuck in infinite loop so move this out of directory
-sbt assembly || exitOnFail
+sbt assembly || exitScript
 mv ~/jazzerresults src/main/scala
 cp target/scala-2.12/ProvFuzz-assembly-1.0.jar ~ || exit 1
 
