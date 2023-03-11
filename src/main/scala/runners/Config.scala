@@ -13,6 +13,7 @@ object Config {
   val keepColProb = 0.2f
   val dropMixProb = 0.5f
   val scalaVersion = 2.12
+  val scoverageScalaCompilerVersion = "2.12.2"
   val maxSamples = 5
   val maxRepeats = 1
   val percentageProv = 0.1f

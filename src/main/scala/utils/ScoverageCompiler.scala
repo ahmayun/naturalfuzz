@@ -18,7 +18,7 @@ import scala.tools.nsc.transform.TypingTransformers
   Slightly modified for my use case
  */
 object ScoverageCompiler {
-  val ScalaVersion: String = scala.util.Properties.versionNumberString
+  val ScalaVersion: String = Config.scoverageScalaCompilerVersion // scala.util.Properties.versionNumberString
   val ShortScalaVersion: String = (ScalaVersion split "[.]").toList match {
     case init :+ last if last forall (_.isDigit) => init mkString "."
     case _                                       => ScalaVersion
