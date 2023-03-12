@@ -1,5 +1,6 @@
 package runners
 
+import java.net.InetAddress
 import fuzzer.{Fuzzer, Global, Program, SymbolicProgram}
 import guidance.RIGGuidance
 import org.apache.spark.rdd.RDD
@@ -176,7 +177,9 @@ object RunRIGFuzzJarCluster extends Serializable {
       //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
     }
 
-    Pickle.dump(qrs, s"pickled/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    val hostname = InetAddress.getLocalHost.getHostName
+    println(s"hostname: $hostname")
+    Pickle.dump(qrs, s"/home/student/pickled/${createSafeFileName(benchmarkName, pargs)}.pkl")
     sys.exit(0)
     // ============ END ==========================
 
