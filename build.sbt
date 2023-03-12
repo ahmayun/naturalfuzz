@@ -19,7 +19,7 @@ resolvers ++= Seq(
 //   )
 
 
-
+libraryDependencies += "org.json4s" %% "json4s-jackson" % "4.0.3"
 libraryDependencies += "org.scalameta" %% "scalameta" % "4.2.3"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.8"
 libraryDependencies += "org.roaringbitmap" % "RoaringBitmap" % "0.8.11"

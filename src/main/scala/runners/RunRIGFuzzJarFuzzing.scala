@@ -59,7 +59,7 @@ object RunRIGFuzzJarFuzzing extends Serializable {
       s"$pname"
       //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
     }
-    val qrs = Pickle.load[List[QueryResult]](s"/home/student/pickled/qrs/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    val qrs = Pickle.deserialize[List[QueryResult]](s"/home/student/pickled/qrs/${createSafeFileName(benchmarkName, pargs)}.pkl")
     val guidance = new RIGGuidance(pargs, schema, 10, new QueriedRDDs(qrs))
 //    Fuzzer.Fuzz(program, guidance, outDir)
 
