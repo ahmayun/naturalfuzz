@@ -23,15 +23,14 @@ object Pickle {
   def serialize(obj: AnyRef, fileName: String): Unit = {
     val file = new File(fileName)
     val pw = new PrintWriter(file)
-    try {
-      pw.write(Serialization.write(obj))
-    } finally {
-      pw.close()
-    }
+    pw.write(Serialization.write(obj))
+    pw.close()
   }
 
-  def deserialize[T](str: String)(implicit mf: Manifest[T]): T = {
-    Serialization.read[T](str)
+  def deserialize[T](fileName: String)(implicit mf: Manifest[T]): T = {
+    val file = new File(fileName)
+    val jsonStr = scala.io.Source.fromFile(file).mkString
+    Serialization.read[T](jsonStr)
   }
 
 }
