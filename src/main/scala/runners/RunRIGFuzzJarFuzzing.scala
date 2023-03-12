@@ -177,6 +177,7 @@ object RunRIGFuzzJarFuzzing extends Serializable {
         (preJoinFilled(dsA)
           .zipWithIndex
           .map {
+            case ((row, _), i) =>
               val cols = row.split(Config.delimiter)
               val key = colsA.map(c => cols(c)).mkString("|")
               (key, (row, i))

@@ -1,0 +1,2 @@
+python3 ./run-rigfuzz.py FlightDistance faulty 10 ~/pickled/reduced_data/FlightDistance/dataset_*
+./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJarCluster FlightDistance spark://zion-headnode:7077 /ahmad/FlightDistance/{flights,airports}
