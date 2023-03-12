@@ -6,7 +6,7 @@ import utils.MutationUtils.getRandomElement
 //import org.apache.spark.rdd.RDD
 
 class QueryResult(val filterQueryRDDs: Array[Seq[String]], val query: Seq[Query], val locs: RDDLocations) extends Serializable {
-
+  private val serialVersionUID: Long = 1L
   def replaceCols(cols: Array[String], rdd: Seq[String], locs: RDDLocations, ds: Int): Array[String] = {
     if (flipCoin(Config.dropMixProb))
       return cols
