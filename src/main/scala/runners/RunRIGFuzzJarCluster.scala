@@ -188,7 +188,7 @@ object RunRIGFuzzJarCluster extends Serializable {
 
     val foldername = createSafeFileName(benchmarkName, pargs)
     Pickle.dump(qrs, s"/home/student/pickled/qrs/$foldername.pkl")
-    finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername/$i", e, i)}
+    finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername", e, i)}
     sys.exit(0)
     // ============ END ==========================
 
