@@ -171,7 +171,12 @@ object RunRIGFuzzJarCluster extends Serializable {
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
 
-    Pickle.dump(qrs, s"pickled/${benchmarkName}.pkl")
+    def createSafeFileName(pname: String, pargs: Array[String]): String = {
+      s"$pname"
+      //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
+    }
+
+    Pickle.dump(qrs, s"pickled/${createSafeFileName(benchmarkName, pargs)}.pkl")
     sys.exit(0)
     // ============ END ==========================
 
