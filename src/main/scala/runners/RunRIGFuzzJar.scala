@@ -1,6 +1,7 @@
 package runners
 
 import abstraction.BaseRDD
+import fuzzer.Fuzzer.writeToFile
 import fuzzer.{Fuzzer, Global, InstrumentedProgram, Program, SymbolicProgram}
 import guidance.RIGGuidance
 import scoverage.report.ScoverageHtmlWriter
@@ -173,9 +174,21 @@ object RunRIGFuzzJar extends Serializable {
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
 
-    sys.exit(0)
+    val finalReduced = reducedDatasets.map {
+      rdd =>
+        rdd.map {
+          case (row, i) => row
+        }.toSeq
+    }.toArray
 
-    val guidance = new RIGGuidance(pargs, schema, 10, new QueriedRDDs(qrs))
+    def createSafeFileName(pname: String, pargs: Array[String]): String = {
+      s"$pname"
+      //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
+    }
+
+    val foldername = createSafeFileName(benchmarkName, pargs)
+    val dataset_files = finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername", e, i)}
+    val guidance = new RIGGuidance(dataset_files, schema, 10, new QueriedRDDs(qrs))
 //    Fuzzer.Fuzz(program, guidance, outDir)
 
 //    val satRDDs = runnablePieces.createSatVectors(program.args) // create RDD with bit vector and bit counts

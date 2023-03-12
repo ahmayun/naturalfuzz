@@ -174,11 +174,6 @@ object RunRIGFuzzJarCluster extends Serializable {
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
 
-    def createSafeFileName(pname: String, pargs: Array[String]): String = {
-      s"$pname"
-      //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
-    }
-
     val finalReduced = reducedDatasets.map{
       rdd =>
         rdd.map {
@@ -186,6 +181,10 @@ object RunRIGFuzzJarCluster extends Serializable {
         }.toSeq
     }.toArray
 
+    def createSafeFileName(pname: String, pargs: Array[String]): String = {
+      s"$pname"
+      //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
+    }
     val foldername = createSafeFileName(benchmarkName, pargs)
     Pickle.serialize(qrs, s"/home/student/pickled/qrs/$foldername.pkl")
     finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername", e, i)}
