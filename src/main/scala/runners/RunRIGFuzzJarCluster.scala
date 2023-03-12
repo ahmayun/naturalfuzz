@@ -176,7 +176,7 @@ object RunRIGFuzzJarCluster extends Serializable {
       //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
     }
 
-    Pickle.dump(qrs, s"pickled/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    Pickle.dump(qrs, s"~/pickled/${createSafeFileName(benchmarkName, pargs)}.pkl")
     sys.exit(0)
     // ============ END ==========================
 
