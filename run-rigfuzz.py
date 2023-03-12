@@ -15,7 +15,7 @@ from socket import gethostname
 NAME=sys.argv[1]
 PACKAGE=sys.argv[2]
 DURATION=sys.argv[3]
-DATASETS=sys.argv[3:]
+DATASETS=" ".join(sys.argv[3:])
 TO_EMAIL=""
 
 PATH_SCALA_SRC=f"src/main/scala/examples/{PACKAGE}/{NAME}.scala"
@@ -112,11 +112,9 @@ execute_command(f"""java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar
           runners.RunRIGFuzzJarFuzzing
           {NAME}
           local[*]
-          {PACKAGE}
           {DURATION}
           {DIR_RIGFUZZ_OUT}
-          a
-          b
+          {DATASETS}
           """.split())
 
 if TO_EMAIL:

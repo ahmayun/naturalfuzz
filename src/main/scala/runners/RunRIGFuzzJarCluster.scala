@@ -1,5 +1,4 @@
 package runners
-
 import fuzzer.Fuzzer.writeToFile
 
 import java.net.InetAddress
