@@ -1,5 +1,7 @@
 package runners
 
+import fuzzer.Fuzzer.writeToFile
+
 import java.net.InetAddress
 import fuzzer.{Fuzzer, Global, Program, SymbolicProgram}
 import guidance.RIGGuidance
@@ -177,9 +179,16 @@ object RunRIGFuzzJarCluster extends Serializable {
       //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
     }
 
-    val hostname = InetAddress.getLocalHost.getHostName
-    println(s"hostname: $hostname")
-    Pickle.dump(qrs, s"/home/student/pickled/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    val finalReduced = reducedDatasets.map{
+      rdd =>
+        rdd.map {
+          case (row, i) => row
+        }.toSeq
+    }.toArray
+
+    val foldername = createSafeFileName(benchmarkName, pargs)
+    Pickle.dump(qrs, s"/home/student/pickled/qrs/$foldername.pkl")
+    finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername/$i", e, i)}
     sys.exit(0)
     // ============ END ==========================
 
