@@ -25,7 +25,7 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DIR_RIGFUZZ_OUT/scoverage-results
 
 pushd target/scala-2.12/classes && \
-      jar uvf ../ProvFuzz-assembly-1.0.jar {PATH_INSTRUMENTED_CLASSES}
+      jar uvf ../ProvFuzz-assembly-1.0.jar $PATH_INSTRUMENTED_CLASSES
 
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
