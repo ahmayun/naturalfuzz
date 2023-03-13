@@ -2,6 +2,7 @@ package utils
 
 import symbolicexecution.SymbolicTree
 
+@SerialVersionUID(2L)
 class Query(val queryFunc: Array[Seq[String]] => Array[Seq[String]], val locs: RDDLocations, val tree: SymbolicTree) extends Serializable {
   def offsetLocs(ds: Int, length: Int): Query = {
     new Query(queryFunc, locs.offsetLocs(ds, length), tree.offsetLocs(ds, length))

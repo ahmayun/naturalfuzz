@@ -1,5 +1,6 @@
 package utils
 
+@SerialVersionUID(3L)
 class RDDLocations(val locs: Array[(Int, Int, Int)]) extends Serializable {
   def offsetLocs(ds: Int, offset: Int): RDDLocations = {
     new RDDLocations(locs.map {

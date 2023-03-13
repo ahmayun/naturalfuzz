@@ -12,7 +12,7 @@ import utils.{Query, RDDLocations}
 import java.util.Objects
 import scala.collection.mutable.ListBuffer
 
-
+@SerialVersionUID(5L)
 abstract case class SymTreeNode(s: Any) extends Serializable {
 
   def getValue: Any = s
@@ -20,14 +20,17 @@ abstract case class SymTreeNode(s: Any) extends Serializable {
   override def toString: String = s.toString
 }
 
+@SerialVersionUID(6L)
 class OperationNode(override val s: Any) extends SymTreeNode(s) with Serializable {
 
 }
 
+@SerialVersionUID(7L)
 class ConcreteValueNode(override val s: Any) extends SymTreeNode(s) with Serializable {
 
 }
 
+@SerialVersionUID(8L)
 class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val offset: Int = 0) extends SymTreeNode(s) with Serializable {
 
   def modifyProv(_ds: Int, _offset: Int): ProvValueNode = {
@@ -70,6 +73,7 @@ class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val 
 
 }
 
+@SerialVersionUID(4L)
 case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTree) extends Serializable {
   def offsetLocs(ds: Int, offset: Int): SymbolicTree = {
     val offsetNode = node match {

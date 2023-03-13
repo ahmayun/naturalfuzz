@@ -4,6 +4,7 @@ import scala.collection.GenTraversableOnce
 import scala.collection.mutable.ListBuffer
 import scala.reflect.runtime.universe._
 
+@SerialVersionUID(9L)
 trait Provenance extends Serializable {
   def convertToTuples: ListBuffer[(Int,Int,Int)]
 
