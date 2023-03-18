@@ -20,6 +20,6 @@ mv ~/jazzerresults src/main/scala
 cp target/scala-2.12/ProvFuzz-assembly-1.0.jar ~ || exit 1
 
 pushd $SPARK_HOME || exit 1
-./copyProvFuzzToNodes.sh ~ ProvFuzz-assembly-1.0.jar
-./runProvFuzzJob.sh ~/ProvFuzz-assembly-1.0.jar $CLASS $PROGRAM $MASTER $ARGS
+./copyProvFuzzToNodes.sh /home/student/rigfuzz/target/scala-2.12 ProvFuzz-assembly-1.0.jar
+./runProvFuzzJob.sh /home/student/rigfuzz/target/scala-2.12/ProvFuzz-assembly-1.0.jar $CLASS $PROGRAM $MASTER $ARGS
 popd || exit 1

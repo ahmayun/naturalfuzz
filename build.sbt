@@ -1,6 +1,6 @@
 name := "ProvFuzz"
 version := "1.0"
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.10"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
