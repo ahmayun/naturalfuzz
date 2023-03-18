@@ -1,6 +1,6 @@
 name := "ProvFuzz"
 version := "1.0"
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.10"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
@@ -19,15 +19,15 @@ resolvers ++= Seq(
 //   )
 
 
-libraryDependencies += "org.json4s" %% "json4s-jackson" % "4.0.3"
+//libraryDependencies += "org.json4s" %% "json4s-jackson" % "4.0.3"
 libraryDependencies += "org.scalameta" %% "scalameta" % "4.2.3"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.8"
 libraryDependencies += "org.roaringbitmap" % "RoaringBitmap" % "0.8.11"
 libraryDependencies += "org.scoverage" %% "scalac-scoverage-plugin" % "1.4.1"
 libraryDependencies += "org.scoverage" %% "scalac-scoverage-runtime" % "1.4.1"
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-compiler" % "2.12.2",
-  "org.scala-lang" % "scala-reflect" % "2.12.2"
+  "org.scala-lang" % "scala-compiler" % "2.12.10",
+  "org.scala-lang" % "scala-reflect" % "2.12.10"
 )
 
 
