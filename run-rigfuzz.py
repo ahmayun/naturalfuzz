@@ -73,6 +73,7 @@ def execute_command(command, wait=True):
         
     output, error = process.communicate()
     if process.returncode != 0:
+        print(output.decode())
         print(f"Command `{command}` failed with error:\n\t{error.decode()}")
         exit(process.returncode)
     print(output.decode())
