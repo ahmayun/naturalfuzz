@@ -38,7 +38,7 @@ class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val 
   }
 
 
-  def getProv: ListBuffer[(Int, Int, Int)] = {
+  def getProv(): ListBuffer[(Int, Int, Int)] = {
     prov.convertToTuples.map {
       case loc@(_ds, col, row) =>
         if (_ds == ds) {
