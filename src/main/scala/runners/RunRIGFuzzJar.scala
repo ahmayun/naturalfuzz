@@ -101,12 +101,18 @@ object RunRIGFuzzJar extends Serializable {
 
     printIntermediateRDDs("POST Join Path Vectors:", rdds, branchConditions)
 
-    val joinTable = List[List[(Int, List[Int])]](
-      List((0, List(5)), (1, List(0))),
-      List((0, List(6)), (1, List(0))),
-//      List((0, List(0)), (0, List(0)))
-    )
+//    val joinTable = List[List[(Int, List[Int])]](
+//      List((0, List(5)), (1, List(0))),
+//      List((0, List(6)), (1, List(0)))
+//    )
 
+    val joinTable = branchConditions.getJoinConditions.map {
+      case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
+    }
+
+    joinTable.foreach(println)
+
+//    sys.exit(0)
     val reducedDatasets = ListBuffer[List[(String, Long)]]()
     rdds
       .zipWithIndex
@@ -187,7 +193,7 @@ object RunRIGFuzzJar extends Serializable {
     }
 
     val foldername = createSafeFileName(benchmarkName, pargs)
-    val dataset_files = finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername", e, i)}
+    val dataset_files = finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"./seeds/rig_reduced_data/$foldername", e, i)}
     val guidance = new RIGGuidance(dataset_files, schema, 10, new QueriedRDDs(qrs))
 //    Fuzzer.Fuzz(program, guidance, outDir)
 

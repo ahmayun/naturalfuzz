@@ -100,11 +100,15 @@ object RunRIGFuzzJarCluster extends Serializable {
 
     printIntermediateRDDs("POST Join Path Vectors:", rdds, branchConditions)
 
-    val joinTable = List[List[(Int, List[Int])]](
-      List((0, List(5)), (1, List(0))),
-      List((0, List(6)), (1, List(0))),
-//      List((0, List(0)), (0, List(0)))
-    )
+//    val joinTable = List[List[(Int, List[Int])]](
+//      List((0, List(5)), (1, List(0))),
+//      List((0, List(6)), (1, List(0))),
+//    )
+
+    val joinTable = branchConditions.getJoinConditions.map {
+      case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
+    }
+
 
     val reducedDatasets = ListBuffer[List[(String, Long)]]()
     rdds
