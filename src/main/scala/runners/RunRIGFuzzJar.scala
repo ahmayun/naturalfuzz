@@ -112,36 +112,42 @@ object RunRIGFuzzJar extends Serializable {
 
     joinTable.foreach(println)
 
+    // get the maximum number of keys extracted from a row
+    // this is how many duplicate rows will be allowed (duplicate w.r.t branch vector)
+    val maxKeysFromRow = 2
 //    sys.exit(0)
     val reducedDatasets = ListBuffer[List[(String, Long)]]()
     rdds
       .zipWithIndex
       .foreach {
         case (rdd, d) =>
-          val (red, _) = rdd
+          val (red, _, _) = rdd
             .zipWithIndex
             .aggregate(
-            (List[(String, Long)](), 0x0))({
+            (List[(String, Long)](), 0x0, 0))({
             // min rows max bit fill algorithm here
             // use join table to guide selection according to rdd1 selection
-            case ((acc, accVec), ((row, pv), rowi)) =>
+            case ((acc, accVec, selected), ((row, pv), rowi)) =>
               val or = accVec | pv
               if (or != accVec && checkMembership((row, d, rowi), reducedDatasets, joinTable)) { // Note: section can be optimized with areNewBitsAfterJoin()
-                (acc :+ (row, rowi), or)
+                (acc :+ (row, rowi), or, selected+1)
+              }
+              else if (or == accVec && selected < maxKeysFromRow && checkMembership((row, d, rowi), reducedDatasets, joinTable)) {
+                (acc :+ (row, rowi), or, selected+1)
               } else {
-                (acc, accVec)
+                (acc, accVec, selected)
               }
           }, {
-            case ((acc1, accVec1), (acc2, accVec2)) =>
+            case ((acc1, accVec1, _), (acc2, accVec2, _)) =>
               val accVec = accVec1 | accVec2
               if (accVec == accVec1 && accVec == accVec2) {
-                (acc1, accVec)
+                (acc1, accVec, 0)
               } else if (accVec == accVec1 && accVec != accVec2) {
-                (acc1, accVec1)
+                (acc1, accVec1, 0)
               } else if (accVec != accVec1 && accVec == accVec2) {
-                (acc2, accVec2)
+                (acc2, accVec2, 0)
               } else {
-                (acc1 ++ acc2, accVec)
+                (acc1 ++ acc2, accVec, 0)
               }
           })
           reducedDatasets.append(red)
@@ -159,20 +165,24 @@ object RunRIGFuzzJar extends Serializable {
 //    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)
 //    val minRDDs = new SatRDDs(blendedRows, branchConditions).getRandMinimumSatSet()
 
-    val qrs = generateList(3 << 30, branchConditions.getCount).zip(branchConditions.filterQueries).map{
-      case (mask,q) =>
-        val qr = rdds.map {
-          rdd =>
-            rdd.filter {
-              case (row, pv) =>
-                (pv & mask) != 0
-            }
-              .map{case (row, pv) => s"$row${Config.delimiter}$pv"}
-              .takeSample(false, 10).toSeq
-        }
-        new QueryResult(qr,Seq(q),q.locs)
-
-    }
+    val qrs = generateList(3 << 30, branchConditions.getCount)
+      .zip(branchConditions.filterQueries)
+      .map {
+        case (mask, q) =>
+          val qr = rdds.map {
+            rdd =>
+              rdd.filter {
+                case (row, pv) =>
+                  (pv & mask) != 0
+              }
+                .map {
+                  case (row, pv) =>
+                    s"$row${Config.delimiter}$pv"
+                }
+                .takeSample(false, 10).toSeq
+          }
+          new QueryResult(qr, Seq(q), q.locs)
+      }
 
     qrs.foreach {
       qr =>
@@ -195,6 +205,7 @@ object RunRIGFuzzJar extends Serializable {
     val foldername = createSafeFileName(benchmarkName, pargs)
     val dataset_files = finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"./seeds/rig_reduced_data/$foldername", e, i)}
     val guidance = new RIGGuidance(dataset_files, schema, 10, new QueriedRDDs(qrs))
+    sys.exit(0)
 //    Fuzzer.Fuzz(program, guidance, outDir)
 
 //    val satRDDs = runnablePieces.createSatVectors(program.args) // create RDD with bit vector and bit counts
@@ -265,15 +276,43 @@ object RunRIGFuzzJar extends Serializable {
           if (otherDS == reducedDSID) {
             val thisRow = row.split(",")
             val otherRow = reducedDSRow.split(",")
-            found = found || hash(thisRow(thisCols.head)) == hash(otherRow(otherCols.head)) // TODO: Generalize this to compound keys
+            found = found || {
+              println("-------")
+              val res = hashKeys(thisRow, thisCols) == hashKeys(otherRow, otherCols)
+              println("-------")
+              res
+            }
           }
         }
     }
     found
   }
 
+  def hashKeys(row: Array[String], cols: List[Int]): Int = {
+    // hash(thisRow(thisCols.head)) == hash(otherRow(otherCols.head))
+    val (selected, _) = row
+      .zipWithIndex
+      .filter {
+        case (e, i) =>
+          cols.contains(i)
+      }
+      .unzip
+
+    val res = selected
+      .sorted
+      .toList // required to produce reliable hashcode for a list with same elements
+      .hashCode
+
+    println(s"HASHING [$res]: ${cols.mkString("|")} - ${selected.mkString(",")}")
+    return res
+  }
+
+
   def checkMembership(rowInfo: (String, Int, Long), reduced: ListBuffer[List[(String, Long)]], joinTable: List[List[(Int, List[Int])]]): Boolean = {
     if (reduced.isEmpty)
+      return true
+
+    if (rowInfo._2 == 0)
       return true
 
     val (rddRow, dsID, rowID) = rowInfo
