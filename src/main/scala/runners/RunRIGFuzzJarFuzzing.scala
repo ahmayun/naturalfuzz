@@ -61,7 +61,7 @@ object RunRIGFuzzJarFuzzing extends Serializable {
     }
 
     val qrs = Pickle.load[List[QueryResult]](s"/home/student/pickled/qrs/${createSafeFileName(benchmarkName, pargs)}.pkl")
-    val guidance = new RIGGuidance(pargs, schema, 10, new QueriedRDDs(qrs))
+    val guidance = new RIGGuidance(pargs, schema, duration.toInt, new QueriedRDDs(qrs))
     val (stats, timeStartFuzz, timeEndFuzz) = Fuzzer.Fuzz(program, guidance, outDir)
 
     // Finalizing
