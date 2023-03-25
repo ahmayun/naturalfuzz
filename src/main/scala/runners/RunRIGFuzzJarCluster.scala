@@ -9,11 +9,11 @@ import org.apache.spark.{SparkConf, SparkContext}
 import runners.RunRIGFuzz.prettify
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
-import symbolicexecution.SymbolicExecutor
+import symbolicexecution.{SymbolicExecutor, SymbolicExpression}
 import utils.MiscUtils.toBinaryStringWithLeadingZeros
 import utils.{FilterQueries, Pickle, QueriedRDDs, QueryResult, RIGUtils}
 import RunRIGFuzzJar.{generateList, createSavedJoins, checkMembership, printIntermediateRDDs}
-
+import org.apache.spark.util.AccumulatorV2
 import java.io.File
 import scala.collection.mutable.ListBuffer
 
