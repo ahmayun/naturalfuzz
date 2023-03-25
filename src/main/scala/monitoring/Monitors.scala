@@ -8,7 +8,7 @@ import symbolicexecution.{OperationNode, ProvValueNode, SymExResult, SymTreeNode
 import taintedprimitives.{TaintedAny, TaintedBase, TaintedBoolean, Utils}
 import runners.Config
 import taintedprimitives.SymImplicits._
-
+import org.apache.spark.{SparkContext,SparkConf,AccumulatorParam}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -22,6 +22,17 @@ object Monitors extends Serializable {
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
 
+  // define an AccumulatorParam to accumulate a list of integers
+  object ExpressionAccumulatorParam extends AccumulatorParam[List[SymbolicExpression]] {
+    def zero(initialValue: List[SymbolicExpression]): List[SymbolicExpression] = List()
+
+    def addInPlace(l1: List[SymbolicExpression], l2: List[SymbolicExpression]): List[SymbolicExpression] = l1 ::: l2
+  }
+
+  // create an accumulator in the driver and initialize it to an empty list
+  val expressionAccumulator = SparkContext
+    .getOrCreate(new SparkConf().setAppName("[ERROR] Init From Monitor Class"))
+    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
@@ -136,12 +147,14 @@ object Monitors extends Serializable {
 
     samples.take(1).foreach { p =>
       // add piece to bit vector
-      constraints.append(SymbolicExpression(
+      val expr = SymbolicExpression(
         SymbolicTree(
-          new SymbolicTree(new ProvValueNode(p.last,p.last.getProvenance())),
+          new SymbolicTree(new ProvValueNode(p.last, p.last.getProvenance())),
           new OperationNode("contains"),
-          new SymbolicTree(new ProvValueNode(p.head,p.head.getProvenance()))))
+          new SymbolicTree(new ProvValueNode(p.head, p.head.getProvenance())))
       )
+//      constraints.append(expr)
+      expressionAccumulator += List(expr)
     }
 
     joint.map {
@@ -165,8 +178,9 @@ object Monitors extends Serializable {
       else
         bool.symbolicExpression
 
-      println(s"PC for branch $id: $pc => ${bool.value}")
-      constraints.append(pc)
+//      println(s"PC for branch $id: $pc => ${bool.value}")
+//      constraints.append(pc)
+      expressionAccumulator += List(bool.symbolicExpression)
       cache(id) = true
     }
 
@@ -221,10 +235,14 @@ object Monitors extends Serializable {
   }
 
   def finalizeSymEx(): SymExResult = {
-    println("=== PC ===")
-    constraints.foreach(println)
-    println("=== PC ===")
+//    println("=== PC ===")
+//    constraints.foreach(println)
+//    println("=== PC ===")
 
-    new SymExResult(null, constraints)
+    println("=== ACC PC ===")
+    expressionAccumulator.value.foreach(println)
+    println("=== ACC PC ===")
+
+    new SymExResult(null, expressionAccumulator.value.to[ListBuffer])
   }
 }

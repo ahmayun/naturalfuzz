@@ -17,7 +17,7 @@ object WebpageSegmentation extends Serializable {
     sparkConf.setAppName("symbolic.WebpageSegmentation")//.set("spark.executor.memory", "2g")
     val before_data = args(0)
     val after_data = args(1)
-    val ctx = new SparkContextWithDP(new SparkContext(sparkConf))
+    val ctx = new SparkContextWithDP(SparkContext.getOrCreate(sparkConf))
     ctx.setLogLevel("ERROR")
     //    Provenance.setProvenanceType("dual")
     val before = ctx.textFileProv(before_data, _.split(','))

@@ -7,9 +7,8 @@ import guidance.RIGGuidance
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
 import utils.{FilterQueries, ProvFuzzUtils, QueriedRDDs, QueryResult, RIGUtils, SatRDDs}
-import symbolicexecution.SymbolicExecutor
+import symbolicexecution.{SymbolicExecutor, SymbolicExpression}
 import org.apache.spark.rdd.RDD
-
 import java.io.File
 import org.apache.spark.{SparkConf, SparkContext}
 import runners.RunRIGFuzz.prettify
@@ -33,19 +32,22 @@ object RunRIGFuzzJar extends Serializable {
         args(2),
         args(3))
     } else {
-      ("FlightDistance", "local[*]",
-        Array("flights", "airports").map{s => s"seeds/reduced_data/LongFlights/$s"},
+      val name = "FlightDistance"
+      (name, "local[*]",
+        Array("flights", "airports").map{s => s"seeds/reduced_data/flightdistance/$s"},
         "10",
-        "target/rig-output")
+        s"target/rig-output-local/$name")
+//      val name = "WebpageSegmentation"
+//      (name, "local[*]",
+//        Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
+//        "10",
+//        s"target/rig-output-local/$name")
     }
     Config.benchmarkName = benchmarkName
-    // val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = s"examples.faulty.$benchmarkName"
-//    val Some(funProbeAble) = Config.mapFunProbeAble.gget(benchmarkName)
-    val Some(provInfo) = Config.provInfos.get(benchmarkName)
     // ========================================================
 
     val scoverageOutputDir = s"$outDir/scoverage-results"
@@ -65,6 +67,13 @@ object RunRIGFuzzJar extends Serializable {
       funSymEx,
       pargs:+sparkMaster)
 
+    val sc = SparkContext.getOrCreate(
+      new SparkConf()
+        .setMaster(sparkMaster)
+        .setAppName(s"RunRIGFuzzJar: symbolic.${benchmarkName}")
+    )
+    sc.setLogLevel("ERROR")
+
     // Preprocessing and Fuzzing
     println("Running monitored program")
     val pathExpressions = SymbolicExecutor.execute(symProgram)
@@ -79,8 +88,6 @@ object RunRIGFuzzJar extends Serializable {
           println(i, q.tree)
       }
 
-    val sc = SparkContext.getOrCreate(new SparkConf())
-    sc.setLogLevel("ERROR")
     val rawDS = pargs
       .map(sc.textFile(_))
 
@@ -96,7 +103,7 @@ object RunRIGFuzzJar extends Serializable {
       .take(10)
       .foreach(println)
 
-    val rdds = branchConditions.createSatVectors(preJoinFill.map(_.zipWithIndex()), savedJoins.toArray)
+    val rdds = branchConditions.createSatVectors(preJoinFill.map(_.zipWithIndex), savedJoins.toArray)
       .map{rdd => rdd.map{ case ((row, pv), _) => (row, pv)}}
 
     printIntermediateRDDs("POST Join Path Vectors:", rdds, branchConditions)

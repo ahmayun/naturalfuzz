@@ -20,7 +20,7 @@ object FlightDistance extends Serializable {
     sparkConf.setAppName(s"symbolic.FlightDistance ${args.mkString(",")}")//.set("spark.executor.memory", "2g")
     val flights_data = args(0) // "datasets/fuzzing_seeds/FlightDistance/flights" // "/home/ahmad/Documents/VT/project1/cs5614-hw/data/flights"
     val airports_data = args(1) // "datasets/fuzzing_seeds/FlightDistance/airports_data" // "/home/ahmad/Documents/VT/project1/cs5614-hw/data/airports_data"
-    val sc = new SparkContext(sparkConf)
+    val sc = SparkContext.getOrCreate(sparkConf)
     val ctx = new SparkContextWithDP(sc)
     ctx.setLogLevel("ERROR")
     Provenance.setProvenanceType("dual")
