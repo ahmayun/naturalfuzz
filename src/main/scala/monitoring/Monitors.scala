@@ -24,7 +24,7 @@ object Monitors extends Serializable {
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
 
   // define an AccumulatorV2 to accumulate a list of integers
-  class ExpressionAccumulatorParam extends AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] {
+  class ExpressionAccumulatorParam extends AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] with Serializable {
     private var expressionList: List[SymbolicExpression] = List()
 
     def isZero: Boolean = expressionList.isEmpty
