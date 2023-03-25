@@ -65,6 +65,13 @@ object RunRIGFuzzJarCluster extends Serializable {
       funSymEx,
       pargs:+sparkMaster)
 
+    val sc = SparkContext.getOrCreate(
+      new SparkConf()
+        .setMaster(sparkMaster)
+        .setAppName(s"RunRIGFuzzJar: symbolic.${benchmarkName}")
+    )
+    sc.setLogLevel("ERROR")
+
     // Preprocessing and Fuzzing
     println("Running monitored program")
     val pathExpressions = SymbolicExecutor.execute(symProgram)
@@ -79,8 +86,6 @@ object RunRIGFuzzJarCluster extends Serializable {
           println(i, q.tree)
       }
 
-    val sc = SparkContext.getOrCreate(new SparkConf())
-    sc.setLogLevel("ERROR")
     val rawDS = pargs
       .map(sc.textFile(_))
 
