@@ -8,7 +8,8 @@ import symbolicexecution.{OperationNode, ProvValueNode, SymExResult, SymTreeNode
 import taintedprimitives.{TaintedAny, TaintedBase, TaintedBoolean, Utils}
 import runners.Config
 import taintedprimitives.SymImplicits._
-import org.apache.spark.{SparkContext,SparkConf,AccumulatorParam}
+import org.apache.spark.{SparkContext,SparkConf}
+import org.apache.spark.util.AccumulatorV2
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -22,17 +23,52 @@ object Monitors extends Serializable {
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
 
-  // define an AccumulatorParam to accumulate a list of integers
-  object ExpressionAccumulatorParam extends AccumulatorParam[List[SymbolicExpression]] {
-    def zero(initialValue: List[SymbolicExpression]): List[SymbolicExpression] = List()
+  // define an AccumulatorV2 to accumulate a list of integers
+  class ExpressionAccumulatorParam extends AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] {
+    private var expressionList: List[SymbolicExpression] = List()
 
-    def addInPlace(l1: List[SymbolicExpression], l2: List[SymbolicExpression]): List[SymbolicExpression] = l1 ::: l2
+    def isZero: Boolean = expressionList.isEmpty
+
+    def copy(): AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] = {
+      val newAcc = new ExpressionAccumulatorParam
+      newAcc.expressionList = this.expressionList
+      newAcc
+    }
+
+    def reset(): Unit = {
+      expressionList = List()
+    }
+
+    def add(v: SymbolicExpression): Unit = {
+      expressionList = expressionList:+v
+    }
+
+    def merge(other: AccumulatorV2[SymbolicExpression, List[SymbolicExpression]]): Unit = other match {
+      case acc: ExpressionAccumulatorParam => expressionList = acc.expressionList ::: expressionList
+      case _ => throw new UnsupportedOperationException(
+        s"Cannot merge ${this.getClass.getName} with ${other.getClass.getName}")
+    }
+
+    def value: List[SymbolicExpression] = expressionList
   }
 
   // create an accumulator in the driver and initialize it to an empty list
-  val expressionAccumulator = SparkContext
-    .getOrCreate(new SparkConf().setAppName("[ERROR] Init From Monitor Class"))
-    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
+  val expressionAccumulator = new ExpressionAccumulatorParam
+  SparkContext
+      .getOrCreate(new SparkConf().setAppName("[ERROR] Init From Monitor Class"))
+      .register(expressionAccumulator, "ExpressionAccumulator")
+
+//  // define an AccumulatorParam to accumulate a list of integers
+//  object ExpressionAccumulatorParam extends AccumulatorParam[List[SymbolicExpression]] {
+//    def zero(initialValue: List[SymbolicExpression]): List[SymbolicExpression] = List()
+//
+//    def addInPlace(l1: List[SymbolicExpression], l2: List[SymbolicExpression]): List[SymbolicExpression] = l1 ::: l2
+//  }
+//
+//  // create an accumulator in the driver and initialize it to an empty list
+//  val expressionAccumulator = SparkContext
+//    .getOrCreate(new SparkConf().setAppName("[ERROR] Init From Monitor Class"))
+//    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
@@ -154,7 +190,7 @@ object Monitors extends Serializable {
           new SymbolicTree(new ProvValueNode(p.head, p.head.getProvenance())))
       )
 //      constraints.append(expr)
-      expressionAccumulator += List(expr)
+      expressionAccumulator.add(expr)
     }
 
     joint.map {
@@ -180,7 +216,7 @@ object Monitors extends Serializable {
 
 //      println(s"PC for branch $id: $pc => ${bool.value}")
 //      constraints.append(pc)
-      expressionAccumulator += List(bool.symbolicExpression)
+      expressionAccumulator.add(bool.symbolicExpression)
       cache(id) = true
     }
 
