@@ -18,45 +18,10 @@ object Monitors extends Serializable {
 
 
   val provInfo: ProvInfo = new ProvInfo()
-  val constraints: ListBuffer[SymbolicExpression] = ListBuffer()
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
-
-  // define an AccumulatorV2 to accumulate a list of integers
-  class ExpressionAccumulatorParam extends AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] with Serializable {
-    private var expressionList: List[SymbolicExpression] = List()
-
-    def isZero: Boolean = expressionList.isEmpty
-
-    def copy(): AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] = {
-      val newAcc = new ExpressionAccumulatorParam
-      newAcc.expressionList = this.expressionList
-      newAcc
-    }
-
-    def reset(): Unit = {
-      expressionList = List()
-    }
-
-    def add(v: SymbolicExpression): Unit = {
-      expressionList = expressionList:+v
-    }
-
-    def merge(other: AccumulatorV2[SymbolicExpression, List[SymbolicExpression]]): Unit = other match {
-      case acc: ExpressionAccumulatorParam => expressionList = acc.expressionList ::: expressionList
-      case _ => throw new UnsupportedOperationException(
-        s"Cannot merge ${this.getClass.getName} with ${other.getClass.getName}")
-    }
-
-    def value: List[SymbolicExpression] = expressionList
-  }
-
-  // create an accumulator in the driver and initialize it to an empty list
-  val expressionAccumulator = new ExpressionAccumulatorParam
-  SparkContext
-      .getOrCreate(new SparkConf().setAppName("[ERROR] Init From Monitor Class"))
-      .register(expressionAccumulator, "ExpressionAccumulator")
+  var expressionAccumulator: AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] = null
 
 //  // define an AccumulatorParam to accumulate a list of integers
 //  object ExpressionAccumulatorParam extends AccumulatorParam[List[SymbolicExpression]] {
@@ -69,6 +34,11 @@ object Monitors extends Serializable {
 //  val expressionAccumulator = SparkContext
 //    .getOrCreate(new SparkConf().setAppName("[ERROR] Init From Monitor Class"))
 //    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
+
+
+  def setAccumulator(acc: AccumulatorV2[SymbolicExpression, List[SymbolicExpression]]): Unit = {
+    expressionAccumulator = acc
+  }
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
