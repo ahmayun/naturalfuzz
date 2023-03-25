@@ -38,13 +38,15 @@ class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val 
   }
 
 
-  val getProv: ListBuffer[(Int, Int, Int)] = prov.convertToTuples.map {
-    case loc @ (_ds, col, row) =>
-      if (_ds == ds) {
-        (_ds, col + offset, row)
-      } else {
-        loc
-      }
+  def getProv(): ListBuffer[(Int, Int, Int)] = {
+    prov.convertToTuples.map {
+      case loc@(_ds, col, row) =>
+        if (_ds == ds) {
+          (_ds, col + offset, row)
+        } else {
+          loc
+        }
+    }
   }
 
   override def hashCode(): Int = {

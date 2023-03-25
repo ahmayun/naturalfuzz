@@ -162,10 +162,10 @@
     <orderEntry type="library" name="sbt: org.roaringbitmap:shims:0.8.11:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-lang.modules:scala-parser-combinators_2.12:1.1.0:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-lang.modules:scala-xml_2.12:1.2.0:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.scala-lang:scala-compiler:2.12.2:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.scala-lang:scala-library:2.12.2:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.scala-lang:scala-reflect:2.12.2:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.scala-lang:scalap:2.12.2:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scala-compiler:2.12.10:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scala-library:2.12.10:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scala-reflect:2.12.10:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scalap:2.12.10:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scalameta:common_2.12:4.2.3:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scalameta:fastparse-utils_2.12:1.0.1:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scalameta:fastparse_2.12:1.0.1:jar" level="project" />
