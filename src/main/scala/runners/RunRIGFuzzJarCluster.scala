@@ -24,34 +24,6 @@ object RunRIGFuzzJarCluster extends Serializable {
     println("RunRIGFuzzJar called with following args:")
     println(args.mkString("\n"))
 
-    class ExpressionAccumulatorParam extends AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] {
-      private var expressionList: List[SymbolicExpression] = List()
-
-      def isZero: Boolean = expressionList.isEmpty
-
-      def copy(): AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] = {
-        val newAcc = new ExpressionAccumulatorParam
-        newAcc.expressionList = this.expressionList
-        newAcc
-      }
-
-      def reset(): Unit = {
-        expressionList = List()
-      }
-
-      def add(v: SymbolicExpression): Unit = {
-        expressionList = expressionList :+ v
-      }
-
-      def merge(other: AccumulatorV2[SymbolicExpression, List[SymbolicExpression]]): Unit = other match {
-        case acc: ExpressionAccumulatorParam => expressionList = acc.expressionList ::: expressionList
-        case _ => throw new UnsupportedOperationException(
-          s"Cannot merge ${this.getClass.getName} with ${other.getClass.getName}")
-      }
-
-      def value: List[SymbolicExpression] = expressionList
-    }
-
     // ==P.U.T. dependent configurations=======================
     val (benchmarkName, sparkMaster, pargs, duration, outDir) =
     if(!args.isEmpty) {
@@ -101,8 +73,7 @@ object RunRIGFuzzJarCluster extends Serializable {
     sc.setLogLevel("ERROR")
 
     // create an accumulator in the driver and initialize it to an empty list
-    val expressionAccumulator = new ExpressionAccumulatorParam
-    sc.register(expressionAccumulator, "ExpressionAccumulator")
+    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
     monitoring.Monitors.setAccumulator(expressionAccumulator)
 
     // Preprocessing and Fuzzing

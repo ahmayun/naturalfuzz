@@ -9,10 +9,11 @@ import taintedprimitives.{TaintedAny, TaintedBase, TaintedBoolean, Utils}
 import runners.Config
 import taintedprimitives.SymImplicits._
 import org.apache.spark.{SparkContext,SparkConf}
-import org.apache.spark.util.AccumulatorV2
+import org.apache.spark.util.CollectionAccumulator
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
+import scala.collection.JavaConverters._
 
 object Monitors extends Serializable {
 
@@ -21,7 +22,7 @@ object Monitors extends Serializable {
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
-  var expressionAccumulator: AccumulatorV2[SymbolicExpression, List[SymbolicExpression]] = null
+  var expressionAccumulator: CollectionAccumulator[SymbolicExpression] = null
 
 //  // define an AccumulatorParam to accumulate a list of integers
 //  object ExpressionAccumulatorParam extends AccumulatorParam[List[SymbolicExpression]] {
@@ -36,7 +37,7 @@ object Monitors extends Serializable {
 //    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
 
 
-  def setAccumulator(acc: AccumulatorV2[SymbolicExpression, List[SymbolicExpression]]): Unit = {
+  def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
     expressionAccumulator = acc
   }
 
@@ -244,11 +245,12 @@ object Monitors extends Serializable {
 //    println("=== PC ===")
 //    constraints.foreach(println)
 //    println("=== PC ===")
+    val exprList = expressionAccumulator.value.asScala.toList
 
     println("=== ACC PC ===")
-    expressionAccumulator.value.foreach(println)
+    exprList.foreach(println)
     println("=== ACC PC ===")
 
-    new SymExResult(null, expressionAccumulator.value.to[ListBuffer])
+    new SymExResult(null, exprList.to[ListBuffer])
   }
 }

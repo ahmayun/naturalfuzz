@@ -129,7 +129,7 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
       .map {
         case (rdd, i) =>
           filtered(i)
-            .foldLeft(rdd) { // TODO: fix this, it might fail on a cluster
+            .foldLeft(rdd) {
               case (acc, (e, _)) =>
                 acc
                   .leftOuterJoin(e)
