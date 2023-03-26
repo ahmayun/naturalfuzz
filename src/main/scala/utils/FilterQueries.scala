@@ -232,7 +232,7 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
           acc | (b << (30 - i * 2))
       }
 
-    val constr = conditions.map(_._2.tree).mkString("\n")
+//    val constr = conditions.map(_._2.tree).mkString("\n")
     val pvstr = toBinaryStringWithLeadingZeros(pv).take(conditions.length*2)
     pv
   }
