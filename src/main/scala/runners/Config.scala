@@ -185,7 +185,8 @@ object Config {
     "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
     "FlightDistance" -> examples.symbolic.FlightDistance.main,
     "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main,
-    "CommuteType" -> examples.symbolic.CommuteType.main
+    "CommuteType" -> examples.symbolic.CommuteType.main,
+    "Delays" -> examples.symbolic.Delays.main
   )
 
 
