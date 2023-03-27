@@ -38,13 +38,15 @@ class RIGGuidance(
   }
 
   override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
+    var changed = false
     if(Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
       this.coverage = cov
       new FileWriter(new File(s"$outDir/cumulative.csv"), true)
         .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
         .append("\n")
         .flush()
+      changed = true;
     }
-    true
+    changed
   }
 }

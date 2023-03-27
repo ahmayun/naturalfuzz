@@ -59,7 +59,6 @@ object Fuzzer {
       try {
         program.main(mutated_files)
         crashed = false
-        new Directory(new File(outDirTestCase)).deleteRecursively()
       } catch {
         case e: Throwable =>
           crashed = true
@@ -93,7 +92,11 @@ object Fuzzer {
       val coverage = getCoverage(coverageOutDir, fuzzer.Global.iteration)
       stats.add_plot_point(fuzzer.Global.iteration, coverage.statementCoveragePercent)
 
-      guidance.updateCoverage(coverage, outDir, crashed)
+      val changed = guidance.updateCoverage(coverage, outDir, crashed)
+
+      if(!changed){
+        new Directory(new File(outDirTestCase)).deleteRecursively()
+      }
 
       new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(coverageOutDir)).write(coverage)
 
