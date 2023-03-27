@@ -23,7 +23,9 @@ object Monitors extends Serializable {
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
   val expressionAccumulator = SparkContext.getOrCreate(
-    new SparkConf() // shouldnt need this
+    new SparkConf()
+      .setMaster("spark://zion-headnode:7077")
+      .setAppName("Monitors")
   ).collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
 
 //  // define an AccumulatorParam to accumulate a list of integers
@@ -39,9 +41,9 @@ object Monitors extends Serializable {
 //    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
 
 
-//  def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
-//    expressionAccumulator = acc
-//  }
+  def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
+    expressionAccumulator = acc
+  }
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
