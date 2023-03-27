@@ -41,9 +41,9 @@ object Monitors extends Serializable {
 //    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
 
 
-  def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
-    expressionAccumulator = acc
-  }
+//  def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
+//    expressionAccumulator = acc
+//  }
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
