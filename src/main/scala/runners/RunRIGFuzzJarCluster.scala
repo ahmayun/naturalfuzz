@@ -1,4 +1,5 @@
 package runners
+
 import fuzzer.Fuzzer.writeToFile
 
 import java.net.InetAddress
@@ -26,25 +27,25 @@ object RunRIGFuzzJarCluster extends Serializable {
 
     // ==P.U.T. dependent configurations=======================
     val (benchmarkName, sparkMaster, pargs, duration, outDir) =
-    if(!args.isEmpty) {
-      (args(0),
-        args(1),
-        args.slice(args.length-2, args.length),
-        args(2),
-        args(3))
-    } else {
-      ("FlightDistance", "local[*]",
-        Array("flights", "airports").map{s => s"seeds/reduced_data/LongFlights/$s"},
-        "10",
-        "target/rig-output")
-    }
+      if (!args.isEmpty) {
+        (args(0),
+          args(1),
+          args.slice(args.length - 2, args.length),
+          args(2),
+          args(3))
+      } else {
+        ("FlightDistance", "local[*]",
+          Array("flights", "airports").map { s => s"seeds/reduced_data/LongFlights/$s" },
+          "10",
+          "target/rig-output")
+      }
     Config.benchmarkName = benchmarkName
     // val Some(pargs) = Config.mapInputFilesRIGReduced.get(benchmarkName)
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
     val benchmarkClass = s"examples.faulty.$benchmarkName"
-//    val Some(funProbeAble) = Config.mapFunProbeAble.gget(benchmarkName)
+    //    val Some(funProbeAble) = Config.mapFunProbeAble.gget(benchmarkName)
     val Some(provInfo) = Config.provInfos.get(benchmarkName)
     // ========================================================
 
@@ -63,7 +64,7 @@ object RunRIGFuzzJarCluster extends Serializable {
       benchmarkClass,
       benchmarkPath,
       funSymEx,
-      pargs:+sparkMaster)
+      pargs :+ sparkMaster)
 
     val sc = SparkContext.getOrCreate(
       new SparkConf()
@@ -106,14 +107,14 @@ object RunRIGFuzzJarCluster extends Serializable {
       .foreach(println)
 
     val rdds = branchConditions.createSatVectors(preJoinFill.map(_.zipWithIndex()), savedJoins.toArray)
-      .map{rdd => rdd.map{ case ((row, pv), _) => (row, pv)}}
+      .map { rdd => rdd.map { case ((row, pv), _) => (row, pv) } }
 
     printIntermediateRDDs("POST Join Path Vectors:", rdds, branchConditions)
 
-//    val joinTable = List[List[(Int, List[Int])]](
-//      List((0, List(5)), (1, List(0))),
-//      List((0, List(6)), (1, List(0))),
-//    )
+    //    val joinTable = List[List[(Int, List[Int])]](
+    //      List((0, List(5)), (1, List(0))),
+    //      List((0, List(6)), (1, List(0))),
+    //    )
 
     val joinTable = branchConditions.getJoinConditions.map {
       case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
@@ -157,30 +158,21 @@ object RunRIGFuzzJarCluster extends Serializable {
           reducedDatasets.append(red)
       }
 
-    reducedDatasets
-      .zipWithIndex
-      .foreach {
-      case (ds, i) =>
-        println(s"==== Reduced DS: ${i + 1} =====")
-        ds.foreach(println)
-        println("-----")
-    }
+    //    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)
+    //    val minRDDs = new SatRDDs(blendedRows, branchConditions).getRandMinimumSatSet()
 
-//    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)
-//    val minRDDs = new SatRDDs(blendedRows, branchConditions).getRandMinimumSatSet()
-
-    val qrs = generateList(3 << 30, branchConditions.getCount).zip(branchConditions.filterQueries).map{
-      case (mask,q) =>
+    val qrs = generateList(3 << 30, branchConditions.getCount).zip(branchConditions.filterQueries).map {
+      case (mask, q) =>
         val qr = rdds.map {
           rdd =>
             rdd.filter {
               case (row, pv) =>
                 (pv & mask) != 0
             }
-              .map{case (row, pv) => s"$row${Config.delimiter}$pv"}
+              .map { case (row, pv) => s"$row${Config.delimiter}$pv" }
               .takeSample(false, 10).toSeq
         }
-        new QueryResult(qr,Seq(q),q.locs)
+        new QueryResult(qr, Seq(q), q.locs)
 
     }
 
@@ -190,7 +182,16 @@ object RunRIGFuzzJarCluster extends Serializable {
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
 
-    val finalReduced = reducedDatasets.map{
+    reducedDatasets
+      .zipWithIndex
+      .foreach {
+        case (ds, i) =>
+          println(s"==== Reduced DS: ${i + 1} =====")
+          ds.foreach(println)
+          println("-----")
+      }
+
+    val finalReduced = reducedDatasets.map {
       rdd =>
         rdd.map {
           case (row, i) => row
@@ -201,9 +202,10 @@ object RunRIGFuzzJarCluster extends Serializable {
       s"$pname"
       //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
     }
+
     val foldername = createSafeFileName(benchmarkName, pargs)
     Pickle.dump(qrs, s"/home/student/pickled/qrs/$foldername.pkl")
-    finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername", e, i)}
+    finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"/home/student/pickled/reduced_data/$foldername", e, i) }
   }
 
 

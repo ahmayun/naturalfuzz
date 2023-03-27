@@ -27,24 +27,24 @@ object RunRIGFuzzJar extends Serializable {
 
     // ==P.U.T. dependent configurations=======================
     val (benchmarkName, sparkMaster, pargs, duration, outDir) =
-    if(!args.isEmpty) {
-      (args(0),
-        args(1),
-        args.slice(args.length-2, args.length),
-        args(2),
-        args(3))
-    } else {
-      val name = "FlightDistance"
-      (name, "local[*]",
-        Array("flights", "airports").map{s => s"seeds/reduced_data/flightdistance/$s"},
-        "10",
-        s"target/rig-output-local/$name")
-//      val name = "WebpageSegmentation"
-//      (name, "local[*]",
-//        Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
-//        "10",
-//        s"target/rig-output-local/$name")
-    }
+      if (!args.isEmpty) {
+        (args(0),
+          args(1),
+          args.slice(args.length - 2, args.length),
+          args(2),
+          args(3))
+      } else {
+        val name = "FlightDistance"
+        (name, "local[*]",
+          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
+          "10",
+          s"target/rig-output-local/$name")
+        //      val name = "WebpageSegmentation"
+        //      (name, "local[*]",
+        //        Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
+        //        "10",
+        //        s"target/rig-output-local/$name")
+      }
     Config.benchmarkName = benchmarkName
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
@@ -67,7 +67,7 @@ object RunRIGFuzzJar extends Serializable {
       benchmarkClass,
       benchmarkPath,
       funSymEx,
-      pargs:+sparkMaster)
+      pargs :+ sparkMaster)
 
     val sc = SparkContext.getOrCreate(
       new SparkConf()
@@ -112,14 +112,14 @@ object RunRIGFuzzJar extends Serializable {
       .foreach(println)
 
     val rdds = branchConditions.createSatVectors(preJoinFill.map(_.zipWithIndex), savedJoins.toArray)
-      .map{rdd => rdd.map{ case ((row, pv), _) => (row, pv)}}
+      .map { rdd => rdd.map { case ((row, pv), _) => (row, pv) } }
 
     printIntermediateRDDs("POST Join Path Vectors:", rdds, branchConditions)
 
-//    val joinTable = List[List[(Int, List[Int])]](
-//      List((0, List(5)), (1, List(0))),
-//      List((0, List(6)), (1, List(0)))
-//    )
+    //    val joinTable = List[List[(Int, List[Int])]](
+    //      List((0, List(5)), (1, List(0))),
+    //      List((0, List(6)), (1, List(0)))
+    //    )
 
     val joinTable = branchConditions.getJoinConditions.map {
       case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
@@ -130,7 +130,7 @@ object RunRIGFuzzJar extends Serializable {
     // get the maximum number of keys extracted from a row
     // this is how many duplicate rows will be allowed (duplicate w.r.t branch vector)
     val maxKeysFromRow = 2
-//    sys.exit(0)
+    //    sys.exit(0)
     val reducedDatasets = ListBuffer[List[(String, Long)]]()
     rdds
       .zipWithIndex
@@ -139,46 +139,37 @@ object RunRIGFuzzJar extends Serializable {
           val (red, _, _) = rdd
             .zipWithIndex
             .aggregate(
-            (List[(String, Long)](), 0x0, 0))({
-            // min rows max bit fill algorithm here
-            // use join table to guide selection according to rdd1 selection
-            case ((acc, accVec, selected), ((row, pv), rowi)) =>
-              val or = accVec | pv
-              if (or != accVec && checkMembership((row, d, rowi), reducedDatasets, joinTable)) { // Note: section can be optimized with areNewBitsAfterJoin()
-                (acc :+ (row, rowi), or, selected+1)
-              }
-              else if (or == accVec && selected < maxKeysFromRow && checkMembership((row, d, rowi), reducedDatasets, joinTable)) {
-                (acc :+ (row, rowi), or, selected+1)
-              } else {
-                (acc, accVec, selected)
-              }
-          }, {
-            case ((acc1, accVec1, _), (acc2, accVec2, _)) =>
-              val accVec = accVec1 | accVec2
-              if (accVec == accVec1 && accVec == accVec2) {
-                (acc1, accVec, 0)
-              } else if (accVec == accVec1 && accVec != accVec2) {
-                (acc1, accVec1, 0)
-              } else if (accVec != accVec1 && accVec == accVec2) {
-                (acc2, accVec2, 0)
-              } else {
-                (acc1 ++ acc2, accVec, 0)
-              }
-          })
+              (List[(String, Long)](), 0x0, 0))({
+              // min rows max bit fill algorithm here
+              // use join table to guide selection according to rdd1 selection
+              case ((acc, accVec, selected), ((row, pv), rowi)) =>
+                val or = accVec | pv
+                if (or != accVec && checkMembership((row, d, rowi), reducedDatasets, joinTable)) { // Note: section can be optimized with areNewBitsAfterJoin()
+                  (acc :+ (row, rowi), or, selected + 1)
+                }
+                else if (or == accVec && selected < maxKeysFromRow && checkMembership((row, d, rowi), reducedDatasets, joinTable)) {
+                  (acc :+ (row, rowi), or, selected + 1)
+                } else {
+                  (acc, accVec, selected)
+                }
+            }, {
+              case ((acc1, accVec1, _), (acc2, accVec2, _)) =>
+                val accVec = accVec1 | accVec2
+                if (accVec == accVec1 && accVec == accVec2) {
+                  (acc1, accVec, 0)
+                } else if (accVec == accVec1 && accVec != accVec2) {
+                  (acc1, accVec1, 0)
+                } else if (accVec != accVec1 && accVec == accVec2) {
+                  (acc2, accVec2, 0)
+                } else {
+                  (acc1 ++ acc2, accVec, 0)
+                }
+            })
           reducedDatasets.append(red)
       }
 
-    reducedDatasets
-      .zipWithIndex
-      .foreach {
-      case (ds, i) =>
-        println(s"==== Reduced DS: ${i + 1} =====")
-        ds.foreach(println)
-        println("-----")
-    }
-
-//    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)
-//    val minRDDs = new SatRDDs(blendedRows, branchConditions).getRandMinimumSatSet()
+    //    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)
+    //    val minRDDs = new SatRDDs(blendedRows, branchConditions).getRandMinimumSatSet()
 
     val qrs = generateList(3 << 30, branchConditions.getCount)
       .zip(branchConditions.filterQueries)
@@ -205,6 +196,15 @@ object RunRIGFuzzJar extends Serializable {
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
 
+    reducedDatasets
+      .zipWithIndex
+      .foreach {
+        case (ds, i) =>
+          println(s"==== Reduced DS: ${i + 1} =====")
+          ds.foreach(println)
+          println("-----")
+      }
+
     val finalReduced = reducedDatasets.map {
       rdd =>
         rdd.map {
@@ -218,34 +218,34 @@ object RunRIGFuzzJar extends Serializable {
     }
 
     val foldername = createSafeFileName(benchmarkName, pargs)
-    val dataset_files = finalReduced.zipWithIndex.map{case (e, i) => writeToFile(s"./seeds/rig_reduced_data/$foldername", e, i)}
+    val dataset_files = finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"./seeds/rig_reduced_data/$foldername", e, i) }
     val guidance = new RIGGuidance(dataset_files, schema, 10, new QueriedRDDs(qrs))
     sys.exit(0)
-//    Fuzzer.Fuzz(program, guidance, outDir)
+    //    Fuzzer.Fuzz(program, guidance, outDir)
 
-//    val satRDDs = runnablePieces.createSatVectors(program.args) // create RDD with bit vector and bit counts
-//    val minSatRDDs = satRDDs.getRandMinimumSatSet()
-//    val brokenRDDs: List[QueryResult] = minSatRDDs.breakIntoQueryRDDs() // not ideal, but allows me to leverage my own existing code
-//
-//
-//    val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(brokenRDDs))
-//
+    //    val satRDDs = runnablePieces.createSatVectors(program.args) // create RDD with bit vector and bit counts
+    //    val minSatRDDs = satRDDs.getRandMinimumSatSet()
+    //    val brokenRDDs: List[QueryResult] = minSatRDDs.breakIntoQueryRDDs() // not ideal, but allows me to leverage my own existing code
+    //
+    //
+    //    val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(brokenRDDs))
+    //
     val (stats, timeStartFuzz, timeEndFuzz) = Fuzzer.Fuzz(program, guidance, outDir)
-//
-//    // Finalizing
+    //
+    //    // Finalizing
     val coverage = Serializer.deserialize(new File(s"$scoverageOutputDir/scoverage.coverage"))
     val measurementFiles = IOUtils.findMeasurementFiles(scoverageOutputDir)
     val measurements = IOUtils.invoked(measurementFiles)
-//
+    //
     coverage.apply(measurements)
     new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageOutputDir)).write(coverage)
 
-//    val durationProbe = 0.1f // (timeEndProbe - timeStartProbe) / 1000.0
-//    val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0
-//    val durationTotal = durationProbe + durationFuzz
+    //    val durationProbe = 0.1f // (timeEndProbe - timeStartProbe) / 1000.0
+    //    val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0
+    //    val durationTotal = durationProbe + durationFuzz
 
-//
-//    // Printing results
+    //
+    //    // Printing results
     stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} $c x $msg") }
     stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} x $c") }
     stats.failureMap.map { case (msg, (_, c, i)) => (getLineNo(benchmarkName, msg.mkString("\n")), c, i) }
@@ -253,23 +253,23 @@ object RunRIGFuzzJar extends Serializable {
       .map { case (line, list) => (line, list.size) }
       .toList.sortBy(_._1)
       .foreach(println)
-//
+    //
     println(s"=== RESULTS: RIGFuzz $benchmarkName ===")
     println(s"Failures: ${stats.failures} (${stats.failureMap.keySet.size} unique)")
     println(s"failures: ${stats.failureMap.map { case (_, (_, _, i)) => i + 1 }.toSeq.sortBy(i => i).mkString(",")}")
     println(s"coverage progress: ${stats.plotData._2.map(limitDP(_, 2)).mkString(",")}")
     println(s"iterations: ${stats.plotData._1.mkString(",")}")
     println(s"Coverage: ${limitDP(coverage.statementCoveragePercent, 2)}% (gathered from ${measurementFiles.length} measurement files)")
-//    println(s"Total Time (s): ${limitDP(durationTotal, 2)} (P: $durationProbe | F: $durationFuzz)")
+    //    println(s"Total Time (s): ${limitDP(durationTotal, 2)} (P: $durationProbe | F: $durationFuzz)")
     println(
       s"Config:\n" +
         s"\tProgram: ${program.name}\n" +
-//        s"\tMutation Distribution M1-M6: ${guidance.get_mutate_probs.mkString(",")}\n" +
-//        s"\tActual Application: ${guidance.get_actual_app.mkString(",")}\n" +
+        //        s"\tMutation Distribution M1-M6: ${guidance.get_mutate_probs.mkString(",")}\n" +
+        //        s"\tActual Application: ${guidance.get_actual_app.mkString(",")}\n" +
         s"\tIterations: ${Global.iteration}"
     )
-//    println("ProvInfo: ")
-//    println(provInfo)
+    //    println("ProvInfo: ")
+    //    println(provInfo)
   }
 
   def generateList(start: Int, count: Int): List[Int] = {
@@ -277,7 +277,7 @@ object RunRIGFuzzJar extends Serializable {
     if (count == 1) {
       List(start)
     } else {
-      start :: generateList(start >>> 2, count-1)
+      start :: generateList(start >>> 2, count - 1)
     }
   }
 
@@ -318,7 +318,7 @@ object RunRIGFuzzJar extends Serializable {
       .toList // required to produce reliable hashcode for a list with same elements
       .hashCode
 
-    println(s"HASHING [$res]: ${cols.mkString("|")} - ${selected.mkString(",")}")
+    //    println(s"HASHING [$res]: ${cols.mkString("|")} - ${selected.mkString(",")}")
     return res
   }
 
@@ -345,6 +345,7 @@ object RunRIGFuzzJar extends Serializable {
   }
 
   def hash(s: String): Int = s.hashCode
+
   def limitDP(d: Double, dp: Int): Double = {
     BigDecimal(d).setScale(dp, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
@@ -369,16 +370,16 @@ object RunRIGFuzzJar extends Serializable {
               val key = colsA.map(c => cols(c)).mkString("|")
               (key, (row, i))
           }
-        .join(
-          preJoinFilled(dsB)
-            .zipWithIndex
-            .map {
-              case ((row, _), i) =>
-                val cols = row.split(Config.delimiter)
-                val key = colsB.map(c => cols(c)).mkString("|")
-                (key, (row, i))
-            }
-        ),dsA,dsB)
+          .join(
+            preJoinFilled(dsB)
+              .zipWithIndex
+              .map {
+                case ((row, _), i) =>
+                  val cols = row.split(Config.delimiter)
+                  val key = colsB.map(c => cols(c)).mkString("|")
+                  (key, (row, i))
+              }
+          ), dsA, dsB)
     }
   }
 
