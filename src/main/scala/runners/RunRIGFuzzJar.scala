@@ -51,6 +51,7 @@ object RunRIGFuzzJar extends Serializable {
           s"target/rig-output-local/$name")
       }
     Config.benchmarkName = benchmarkName
+    Config.sparkMaster = sparkMaster
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
     val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
     val Some(schema) = Config.mapSchemas.get(benchmarkName)
@@ -78,14 +79,14 @@ object RunRIGFuzzJar extends Serializable {
       new SparkConf()
         .setMaster(sparkMaster)
         .setAppName(s"RunRIGFuzzJar: symbolic.${benchmarkName}")
-        .set("spark.executor.memory", "8g")
+//        .set("spark.executor.memory", "8g")
     )
     sc.setLogLevel("ERROR")
 
 
     // create an accumulator in the driver and initialize it to an empty list
-    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
-    monitoring.Monitors.setAccumulator(expressionAccumulator)
+//    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
+//    monitoring.Monitors.setAccumulator(expressionAccumulator)
 
     // Preprocessing and Fuzzing
     println("Running monitored program")

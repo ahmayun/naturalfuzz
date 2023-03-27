@@ -17,12 +17,18 @@ import scala.collection.JavaConverters._
 
 object Monitors extends Serializable {
 
+  val sc = SparkContext.getOrCreate(
+    new SparkConf()
+      .setMaster(Config.sparkMaster)
+      .setAppName(s"Monitor: symbolic.${Config.benchmarkName}")
+    //        .set("spark.executor.memory", "8g")
+  )
 
   val provInfo: ProvInfo = new ProvInfo()
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
-  var expressionAccumulator: CollectionAccumulator[SymbolicExpression] = null
+  var expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
 
 //  // define an AccumulatorParam to accumulate a list of integers
 //  object ExpressionAccumulatorParam extends AccumulatorParam[List[SymbolicExpression]] {
@@ -38,7 +44,7 @@ object Monitors extends Serializable {
 
 
   def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
-    expressionAccumulator = acc
+//    expressionAccumulator = acc
   }
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {

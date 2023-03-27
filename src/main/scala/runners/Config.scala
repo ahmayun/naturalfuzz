@@ -10,6 +10,8 @@ import scala.collection.mutable.ListBuffer
 object Config {
 
   // RIGFuzz params
+  var benchmarkName = "RIGTestJoin" // this value is overridden by a runner
+  var sparkMaster = "local[*]" // this value is overridden by a runner
   val keepColProb = 0.2f
   val dropMixProb = 0.5f
   val scalaVersion = 2.12
@@ -19,7 +21,6 @@ object Config {
   val percentageProv = 0.1f
   val iterations = 10
   val fuzzDuration = 10 // 86400 // duration in seconds
-  var benchmarkName = "RIGTestJoin" // this value can be overridden by a runner
   val resultsDir = s"./target/fuzzer-results/$benchmarkName"
   val faultTest = true
   val deepFaults = false
