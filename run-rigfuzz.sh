@@ -30,6 +30,8 @@ jar uvf ../ProvFuzz-assembly-1.0.jar \
         || exit 1
 popd || exit 1
 
+date > $DIR_RIGFUZZ_OUT/start.time
+
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunRIGFuzzJarFuzzing \
           $NAME \
@@ -37,3 +39,5 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DURATION \
           $DIR_RIGFUZZ_OUT \
           $DATASETS
+
+date > $DIR_RIGFUZZ_OUT/end.time

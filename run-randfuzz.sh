@@ -37,6 +37,7 @@ jar uvf  ../ProvFuzz-assembly-1.0.jar \
         || exit 1
 popd || exit 1
 
+date > $DIR_RANDFUZZ_OUT/start.time
 
 java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           runners.RunRandFuzzJar \
@@ -44,3 +45,5 @@ java -cp  target/scala-2.11/ProvFuzz-assembly-1.0.jar \
           $PACKAGE \
           $DURATION \
           $DIR_RANDFUZZ_OUT
+
+date > $DIR_RANDFUZZ_OUT/end.time
