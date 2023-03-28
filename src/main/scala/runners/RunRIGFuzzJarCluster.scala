@@ -74,8 +74,8 @@ object RunRIGFuzzJarCluster extends Serializable {
     sc.setLogLevel("ERROR")
 
     // create an accumulator in the driver and initialize it to an empty list
-    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
-    monitoring.Monitors.setAccumulator(expressionAccumulator)
+//    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
+//    monitoring.Monitors.setAccumulator(expressionAccumulator)
 
     // Preprocessing and Fuzzing
     println("Running monitored program")
