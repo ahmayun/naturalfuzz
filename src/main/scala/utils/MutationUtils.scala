@@ -18,8 +18,8 @@ object MutationUtils {
     v
   }
 
-  def getRandomElement[T](seq: Seq[T]): T = {
-    val randomIndex = Random.nextInt(seq.length)
+  def getRandomElement[T](seq: Seq[T], rand: Random = Random): T = {
+    val randomIndex = rand.nextInt(seq.length)
     seq(randomIndex)
   }
 

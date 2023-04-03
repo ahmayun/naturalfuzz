@@ -1,6 +1,6 @@
 package refactor
 
-import refactor.MonitorAttacher.treeFromFile
+import refactor.CodeTransformUtils.{treeFromFile,writeTransformed}
 
 import java.io.File
 import scala.meta._
@@ -19,7 +19,7 @@ object RunMonitorAttacher {
     val transformed = MonitorAttacher.attachMonitors(tree)
     println(tree.structure)
     println(transformed.structure)
-    MonitorAttacher.writeTransformed(transformed.toString(), outputFile)
+    writeTransformed(transformed.toString(), outputFile)
 
   }
 }

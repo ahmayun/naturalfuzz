@@ -7,8 +7,8 @@ object WebpageSegmentation {
   def main(args: Array[String]): Unit = {
 //    println(s"WebpageSegmentation args ${args.mkString(",")}")
     val sparkConf = new SparkConf()
-    sparkConf.setMaster("local[6]")
-    sparkConf.setAppName("Webpage Segmentation").set("spark.executor.memory", "2g")
+    sparkConf.setMaster("local[*]")
+    sparkConf.setAppName("Webpage Segmentation")//.set("spark.executor.memory", "2g")
     val before_data = args(0) // "seeds/weak_seed/webpage_segmentation/before"
     val after_data = args(1) // "seeds/weak_seed/webpage_segmentation/after"
     val ctx = new SparkContext(sparkConf) //set up lineage context and start capture lineage
@@ -26,20 +26,20 @@ object WebpageSegmentation {
     val changed = pairs
       .filter{
         case (_, ((_, v1), (_, v2))) =>
-          if (v1(0) > 7325622 && v1(0) < 8463215) throw new RuntimeException()
+//          if (v1(0) > 7325622 && v1(0) < 8463215) throw new RuntimeException()
           !v1.equals(v2)
       }
       .map{
         case (k, (_, (url, a))) =>
           val Array(_, cid, ctype) = k.split('*')
-          if (a(1) > 8463215 && a(1) < 9463215) throw new RuntimeException()
+//          if (a(1) > 8463215 && a(1) < 9463215) throw new RuntimeException()
           (url, (a, cid, ctype))
       }
 
     val inter = changed.join(boxes_after_by_site)
     inter.map{
       case (url, ((box1, _, _), lst)) => (url, lst.map{case (box, _, _) => box}.map(intersects(_, box1)))
-    }.collect()//.foreach(println)
+    }.collect().foreach(println)
 
   }
 
@@ -57,12 +57,8 @@ object WebpageSegmentation {
     val endpointby = bSWy + bHeight;
     val startpointby = bSWy;
 
-//    println(s"$aSWx,$aSWy,$aHeight,$aHeight")
-//    println(s"$bSWx,$bSWy,$bHeight,$bHeight")
-//    println("-----------------")
-    if(aSWx > 700000000 && aSWx < 800000000) {
-      throw new RuntimeException()
-    }
+//    if(aSWx > 700000000 && aSWx < 800000000) { throw new RuntimeException() }
+
     if ((endpointax < startpointbx) && (startpointax < startpointbx) ){
       return None;
     }
@@ -90,7 +86,7 @@ object WebpageSegmentation {
       iWidth = bWidth;
       val top = if (endpointby < endpointay) endpointby else endpointay;
       iHeight = (top - iSWy);
-      if(aSWx > 100000000 && aSWx < 200000000) throw new RuntimeException()
+//      if(aSWx > 100000000 && aSWx < 200000000) throw new RuntimeException()
     }
     else if ((startpointbx <= startpointax) && (endpointax <= endpointbx)) {
       iSWx  = startpointax;
@@ -98,7 +94,7 @@ object WebpageSegmentation {
       iWidth = aWidth;
       val top = if (endpointby < endpointay) endpointby  else endpointay;
       iHeight = (top - iSWy);
-      if(aSWx > 100000000 && aSWx < 200000000) throw new RuntimeException()
+//      if(aSWx > 100000000 && aSWx < 200000000) throw new RuntimeException()
     }
     else if ((startpointax >= startpointbx) && (startpointax <= endpointbx)) {
       iSWx  = startpointax;
@@ -106,9 +102,7 @@ object WebpageSegmentation {
       iWidth = (endpointbx - startpointax);
       val top = if (endpointby < endpointay) endpointby  else endpointay;
       iHeight = (top - iSWy);
-      if(aSWx > 100000000 && aSWx < 200000000) {
-        throw new RuntimeException()
-      }
+//      if(aSWx > 100000000 && aSWx < 200000000) { throw new RuntimeException() }
     }
     else if ((startpointbx >= startpointax) && (startpointbx <= endpointax)) {
       iSWx  = startpointbx;
@@ -116,7 +110,7 @@ object WebpageSegmentation {
       iWidth = (endpointax - startpointbx);
       val top = if (endpointby < endpointay) endpointby  else endpointay;
       iHeight = (top - iSWy);
-      if(aSWx > 100000000 && aSWx < 200000000) throw new RuntimeException()
+//      if(aSWx > 100000000 && aSWx < 200000000) throw new RuntimeException()
     }
     Some((iSWx, iSWy, iHeight, iWidth))
   }
