@@ -43,7 +43,7 @@ popd || exit 1
 date > $DIR_RIGFUZZ_OUT/start.time
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
-          runners.RunRIGMutantJarFuzzing \
+          runners.RunRIGFuzzJarFuzzing \
           $NAME \
           $MUTANT_NAME \
           local[*] \
