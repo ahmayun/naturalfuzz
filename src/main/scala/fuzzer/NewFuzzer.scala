@@ -63,7 +63,7 @@ object NewFuzzer {
     if(compile) {
       new Directory(new File(outDir)).deleteRecursively()
       CompileWithScoverage(refProgram.classpath, refCoverageOutDir)
-      CompileWithScoverage(mutantProgram.classpath, mutantCoverageOutDir)
+//      CompileWithScoverage(mutantProgram.classpath, mutantCoverageOutDir)
     }
 
     val t_start = System.currentTimeMillis()
