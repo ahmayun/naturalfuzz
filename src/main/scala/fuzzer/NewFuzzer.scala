@@ -40,6 +40,16 @@ object NewFuzzer {
     writer.close()
   }
 
+  def writeStringToFile(outDir: String, str: String): Unit = {
+    val writer = new FileWriter(new File(outDir))
+    writer
+      .append(str)
+      .append("\n")
+      .flush()
+
+    writer.close()
+  }
+
   def FuzzMutants(refProgram: ExecutableProgram, mutantProgram: ExecutableProgram, guidance: Guidance, outDir: String, compile: Boolean = true): (FuzzStats, Long, Long) = {
     val testCaseOutDir = s"$outDir/interesting-inputs"
     val coverageOutDir = s"$outDir/scoverage-results"
@@ -58,40 +68,57 @@ object NewFuzzer {
 
     val t_start = System.currentTimeMillis()
     var mutantKilled = false
+    var postMutantKill = false
+    var refExecStats: ExecStats = null
+    var mutantExecStats: ExecStats = null
     while(!guidance.isDone()) {
-      val outDirTestCase = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
+      var outDirTestCase = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
       val inputDatasets = guidance.getInput().map(f => FileUtils.readDatasetPart(f, 0))
       val mutated_files = guidance.mutate(inputDatasets).zipWithIndex.map{case (e, i) => writeToFile(outDirTestCase, e, i)}
       if(!mutantKilled) { // maybe should remove this, is there a point in continuing after mutant is killed?
-        val (same, refExecStats, mutantExecStats) = compareExecutions(refProgram, mutantProgram, mutated_files)
+        val (same, _refExecStats, _mutantExecStats) = compareExecutions(refProgram, mutantProgram, mutated_files)
+        refExecStats = _refExecStats
+        mutantExecStats = _mutantExecStats
         mutantKilled = !same
         if (mutantKilled) {
           // handle divering output
           // probably should stop fuzzing here
-          new File(outDirTestCase).renameTo(new File(s"${outDirTestCase}_diverging"))
+          val newOutDirTestCase = s"${outDirTestCase}_diverging"
+          new File(outDirTestCase).renameTo(new File(newOutDirTestCase))
+          outDirTestCase = newOutDirTestCase
 //          return (stats, t_start, System.currentTimeMillis())
         }
       } else {
         val execInfo = exec(refProgram, mutated_files)
+        postMutantKill = true
       }
 
       val (newStats, newLastCoverage, changed) = analyzeAndLogCoverage(refCoverageOutDir, stats, lastCoverage)
       val (newMutantStats, newMutantLastCoverage, _) = analyzeAndLogCoverage(mutantCoverageOutDir, mutantStats, mutantLastCoverage)
-      stats = newStats
-      mutantStats = newMutantStats
-      lastCoverage = newLastCoverage
-      mutantLastCoverage = newMutantLastCoverage
 
       logTimeAndIteration(outDir, t_start)
       guidance.updateCoverage(getCoverage(refCoverageOutDir, fuzzer.Global.iteration))
 
-      if(!changed && !mutantKilled) {
+      if(changed) {
+        writeStringToFile(s"$outDirTestCase/ref_output.stdout", refExecStats.stdout)
+        writeStringToFile(s"$outDirTestCase/ref_output.stderr", refExecStats.stderr)
+        if(!postMutantKill) {
+          writeStringToFile(s"$outDirTestCase/mutant_output.stdout", mutantExecStats.stdout)
+          writeStringToFile(s"$outDirTestCase/mutant_output.stderr", mutantExecStats.stderr)
+        }
+        new File(outDirTestCase).renameTo(new File(s"${outDirTestCase}_newCov_${newLastCoverage}"))
+      }
+
+      if(!changed && (!mutantKilled || postMutantKill)) {
         new Directory(new File(outDirTestCase)).deleteRecursively()
       }
 
+      stats = newStats
+      mutantStats = newMutantStats
+      lastCoverage = newLastCoverage
+      mutantLastCoverage = newMutantLastCoverage
       fuzzer.Global.iteration += 1
     }
-
 
     (stats, t_start, System.currentTimeMillis())
   }
@@ -108,10 +135,14 @@ object NewFuzzer {
     execStats
   }
 
+  def isErrorSame(o1: ExecStats, o2: ExecStats): Boolean = {
+    true
+  }
+
   def compareOutputs(o1: ExecStats, o2: ExecStats): Boolean = {
     val sameTerminationStatus = !(o1.crashed ^ o2.crashed)
     val sameOutput = if(sameTerminationStatus && !o1.crashed) o1.stdout == o2.stdout else true
-    val sameError = if(sameTerminationStatus && o1.crashed) true else true // this will be tricky i think, skip for now
+    val sameError = if(sameTerminationStatus && o1.crashed) isErrorSame(o1, o2) else true // TODO: this will be tricky i think, skip for now
 
     val same = sameTerminationStatus && sameOutput && sameError
 
