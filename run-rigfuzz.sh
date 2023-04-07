@@ -21,7 +21,7 @@ DATASETS=$@
 
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
 PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
-DIR_RIGFUZZ_OUT="target/RIG-output/$NAME"
+DIR_RIGFUZZ_OUT="target/RIG-output/$MUTANT_NAME"
 
 rm -rf $DIR_RIGFUZZ_OUT
 mkdir -p $DIR_RIGFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1
