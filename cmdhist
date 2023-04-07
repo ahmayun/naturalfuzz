@@ -1,3 +1,4 @@
 python3 ./run-rigfuzz.py FlightDistance faulty 10 ~/pickled/reduced_data/FlightDistance/dataset_*
 ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJarCluster FlightDistance spark://zion-headnode:7077 /ahmad/FlightDistance/{flights,airports}
 ./run-rigfuzz.sh Delays faulty 10 ~/pickled/reduced_data/Delays/*
+./run-rigfuzz.sh WebpageSegmentation WebpageSegmentation_M19_83_lte_neq faulty 20 ~/pickled/reduced_data/WebpageSegmentation/*
