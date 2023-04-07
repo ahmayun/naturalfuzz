@@ -225,7 +225,20 @@ object Config {
     "WebpageSegmentation_M17_73_lt_gt" -> mutants.WebpageSegmentation.WebpageSegmentation_M17_73_lt_gt.main,
     "WebpageSegmentation_M9_57_plus_div" -> mutants.WebpageSegmentation.WebpageSegmentation_M9_57_plus_div.main,
     "WebpageSegmentation_M40_112_minus_plus" -> mutants.WebpageSegmentation.WebpageSegmentation_M40_112_minus_plus.main,
-    "WebpageSegmentation_M6_51_plus_div" -> mutants.WebpageSegmentation.WebpageSegmentation_M6_51_plus_div.main
+    "WebpageSegmentation_M6_51_plus_div" -> mutants.WebpageSegmentation.WebpageSegmentation_M6_51_plus_div.main,
+    "FlightDistance_M10_42_times_div" -> mutants.FlightDistance.FlightDistance_M10_42_times_div.main,
+    "FlightDistance_M2_40_plus_times" -> mutants.FlightDistance.FlightDistance_M2_40_plus_times.main,
+    "FlightDistance_M9_42_times_div" -> mutants.FlightDistance.FlightDistance_M9_42_times_div.main,
+    "FlightDistance_M3_40_div_minus" -> mutants.FlightDistance.FlightDistance_M3_40_div_minus.main,
+    "FlightDistance_M11_47_div_times" -> mutants.FlightDistance.FlightDistance_M11_47_div_times.main,
+    "FlightDistance_M1_39_minus_plus" -> mutants.FlightDistance.FlightDistance_M1_39_minus_plus.main,
+    "FlightDistance_M0_38_minus_times" -> mutants.FlightDistance.FlightDistance_M0_38_minus_times.main,
+    "FlightDistance_M5_40_times_plus" -> mutants.FlightDistance.FlightDistance_M5_40_times_plus.main,
+    "FlightDistance_M12_47_times_plus" -> mutants.FlightDistance.FlightDistance_M12_47_times_plus.main,
+    "FlightDistance_M6_40_div_times" -> mutants.FlightDistance.FlightDistance_M6_40_div_times.main,
+    "FlightDistance_M8_41_minus_plus" -> mutants.FlightDistance.FlightDistance_M8_41_minus_plus.main,
+    "FlightDistance_M7_41_times_plus" -> mutants.FlightDistance.FlightDistance_M7_41_times_plus.main,
+    "FlightDistance_M4_40_times_minus" -> mutants.FlightDistance.FlightDistance_M4_40_times_minus.main
   )
 
 

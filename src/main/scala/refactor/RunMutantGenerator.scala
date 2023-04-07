@@ -7,7 +7,7 @@ import scala.meta._
 object RunMutantGenerator {
   def main(args: Array[String]): Unit = {
     val inputFolder = "src/main/scala/examples/faulty"
-    val testName = "WebpageSegmentation"
+    val testName = "FlightDistance"
     val outputFolder = s"src/main/scala/examples/mutants/${testName}"
     new File(outputFolder).mkdirs()
     val inputFile = s"$inputFolder/$testName.scala"

@@ -31,19 +31,22 @@ object RunRIGMutantFuzzJar extends Serializable {
           args(3),
           args(4))
       } else {
-//        val name = "FlightDistance"
-//        (name, "local[*]",
-//          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
-//          "10",
-//          s"target/rig-output-local/$name")
-        val name = "WebpageSegmentation"
-        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
+        val name = "FlightDistance"
+        val _mutantName = "FlightDistance_M9_42_times_div"
         (name,
           _mutantName,
-          "local[1]",
-          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
+          "local[*]",
+          Array("dataset_0", "dataset_1").map { s => s"seeds/rig_reduced_data/$name/$s" },
           "20",
           s"target/rig-output-local/${_mutantName}")
+//        val name = "WebpageSegmentation"
+//        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
+//        (name,
+//          _mutantName,
+//          "local[1]",
+//          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
+//          "20",
+//          s"target/rig-output-local/${_mutantName}")
 //        val name = "Delays"
 //        (name, "local[*]",
 //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
