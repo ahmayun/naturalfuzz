@@ -100,6 +100,7 @@ object NewFuzzer {
       guidance.updateCoverage(getCoverage(refCoverageOutDir, fuzzer.Global.iteration))
 
       if(changed) {
+        logTimeAndIteration(outDirTestCase,t_start)
         writeStringToFile(s"$outDirTestCase/ref_output.stdout", refExecStats.stdout)
         writeStringToFile(s"$outDirTestCase/ref_output.stderr", refExecStats.stderr)
         if(!postMutantKill) {
