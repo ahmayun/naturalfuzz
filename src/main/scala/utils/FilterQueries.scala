@@ -17,8 +17,8 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
 
   def getJoinConditions: List[(Int, Int, List[Int], List[Int])] = {
     filterQueries
-//      .filter(_.isMultiDatasetQuery)
       .filter(_.tree.node.s == "contains")
+      .filter(_.isMultiDatasetQuery)
       .map {q =>
         q.locs.to4Tuple
       }

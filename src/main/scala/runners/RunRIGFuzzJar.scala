@@ -34,16 +34,16 @@ object RunRIGFuzzJar extends Serializable {
           args(2),
           args(3))
       } else {
-//        val name = "FlightDistance"
-//        (name, "local[*]",
-//          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
-//          "10",
-//          s"target/rig-output-local/$name")
-        val name = "WebpageSegmentation"
+        val name = "FlightDistance"
         (name, "local[*]",
-          Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
+          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
           "10",
           s"target/rig-output-local/$name")
+//        val name = "WebpageSegmentation"
+//        (name, "local[*]",
+//          Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
+//          "10",
+//          s"target/rig-output-local/$name")
 //        val name = "Delays"
 //        (name, "local[*]",
 //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
