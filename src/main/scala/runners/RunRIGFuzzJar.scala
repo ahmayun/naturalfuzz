@@ -85,7 +85,8 @@ object RunRIGFuzzJar extends Serializable {
 
 
     // create an accumulator in the driver and initialize it to an empty list
-//    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
+    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
+    Config.expressionAccumulator = expressionAccumulator
 //    monitoring.Monitors.setAccumulator(expressionAccumulator)
 
     // Preprocessing and Fuzzing

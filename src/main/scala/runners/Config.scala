@@ -1,9 +1,10 @@
 package runners
 
-import examples.{benchmarks, faulty, fuzzable, monitored,mutants}
+import examples.{benchmarks, faulty, fuzzable, monitored, mutants}
 import fuzzer.{ProvInfo, Schema}
+import org.apache.spark.util.CollectionAccumulator
 import schemas.BenchmarkSchemas
-import symbolicexecution.SymExResult
+import symbolicexecution.{SymExResult, SymbolicExpression}
 
 import scala.collection.mutable.ListBuffer
 
@@ -12,6 +13,7 @@ object Config {
   // RIGFuzz params
   var benchmarkName = "RIGTestJoin" // this value is overridden by a runner
   var sparkMaster = "local[*]" // this value is overridden by a runner
+  var expressionAccumulator: CollectionAccumulator[SymbolicExpression] = null
   val keepColProb = 0.2f
   val dropMixProb = 0.5f
   val scalaVersion = 2.12

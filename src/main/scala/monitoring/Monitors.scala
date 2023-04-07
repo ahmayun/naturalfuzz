@@ -17,30 +17,18 @@ import scala.collection.JavaConverters._
 
 object Monitors extends Serializable {
 
-  val sc = SparkContext.getOrCreate(
-    new SparkConf()
-      .setMaster(Config.sparkMaster)
-      .setAppName(s"Monitor: symbolic.${Config.benchmarkName}")
-    //        .set("spark.executor.memory", "8g")
-  )
+//  val sc = SparkContext.getOrCreate(
+//    new SparkConf()
+//      .setMaster(Config.sparkMaster)
+//      .setAppName(s"Monitor: symbolic.${Config.benchmarkName}")
+//    //        .set("spark.executor.memory", "8g")
+//  )
 
   val provInfo: ProvInfo = new ProvInfo()
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
-  var expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
-
-//  // define an AccumulatorParam to accumulate a list of integers
-//  object ExpressionAccumulatorParam extends AccumulatorParam[List[SymbolicExpression]] {
-//    def zero(initialValue: List[SymbolicExpression]): List[SymbolicExpression] = List()
-//
-//    def addInPlace(l1: List[SymbolicExpression], l2: List[SymbolicExpression]): List[SymbolicExpression] = l1 ::: l2
-//  }
-//
-//  // create an accumulator in the driver and initialize it to an empty list
-//  val expressionAccumulator = SparkContext
-//    .getOrCreate(new SparkConf().setAppName("[ERROR] Init From Monitor Class"))
-//    .accumulator(List[SymbolicExpression](), "ExpressionAccumulator")(ExpressionAccumulatorParam)
+//  var expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
 
 
   def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
@@ -167,7 +155,7 @@ object Monitors extends Serializable {
           new SymbolicTree(new ProvValueNode(p.head, p.head.getProvenance())))
       )
 //      constraints.append(expr)
-      expressionAccumulator.add(expr)
+      Config.expressionAccumulator.add(expr)
     }
 
     joint.map {
@@ -193,7 +181,7 @@ object Monitors extends Serializable {
 
 //      println(s"PC for branch $id: $pc => ${bool.value}")
 //      constraints.append(pc)
-      expressionAccumulator.add(bool.symbolicExpression)
+      Config.expressionAccumulator.add(bool.symbolicExpression)
       cache(id) = true
     }
 
@@ -251,7 +239,7 @@ object Monitors extends Serializable {
 //    println("=== PC ===")
 //    constraints.foreach(println)
 //    println("=== PC ===")
-    val exprList = expressionAccumulator.value.asScala.toList
+    val exprList = Config.expressionAccumulator.value.asScala.toList
 
     println("=== ACC PC ===")
     exprList.foreach(println)
