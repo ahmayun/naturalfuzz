@@ -3,6 +3,15 @@
 # SAMPLE RUN:
 #       ./run-rigfuzz.py FlightDistance faulty 86400 --email=ahmad35@vt.edu --compile=True
 
+exitScript() {
+    mv ~/jazzerresults src/main/scala
+    exit 1;
+}
+
+mv src/main/scala/jazzerresults ~ # sbt gets stuck in infinite loop so move this out of directory
+sbt assembly || exitScript
+mv ~/jazzerresults src/main/scala
+
 NAME=$1
 PACKAGE=$2
 DURATION=$3
