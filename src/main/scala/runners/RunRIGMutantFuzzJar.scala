@@ -37,12 +37,13 @@ object RunRIGMutantFuzzJar extends Serializable {
 //          "10",
 //          s"target/rig-output-local/$name")
         val name = "WebpageSegmentation"
+        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
         (name,
-          "WebpageSegmentation_M19_83_lte_neq",
+          _mutantName,
           "local[1]",
           Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
           "20",
-          s"target/rig-output-local/$name")
+          s"target/rig-output-local/${_mutantName}")
 //        val name = "Delays"
 //        (name, "local[*]",
 //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
