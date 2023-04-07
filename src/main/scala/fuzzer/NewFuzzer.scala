@@ -1,0 +1,175 @@
+package fuzzer
+
+import runners.Config
+import scoverage.Platform.FileWriter
+import scoverage.report.ScoverageHtmlWriter
+import scoverage.{Constants, Coverage, IOUtils, Serializer}
+import utils.CompilerUtils.CompileWithScoverage
+import utils.FileUtils
+
+import java.io.{File, FileFilter}
+import scala.reflect.io.Directory
+
+object NewFuzzer {
+
+  def getMeasurementFile(dataDir: File, iteration: Int): Array[File] = dataDir.listFiles(new FileFilter {
+    override def accept(pathname: File): Boolean = pathname.getName.startsWith(s"${Constants.MeasurementsPrefix}")
+  })
+
+  def getCoverage(dataDir: String, iteration: Int): Coverage = {
+    val coverage = Serializer.deserialize(new File(s"$dataDir/${Constants.CoverageFileName}"))
+    val measurementFiles = getMeasurementFile(new File(dataDir), iteration)
+    coverage.apply(IOUtils.invoked(measurementFiles))
+    coverage
+  }
+
+  def writeToFile(outDir: String, data: Seq[String], dataset: Int) : String = {
+    val output_dir = s"$outDir/dataset_$dataset"
+    val output_file = s"$output_dir/part-000000"
+    FileUtils.writeToFile(data, output_file)
+    output_dir
+  }
+
+  def writeErrorToFile(error: Vector[String], outDir: String): Unit = {
+    val writer = new FileWriter(new File(outDir), true)
+    writer
+      .append(s"${Global.iteration},${error.mkString(" : ")}")
+      .append("\n")
+      .flush()
+
+    writer.close()
+  }
+
+  def FuzzMutants(refProgram: ExecutableProgram, mutantProgram: ExecutableProgram, guidance: Guidance, outDir: String, compile: Boolean = true): (FuzzStats, Long, Long) = {
+    val testCaseOutDir = s"$outDir/interesting-inputs"
+    val coverageOutDir = s"$outDir/scoverage-results"
+    val refCoverageOutDir = s"$coverageOutDir/referenceProgram"
+    val mutantCoverageOutDir = s"$coverageOutDir/${mutantProgram.name}"
+    var stats = new FuzzStats(refProgram.name)
+    var mutantStats = new FuzzStats(mutantProgram.name)
+    var lastCoverage = 0.0;
+    var mutantLastCoverage = 0.0;
+
+    if(compile) {
+      new Directory(new File(outDir)).deleteRecursively()
+      CompileWithScoverage(refProgram.classpath, refCoverageOutDir)
+      CompileWithScoverage(mutantProgram.classpath, mutantCoverageOutDir)
+    }
+
+    val t_start = System.currentTimeMillis()
+    var mutantKilled = false
+    while(!guidance.isDone()) {
+      val outDirTestCase = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
+      val inputDatasets = guidance.getInput().map(f => FileUtils.readDatasetPart(f, 0))
+      val mutated_files = guidance.mutate(inputDatasets).zipWithIndex.map{case (e, i) => writeToFile(outDirTestCase, e, i)}
+      if(!mutantKilled) { // maybe should remove this, is there a point in continuing after mutant is killed?
+        val (same, refExecStats, mutantExecStats) = compareExecutions(refProgram, mutantProgram, mutated_files)
+        mutantKilled = !same
+        if (mutantKilled) {
+          // handle divering output
+          // probably should stop fuzzing here
+          new File(outDirTestCase).renameTo(new File(s"${outDirTestCase}_diverging"))
+//          return (stats, t_start, System.currentTimeMillis())
+        }
+      } else {
+        val execInfo = exec(refProgram, mutated_files)
+      }
+
+      val (newStats, newLastCoverage, changed) = analyzeAndLogCoverage(refCoverageOutDir, stats, lastCoverage)
+      val (newMutantStats, newMutantLastCoverage, _) = analyzeAndLogCoverage(mutantCoverageOutDir, mutantStats, mutantLastCoverage)
+      stats = newStats
+      mutantStats = newMutantStats
+      lastCoverage = newLastCoverage
+      mutantLastCoverage = newMutantLastCoverage
+
+      logTimeAndIteration(outDir, t_start)
+      guidance.updateCoverage(getCoverage(refCoverageOutDir, fuzzer.Global.iteration))
+
+      if(!changed && !mutantKilled) {
+        new Directory(new File(outDirTestCase)).deleteRecursively()
+      }
+
+      fuzzer.Global.iteration += 1
+    }
+
+
+    (stats, t_start, System.currentTimeMillis())
+  }
+
+  def exec(program: ExecutableProgram, args: Array[String]): ExecStats = {
+    val execStats = try {
+      program.invokeMain(args)
+      new ExecStats(Global.stdout, "", args, false)
+    } catch {
+      case e: Throwable => new ExecStats(Global.stdout, s"$e", args, true)
+      case e2 => new ExecStats(Global.stdout, s"$e2", args, true)
+    }
+    Global.stdout = ""
+    execStats
+  }
+
+  def compareOutputs(o1: ExecStats, o2: ExecStats): Boolean = {
+    val sameTerminationStatus = !(o1.crashed ^ o2.crashed)
+    val sameOutput = if(sameTerminationStatus && !o1.crashed) o1.stdout == o2.stdout else true
+    val sameError = if(sameTerminationStatus && o1.crashed) true else true // this will be tricky i think, skip for now
+
+    val same = sameTerminationStatus && sameOutput && sameError
+
+    println(
+      s"""============COMPARE result: ${same} inputs: ${o1.input.mkString("(",",",")")} iter: ${Global.iteration} ================
+         |------------REF crashed: ${o1.crashed} ---------------------
+         |${o1.stdout}
+         |------------MUTANT crashed: ${o2.crashed} ---------------------
+         |${if(o2.crashed) o2.stderr else o2.stdout}
+         |============COMPARE END================
+         |""".stripMargin)
+
+    same
+  }
+
+  def compareExecutions(refProgram: ExecutableProgram, mutantProgram: ExecutableProgram, mutated_datasets: Array[String]): (Boolean, ExecStats, ExecStats) = {
+    val execStatsRef = exec(refProgram, mutated_datasets)
+    val execStatsMutant = exec(mutantProgram, mutated_datasets)
+    (compareOutputs(execStatsRef, execStatsMutant), execStatsRef, execStatsMutant)
+  }
+
+  def updateCoverage(cov: Coverage, lastCoverage: Double): Boolean = {
+    var changed = false
+    if (Global.iteration == 0 || cov.statementCoveragePercent > lastCoverage) {
+      changed = true;
+    }
+    changed
+  }
+
+  def analyzeAndLogCoverage(
+                             refCoverageOutDir: String,
+                             stats: FuzzStats,
+                             lastCoverage: Double): (FuzzStats, Double, Boolean) = {
+
+    var newCov = lastCoverage
+    val coverage = getCoverage(refCoverageOutDir, fuzzer.Global.iteration)
+    stats.add_plot_point(fuzzer.Global.iteration, coverage.statementCoveragePercent)
+    val changed = updateCoverage(coverage, lastCoverage)
+    if (changed) {
+      newCov = coverage.statementCoveragePercent
+      new FileWriter(new File(s"$refCoverageOutDir/cumulative.csv"), true)
+        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
+        .append("\n")
+        .flush()
+    }
+
+    // write coverage information to coverageOutDir
+    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(refCoverageOutDir)).write(coverage)
+    (stats, newCov, changed)
+  }
+
+  def logTimeAndIteration(outDir: String, t_start: Long): Unit = {
+    val writer = new FileWriter(new File(s"$outDir/iter_time"))
+    writer
+      .append(s"${Global.iteration},${System.currentTimeMillis() - t_start}")
+      .append("\n")
+      .flush()
+    writer.close()
+  }
+
+}

@@ -6,7 +6,7 @@ import fuzzer.{Fuzzer, Global, InstrumentedProgram, Program, SymbolicProgram}
 import guidance.RIGGuidance
 import scoverage.report.ScoverageHtmlWriter
 import scoverage.{IOUtils, Serializer}
-import utils.{FilterQueries, ProvFuzzUtils, QueriedRDDs, QueryResult, RIGUtils, SatRDDs}
+import utils.{FilterQueries, Pickle, ProvFuzzUtils, QueriedRDDs, QueryResult, RIGUtils, SatRDDs}
 import symbolicexecution.{SymbolicExecutor, SymbolicExpression}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.util.CollectionAccumulator
@@ -39,16 +39,16 @@ object RunRIGFuzzJar extends Serializable {
 //          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
 //          "10",
 //          s"target/rig-output-local/$name")
-//        val name = "WebpageSegmentation"
-//        (name, "local[*]",
-//          Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
-//          "10",
-//          s"target/rig-output-local/$name")
-        val name = "Delays"
+        val name = "WebpageSegmentation"
         (name, "local[*]",
-          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
+          Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
           "10",
           s"target/rig-output-local/$name")
+//        val name = "Delays"
+//        (name, "local[*]",
+//          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
+//          "30",
+//          s"target/rig-output-local/$name")
       }
     Config.benchmarkName = benchmarkName
     Config.sparkMaster = sparkMaster
@@ -110,7 +110,7 @@ object RunRIGFuzzJar extends Serializable {
     printIntermediateRDDs("Pre Join Path Vectors:", preJoinFill, branchConditions)
 
     val savedJoins = createSavedJoins(preJoinFill, branchConditions)
-    println("Saved Joins")
+    println(s"Saved Joins: ${savedJoins.length}")
     savedJoins
       .head
       ._1
@@ -224,9 +224,10 @@ object RunRIGFuzzJar extends Serializable {
     }
 
     val foldername = createSafeFileName(benchmarkName, pargs)
+    Pickle.dump(qrs, s"pickled/$foldername.pkl")
     val dataset_files = finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"./seeds/rig_reduced_data/$foldername", e, i) }
-    val guidance = new RIGGuidance(dataset_files, schema, 10, new QueriedRDDs(qrs))
-    sys.exit(0)
+    val qrsLoaded = Pickle.load[List[QueryResult]](s"pickled/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    val guidance = new RIGGuidance(dataset_files, schema, duration.toInt, new QueriedRDDs(qrsLoaded))
     //    Fuzzer.Fuzz(program, guidance, outDir)
 
     //    val satRDDs = runnablePieces.createSatVectors(program.args) // create RDD with bit vector and bit counts
@@ -237,12 +238,12 @@ object RunRIGFuzzJar extends Serializable {
     //    val guidance = new RIGGuidance(inputFiles, schema, runs, new QueriedRDDs(brokenRDDs))
     //
     val (stats, timeStartFuzz, timeEndFuzz) = Fuzzer.Fuzz(program, guidance, outDir)
-    //
-    //    // Finalizing
+
+    // Finalizing
     val coverage = Serializer.deserialize(new File(s"$scoverageOutputDir/scoverage.coverage"))
     val measurementFiles = IOUtils.findMeasurementFiles(scoverageOutputDir)
     val measurements = IOUtils.invoked(measurementFiles)
-    //
+
     coverage.apply(measurements)
     new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(scoverageOutputDir)).write(coverage)
 
@@ -250,8 +251,8 @@ object RunRIGFuzzJar extends Serializable {
     //    val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0
     //    val durationTotal = durationProbe + durationFuzz
 
-    //
-    //    // Printing results
+
+    // Printing results
     stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} $c x $msg") }
     stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} x $c") }
     stats.failureMap.map { case (msg, (_, c, i)) => (getLineNo(benchmarkName, msg.mkString("\n")), c, i) }
@@ -259,7 +260,7 @@ object RunRIGFuzzJar extends Serializable {
       .map { case (line, list) => (line, list.size) }
       .toList.sortBy(_._1)
       .foreach(println)
-    //
+
     println(s"=== RESULTS: RIGFuzz $benchmarkName ===")
     println(s"Failures: ${stats.failures} (${stats.failureMap.keySet.size} unique)")
     println(s"failures: ${stats.failureMap.map { case (_, (_, _, i)) => i + 1 }.toSeq.sortBy(i => i).mkString(",")}")
@@ -364,6 +365,9 @@ object RunRIGFuzzJar extends Serializable {
 
   def createSavedJoins(preJoinFilled: Array[RDD[(String, Int)]], branchConditions: FilterQueries): List[(RDD[(String, ((String, Long), (String, Long)))], Int, Int)] = {
     val joins = branchConditions.getJoinConditions // returns (ds0ID,ds1ID,List(colsDs0),List(colsDs1))
+    println("DETECTED JOINS")
+    joins.foreach(println)
+
     joins.map {
       case (dsA, dsB, colsA, colsB) =>
         (preJoinFilled(dsA)

@@ -1,9 +1,10 @@
 package refactor
 
-import scala.meta.{Term, Transformer, Tree, Defn}
+import scala.meta.{Term, Transformer, Tree, Defn, Stat,Pkg, XtensionParseInputLike}
 import utils.MutationUtils.getRandomElement
 import scala.util.Random
 import scala.meta.Term.ApplyInfix.unapply
+
 object MutantGenerator extends Transformer {
 
   val BOOLEAN = 1
@@ -12,6 +13,7 @@ object MutantGenerator extends Transformer {
   var g_currentNode: Term.ApplyInfix = null
   var g_mutantOp = ""
   var g_mutantObjSuffix = ""
+  var g_className = ""
   val g_arithOps = List("+", "-", "*", "/")
   val g_booleanOps = List("==", ">", ">=", "<", "<=", "!=")
   val g_opNames = Map(
@@ -28,6 +30,7 @@ object MutantGenerator extends Transformer {
   )
   val g_seed = "ahmad35@vt.edu".hashCode
   Random.setSeed(g_seed)
+  val random = new Random(seed = g_seed)
   def getOpType(op: Term.Name): Int = {
     if (g_arithOps.contains(op.toString()))
       ARITHMETIC
@@ -48,21 +51,24 @@ object MutantGenerator extends Transformer {
   def setCurrentOp(node: Term.ApplyInfix): (String, String, Int, String, String) = {
     val Some((lhs,oldOp @ Term.Name(oldOpSym), targs, args)) = unapply(node)
     val newOpSym = getOpType(oldOp) match {
-      case ARITHMETIC => getRandomElement(g_arithOps.filter(_ != oldOpSym))
-      case BOOLEAN => getRandomElement(g_booleanOps.filter(_ != oldOpSym))
+      case ARITHMETIC => getRandomElement(g_arithOps.filter(_ != oldOpSym),random)
+      case BOOLEAN => getRandomElement(g_booleanOps.filter(_ != oldOpSym),random)
     }
     (oldOpSym, g_opNames(oldOpSym), node.pos.startLine, newOpSym, g_opNames(newOpSym))
   }
 
-  def generateMutants(tree: Tree): List[(Tree, String)] = {
-    getAllBinOpsPositions(tree).map {
-      node =>
-        val (oldOpSym, oldOpName, lineNo, newOpSym, newOpName) = setCurrentOp(node)
-        g_mutantObjSuffix = s"${lineNo}_${oldOpName}_$newOpName"
-        g_currentNode = node
-        g_mutantOp = newOpSym
-        println(s"changing $oldOpSym to $newOpSym on line $lineNo: $node")
-        (apply(tree), g_mutantObjSuffix)
+  def generateMutants(tree: Tree, className: String): List[(Tree, String)] = {
+    g_className = className
+    getAllBinOpsPositions(tree)
+      .zipWithIndex
+      .map {
+        case (node, i) =>
+          val (oldOpSym, oldOpName, lineNo, newOpSym, newOpName) = setCurrentOp(node)
+          g_mutantObjSuffix = s"M${i}_${lineNo}_${oldOpName}_$newOpName"
+          g_currentNode = node
+          g_mutantOp = newOpSym
+          println(s"changing $oldOpSym to $newOpSym on line $lineNo: $node")
+          (apply(tree), g_mutantObjSuffix)
     }
   }
 
@@ -74,6 +80,8 @@ object MutantGenerator extends Transformer {
 
   override def apply(tree: Tree): Tree = {
     tree match {
+      case Pkg(_, stats) =>
+        super.apply(Pkg(Term.Select(Term.Select(Term.Name("examples"), Term.Name("mutants")), Term.Name(g_className)), stats))
       case Defn.Object(mods, Term.Name(objName), templ) =>
         super.apply(Defn.Object(mods, Term.Name(s"${objName}_$g_mutantObjSuffix"), templ))
       case node @ Term.ApplyInfix(lhs, op, targs, args) if areNodesEqual(node, g_currentNode) =>

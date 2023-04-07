@@ -1,4 +1,4 @@
-package examples.faulty
+package examples.mutants.WebpageSegmentation
 
 import abstraction.{SparkConf, SparkContext}
 import capture.IOStreams._println
