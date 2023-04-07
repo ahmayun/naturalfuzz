@@ -41,6 +41,7 @@ popd || exit 1
 
 START_TIME=$(date +"%T %D")
 echo -e "Subject:[START] BigFuzz $(hostname)\n$NAME $START_TIME" | sendmail ahmad35@vt.edu
+date > $DIR_BIGFUZZ_OUT/start.time
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunBigFuzzJar \
@@ -49,4 +50,5 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DURATION \
           $DIR_BIGFUZZ_OUT
 
+date > $DIR_BIGFUZZ_OUT/end.time
 echo -e "Subject:[END] BigFuzz $(hostname)\n$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu

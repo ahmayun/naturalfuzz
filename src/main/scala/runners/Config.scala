@@ -1,6 +1,6 @@
 package runners
 
-import examples.{benchmarks, faulty, fuzzable, monitored}
+import examples.{benchmarks, faulty, fuzzable, monitored,mutants}
 import fuzzer.{ProvInfo, Schema}
 import schemas.BenchmarkSchemas
 import symbolicexecution.SymExResult
@@ -180,6 +180,52 @@ object Config {
     "RIGTestProgram" -> fuzzable.RIGTestProgram.main,
     "RIGTestJoin" -> fuzzable.RIGTestJoin.main
   )
+
+  val mapFunMutants: Map[String, Array[String] => Unit] = Map[String, Array[String] => Unit](
+    "WebpageSegmentation_M35_107_gte_lte" -> mutants.WebpageSegmentation.WebpageSegmentation_M35_107_gte_lte.main,
+    "WebpageSegmentation_M15_69_lt_gt" -> mutants.WebpageSegmentation.WebpageSegmentation_M15_69_lt_gt.main,
+    "WebpageSegmentation_M26_93_lt_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M26_93_lt_neq.main,
+    "WebpageSegmentation_M2_20_minus_times" -> mutants.WebpageSegmentation.WebpageSegmentation_M2_20_minus_times.main,
+    "WebpageSegmentation_M30_99_lte_gte" -> mutants.WebpageSegmentation.WebpageSegmentation_M30_99_lte_gte.main,
+    "WebpageSegmentation_M18_77_gt_gte" -> mutants.WebpageSegmentation.WebpageSegmentation_M18_77_gt_gte.main,
+    "WebpageSegmentation_M32_102_minus_times" -> mutants.WebpageSegmentation.WebpageSegmentation_M32_102_minus_times.main,
+    "WebpageSegmentation_M4_21_minus_times" -> mutants.WebpageSegmentation.WebpageSegmentation_M4_21_minus_times.main,
+    "WebpageSegmentation_M19_83_lte_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M19_83_lte_neq.main,
+    "WebpageSegmentation_M27_95_lt_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M27_95_lt_neq.main,
+    "WebpageSegmentation_M11_62_lt_lte" -> mutants.WebpageSegmentation.WebpageSegmentation_M11_62_lt_lte.main,
+    "WebpageSegmentation_M31_101_gt_lt" -> mutants.WebpageSegmentation.WebpageSegmentation_M31_101_gt_lt.main,
+    "WebpageSegmentation_M20_83_lte_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M20_83_lte_neq.main,
+    "WebpageSegmentation_M22_87_lt_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M22_87_lt_neq.main,
+    "WebpageSegmentation_M21_85_lt_eq" -> mutants.WebpageSegmentation.WebpageSegmentation_M21_85_lt_eq.main,
+    "WebpageSegmentation" -> mutants.WebpageSegmentation.WebpageSegmentation.main,
+    "WebpageSegmentation_M28_96_minus_times" -> mutants.WebpageSegmentation.WebpageSegmentation_M28_96_minus_times.main,
+    "WebpageSegmentation_M37_109_gt_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M37_109_gt_neq.main,
+    "WebpageSegmentation_M5_21_minus_plus" -> mutants.WebpageSegmentation.WebpageSegmentation_M5_21_minus_plus.main,
+    "WebpageSegmentation_M0_19_minus_times" -> mutants.WebpageSegmentation.WebpageSegmentation_M0_19_minus_times.main,
+    "WebpageSegmentation_M3_20_minus_times" -> mutants.WebpageSegmentation.WebpageSegmentation_M3_20_minus_times.main,
+    "WebpageSegmentation_M38_110_minus_div" -> mutants.WebpageSegmentation.WebpageSegmentation_M38_110_minus_div.main,
+    "WebpageSegmentation_M25_91_lte_eq" -> mutants.WebpageSegmentation.WebpageSegmentation_M25_91_lte_eq.main,
+    "WebpageSegmentation_M23_88_minus_div" -> mutants.WebpageSegmentation.WebpageSegmentation_M23_88_minus_div.main,
+    "WebpageSegmentation_M14_69_lt_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M14_69_lt_neq.main,
+    "WebpageSegmentation_M1_19_minus_plus" -> mutants.WebpageSegmentation.WebpageSegmentation_M1_19_minus_plus.main,
+    "WebpageSegmentation_M34_104_minus_times" -> mutants.WebpageSegmentation.WebpageSegmentation_M34_104_minus_times.main,
+    "WebpageSegmentation_M33_103_lt_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M33_103_lt_neq.main,
+    "WebpageSegmentation_M16_73_lt_gt" -> mutants.WebpageSegmentation.WebpageSegmentation_M16_73_lt_gt.main,
+    "WebpageSegmentation_M8_55_plus_minus" -> mutants.WebpageSegmentation.WebpageSegmentation_M8_55_plus_minus.main,
+    "WebpageSegmentation_M39_111_lt_neq" -> mutants.WebpageSegmentation.WebpageSegmentation_M39_111_lt_neq.main,
+    "WebpageSegmentation_M29_99_gte_lte" -> mutants.WebpageSegmentation.WebpageSegmentation_M29_99_gte_lte.main,
+    "WebpageSegmentation_M10_62_lt_gte" -> mutants.WebpageSegmentation.WebpageSegmentation_M10_62_lt_gte.main,
+    "WebpageSegmentation_M13_65_lt_eq" -> mutants.WebpageSegmentation.WebpageSegmentation_M13_65_lt_eq.main,
+    "WebpageSegmentation_M12_65_lt_gt" -> mutants.WebpageSegmentation.WebpageSegmentation_M12_65_lt_gt.main,
+    "WebpageSegmentation_M36_107_lte_lt" -> mutants.WebpageSegmentation.WebpageSegmentation_M36_107_lte_lt.main,
+    "WebpageSegmentation_M24_91_lte_gt" -> mutants.WebpageSegmentation.WebpageSegmentation_M24_91_lte_gt.main,
+    "WebpageSegmentation_M7_53_plus_minus" -> mutants.WebpageSegmentation.WebpageSegmentation_M7_53_plus_minus.main,
+    "WebpageSegmentation_M17_73_lt_gt" -> mutants.WebpageSegmentation.WebpageSegmentation_M17_73_lt_gt.main,
+    "WebpageSegmentation_M9_57_plus_div" -> mutants.WebpageSegmentation.WebpageSegmentation_M9_57_plus_div.main,
+    "WebpageSegmentation_M40_112_minus_plus" -> mutants.WebpageSegmentation.WebpageSegmentation_M40_112_minus_plus.main,
+    "WebpageSegmentation_M6_51_plus_div" -> mutants.WebpageSegmentation.WebpageSegmentation_M6_51_plus_div.main
+  )
+
 
   val mapFunSymEx: Map[String, Array[String] => SymExResult] = Map[String, Array[String] => SymExResult](elems =
     "RIGTestProgram" -> examples.symbolic.RIGTestProgram.main,

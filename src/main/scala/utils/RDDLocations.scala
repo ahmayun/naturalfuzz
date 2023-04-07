@@ -28,7 +28,7 @@ class RDDLocations(val locs: Array[(Int, Int, Int)]) extends Serializable {
         case (ds, arr) => (ds, arr.map(_._2).toList)
       }
 
-    (inter.keys.toList(0), inter.keys.toList(1), inter.values.toList(0), inter.values.toList(1))
+    (inter.keys.toList(0), inter.keys.toList(1), inter.values.toList(0).sorted, inter.values.toList(1).sorted)
   }
 
   def getCols(dsi: Int): Array[Int] = {

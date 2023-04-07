@@ -20,12 +20,12 @@ class RIGGuidance(
 
   def mutate(inputDatasets: Array[Seq[String]]): Array[Seq[String]] = {
     val mm = qrdds.mixMatch(inputDatasets).filterQueryRDDs
-    println("original")
-    inputDatasets(0).foreach(println)
-    println("")
-    println("mutated")
-    mm(0).foreach(println)
-    println("")
+//    println("original")
+//    inputDatasets(0).foreach(println)
+//    println("")
+//    println("mutated")
+//    mm(0).foreach(println)
+//    println("")
     mm
   }
 
@@ -37,14 +37,12 @@ class RIGGuidance(
     !deadline.hasTimeLeft()
   }
 
-  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
+  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", updateInternal: Boolean = true): Boolean = {
     var changed = false
     if(Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
-      this.coverage = cov
-      new FileWriter(new File(s"$outDir/cumulative.csv"), true)
-        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
-        .append("\n")
-        .flush()
+      if(updateInternal) {
+        this.coverage = cov
+      }
       changed = true;
     }
     changed
