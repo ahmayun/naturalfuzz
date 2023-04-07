@@ -13,9 +13,10 @@ sbt assembly || exitScript
 mv ~/jazzerresults src/main/scala
 
 NAME=$1
-PACKAGE=$2
-DURATION=$3
-shift 3
+MUTANT_NAME=$2
+PACKAGE=$3
+DURATION=$4
+shift 4
 DATASETS=$@
 
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
@@ -42,8 +43,9 @@ popd || exit 1
 date > $DIR_RIGFUZZ_OUT/start.time
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
-          runners.RunRIGFuzzJarFuzzing \
+          runners.RunRIGMutantJarFuzzing \
           $NAME \
+          $MUTANT_NAME \
           local[*] \
           $DURATION \
           $DIR_RIGFUZZ_OUT \
