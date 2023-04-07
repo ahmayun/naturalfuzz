@@ -94,7 +94,7 @@ object NewFuzzer {
       }
 
       val (newStats, newLastCoverage, changed) = analyzeAndLogCoverage(refCoverageOutDir, stats, lastCoverage)
-      val (newMutantStats, newMutantLastCoverage, _) = analyzeAndLogCoverage(mutantCoverageOutDir, mutantStats, mutantLastCoverage)
+//      val (newMutantStats, newMutantLastCoverage, _) = analyzeAndLogCoverage(mutantCoverageOutDir, mutantStats, mutantLastCoverage)
 
       logTimeAndIteration(outDir, t_start)
       guidance.updateCoverage(getCoverage(refCoverageOutDir, fuzzer.Global.iteration))
@@ -115,9 +115,9 @@ object NewFuzzer {
       }
 
       stats = newStats
-      mutantStats = newMutantStats
+//      mutantStats = newMutantStats
       lastCoverage = newLastCoverage
-      mutantLastCoverage = newMutantLastCoverage
+//      mutantLastCoverage = newMutantLastCoverage
       fuzzer.Global.iteration += 1
     }
 
