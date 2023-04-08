@@ -74,7 +74,7 @@ object RunRIGFuzz extends Serializable {
       inputFiles)
 
     // Preprocessing and Fuzzing
-    val pathExpressions = SymbolicExecutor.execute(symProgram)
+    val pathExpressions = SymbolicExecutor.execute(symProgram, null)
     val runnablePieces = RIGUtils.createFilterQueries(pathExpressions)
     println("All pieces:")
     runnablePieces

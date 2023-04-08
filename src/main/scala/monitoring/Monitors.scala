@@ -21,7 +21,7 @@ object Monitors extends Serializable {
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
-  
+
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
@@ -119,7 +119,8 @@ object Monitors extends Serializable {
 
   def monitorJoinSymEx[K <: TaintedBase : ClassTag, V1, V2](d1: PairProvenanceDefaultRDD[K, V1],
                                                        d2: PairProvenanceDefaultRDD[K, V2],
-                                                       id: Int): PairProvenanceRDD[K, (V1, V2)] = {
+                                                       id: Int,
+                                                       expressionAccumulator: CollectionAccumulator[SymbolicExpression]): PairProvenanceRDD[K, (V1, V2)] = {
 
     val joint = d1.join(d2.map { case (k, v) => (k, (k, v)) })
 
@@ -143,7 +144,7 @@ object Monitors extends Serializable {
           new SymbolicTree(new ProvValueNode(p.head, p.head.getProvenance())))
       )
 //      constraints.append(expr)
-      Config.expressionAccumulator.add(expr)
+      expressionAccumulator.add(expr)
     }
 
     joint.map {
@@ -153,7 +154,10 @@ object Monitors extends Serializable {
     }
   }
 
-  def monitorPredicateSymEx(bool: TaintedBoolean, prov: (List[Any], List[Any]), id: Int, currentPathConstraint: SymbolicExpression = SymbolicExpression(new SymbolicTree())): Boolean = {
+  def monitorPredicateSymEx(bool: TaintedBoolean,
+                            prov: (List[Any], List[Any]),
+                            id: Int,
+                            expressionAccumulator: CollectionAccumulator[SymbolicExpression]): Boolean = {
     if (bool) {
       prov._1.foreach {
         case v: TaintedBase => // this.provInfo.update(id, ListBuffer(v.getProvenance()))
@@ -162,14 +166,14 @@ object Monitors extends Serializable {
     }
 
     if(!cache.contains(id)) {
-      val pc = if(!currentPathConstraint.isEmpty)
-        currentPathConstraint.and(bool.symbolicExpression)
-      else
-        bool.symbolicExpression
+//      val pc = if(!currentPathConstraint.isEmpty)
+//        currentPathConstraint.and(bool.symbolicExpression)
+//      else
+//        bool.symbolicExpression
 
 //      println(s"PC for branch $id: $pc => ${bool.value}")
 //      constraints.append(pc)
-      Config.expressionAccumulator.add(bool.symbolicExpression)
+      expressionAccumulator.add(bool.symbolicExpression)
       cache(id) = true
     }
 
@@ -223,11 +227,11 @@ object Monitors extends Serializable {
     provInfo.simplify()
   }
 
-  def finalizeSymEx(): SymExResult = {
+  def finalizeSymEx(expressionAccumulator: CollectionAccumulator[SymbolicExpression]): SymExResult = {
 //    println("=== PC ===")
 //    constraints.foreach(println)
 //    println("=== PC ===")
-    val exprList = Config.expressionAccumulator.value.asScala.toList
+    val exprList = expressionAccumulator.value.asScala.toList
 
     println("=== ACC PC ===")
     exprList.foreach(println)

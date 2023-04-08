@@ -242,13 +242,13 @@ object Config {
   )
 
 
-  val mapFunSymEx: Map[String, Array[String] => SymExResult] = Map[String, Array[String] => SymExResult](elems =
-    "RIGTestProgram" -> examples.symbolic.RIGTestProgram.main,
-    "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
-    "FlightDistance" -> examples.symbolic.FlightDistance.main,
-    "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main,
-    "CommuteType" -> examples.symbolic.CommuteType.main,
-    "Delays" -> examples.symbolic.Delays.main
+  val mapFunSymEx: Map[String, (Array[String], CollectionAccumulator[SymbolicExpression]) => SymExResult] = Map[String, (Array[String], CollectionAccumulator[SymbolicExpression]) => SymExResult](elems =
+//    "RIGTestProgram" -> examples.symbolic.RIGTestProgram.main,
+//    "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
+//    "FlightDistance" -> examples.symbolic.FlightDistance.main,
+    "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main
+//    "CommuteType" -> examples.symbolic.CommuteType.main,
+//    "Delays" -> examples.symbolic.Delays.main
   )
 
 

@@ -70,12 +70,12 @@ object RunRIGFuzzJarCluster extends Serializable {
 
     // create an accumulator in the driver and initialize it to an empty list
     val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
-    Config.expressionAccumulator = expressionAccumulator
+//    Config.expressionAccumulator = expressionAccumulator
 //    monitoring.Monitors.setAccumulator(expressionAccumulator)
 
     // Preprocessing and Fuzzing
     println("Running monitored program")
-    val pathExpressions = SymbolicExecutor.execute(symProgram)
+    val pathExpressions = SymbolicExecutor.execute(symProgram, expressionAccumulator)
     println("Creating filter queries")
     val branchConditions = RIGUtils.createFilterQueries(pathExpressions)
     println("All pieces:")

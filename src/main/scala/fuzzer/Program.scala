@@ -1,6 +1,7 @@
 package fuzzer
 
-import symbolicexecution.SymExResult
+import org.apache.spark.util.CollectionAccumulator
+import symbolicexecution.{SymExResult, SymbolicExpression}
 
 trait ExecutableProgram {
   def invokeMain(args: Array[String]): Unit
@@ -45,7 +46,7 @@ class InstrumentedProgram(val name: String,
 class SymbolicProgram(val name: String,
                       val classname: String,
                       val classpath: String,
-                      val main: Array[String] => SymExResult,
+                      val main: (Array[String], CollectionAccumulator[SymbolicExpression]) => SymExResult,
                       val args: Array[String]) {
 
 }
