@@ -6,10 +6,11 @@ import provenance.data.{DualRBProvenance, Provenance}
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import symbolicexecution.{OperationNode, ProvValueNode, SymExResult, SymTreeNode, SymbolicExpression, SymbolicTree}
 import taintedprimitives.{TaintedAny, TaintedBase, TaintedBoolean, Utils}
-import runners.Config
+import runners.{Config, RunRIGFuzzJarCluster}
 import taintedprimitives.SymImplicits._
-import org.apache.spark.{SparkContext,SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.util.CollectionAccumulator
+
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -17,23 +18,10 @@ import scala.collection.JavaConverters._
 
 object Monitors extends Serializable {
 
-//  val sc = SparkContext.getOrCreate(
-//    new SparkConf()
-//      .setMaster(Config.sparkMaster)
-//      .setAppName(s"Monitor: symbolic.${Config.benchmarkName}")
-//    //        .set("spark.executor.memory", "8g")
-//  )
-
   val provInfo: ProvInfo = new ProvInfo()
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
-//  var expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
-
-
-  def setAccumulator(acc: CollectionAccumulator[SymbolicExpression]): Unit = {
-//    expressionAccumulator = acc
-  }
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
@@ -155,7 +143,7 @@ object Monitors extends Serializable {
           new SymbolicTree(new ProvValueNode(p.head, p.head.getProvenance())))
       )
 //      constraints.append(expr)
-      Config.expressionAccumulator.add(expr)
+      RunRIGFuzzJarCluster.expressionAccumulator.add(expr)
     }
 
     joint.map {
@@ -181,7 +169,7 @@ object Monitors extends Serializable {
 
 //      println(s"PC for branch $id: $pc => ${bool.value}")
 //      constraints.append(pc)
-      Config.expressionAccumulator.add(bool.symbolicExpression)
+      RunRIGFuzzJarCluster.expressionAccumulator.add(bool.symbolicExpression)
       cache(id) = true
     }
 
@@ -239,7 +227,7 @@ object Monitors extends Serializable {
 //    println("=== PC ===")
 //    constraints.foreach(println)
 //    println("=== PC ===")
-    val exprList = Config.expressionAccumulator.value.asScala.toList
+    val exprList = RunRIGFuzzJarCluster.expressionAccumulator.value.asScala.toList
 
     println("=== ACC PC ===")
     exprList.foreach(println)
