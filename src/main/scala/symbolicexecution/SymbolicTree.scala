@@ -190,7 +190,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
           val col = n.getCol
           val Some(schema) = Config.mapSchemas.get(benchmarkName)
           val offset = if(ds.length == 2 && nodeDS == ds(1)) offsetDS2 else 0
-          println(s"Debug eval: nodeDS: $nodeDS, col: $col, offset: $offset")
+          println(s"Debug eval: benchmarkName: $benchmarkName nodeDS: $nodeDS, col: $col, offset: $offset")
           if(schema(nodeDS)(col-offset).dataType == Schema.TYPE_NUMERICAL) {
             row(col).toInt //TODO: Remove hardcoded type conversion to INT
           } else {
