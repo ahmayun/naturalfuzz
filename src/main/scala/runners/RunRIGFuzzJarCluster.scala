@@ -19,13 +19,7 @@ import java.io.File
 import scala.collection.mutable.ListBuffer
 
 object RunRIGFuzzJarCluster extends Serializable {
-  val sc = SparkContext.getOrCreate(
-    new SparkConf()
-      .setMaster("spark://zion-headnode:7077")
-      .setAppName(s"RunRIGFuzzJarCluster")
-  )
-  sc.setLogLevel("ERROR")
-  val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
+
   def main(args: Array[String]): Unit = {
 
     println("RunRIGFuzzJar called with following args:")
@@ -67,8 +61,16 @@ object RunRIGFuzzJarCluster extends Serializable {
       funSymEx,
       pargs :+ sparkMaster)
 
-    // create an accumulator in the driver and initialize it to an empty list
+    val sc = SparkContext.getOrCreate(
+      new SparkConf()
+        .setMaster(sparkMaster)
+        .setAppName(s"RunRIGFuzzJar: symbolic.${benchmarkName}")
+    )
+    sc.setLogLevel("ERROR")
 
+    // create an accumulator in the driver and initialize it to an empty list
+    val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
+    Config.expressionAccumulator = expressionAccumulator
 //    monitoring.Monitors.setAccumulator(expressionAccumulator)
 
     // Preprocessing and Fuzzing

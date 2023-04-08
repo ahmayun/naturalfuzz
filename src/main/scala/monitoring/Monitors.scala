@@ -6,11 +6,10 @@ import provenance.data.{DualRBProvenance, Provenance}
 import provenance.rdd.{PairProvenanceDefaultRDD, PairProvenanceRDD}
 import symbolicexecution.{OperationNode, ProvValueNode, SymExResult, SymTreeNode, SymbolicExpression, SymbolicTree}
 import taintedprimitives.{TaintedAny, TaintedBase, TaintedBoolean, Utils}
-import runners.{Config, RunRIGFuzzJarCluster}
+import runners.Config
 import taintedprimitives.SymImplicits._
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.{SparkContext,SparkConf}
 import org.apache.spark.util.CollectionAccumulator
-
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -22,6 +21,7 @@ object Monitors extends Serializable {
   val cache: mutable.Map[Int, Boolean] = mutable.HashMap()
   val minData: mutable.Map[Int, ListBuffer[String]] = new mutable.HashMap()
   val dummyBuffer: ListBuffer[Provenance] = new ListBuffer()
+  
 
   def updateMinData(p: ListBuffer[Provenance]): Unit = {
     p.foreach { pi =>
@@ -143,7 +143,7 @@ object Monitors extends Serializable {
           new SymbolicTree(new ProvValueNode(p.head, p.head.getProvenance())))
       )
 //      constraints.append(expr)
-      RunRIGFuzzJarCluster.expressionAccumulator.add(expr)
+      Config.expressionAccumulator.add(expr)
     }
 
     joint.map {
@@ -169,7 +169,7 @@ object Monitors extends Serializable {
 
 //      println(s"PC for branch $id: $pc => ${bool.value}")
 //      constraints.append(pc)
-      RunRIGFuzzJarCluster.expressionAccumulator.add(bool.symbolicExpression)
+      Config.expressionAccumulator.add(bool.symbolicExpression)
       cache(id) = true
     }
 
@@ -227,7 +227,7 @@ object Monitors extends Serializable {
 //    println("=== PC ===")
 //    constraints.foreach(println)
 //    println("=== PC ===")
-    val exprList = RunRIGFuzzJarCluster.expressionAccumulator.value.asScala.toList
+    val exprList = Config.expressionAccumulator.value.asScala.toList
 
     println("=== ACC PC ===")
     exprList.foreach(println)
