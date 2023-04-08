@@ -5,7 +5,15 @@ import sparkwrapper.SparkContextWithDP
 import scala.collection.JavaConverters._
 
 object Test7 {
+  val sc = SparkContext.getOrCreate(
+    new SparkConf()
+      .setMaster("spark://zion-headnode:7077")
+      .setAppName("Test 7")
+  )
+  sc.setLogLevel("ERROR")
 
+  // create an accumulator in the driver and initialize it to an empty list
+  val expressionAccumulator = sc.collectionAccumulator[String]("ExpressionAccumulator")
   def main(args: Array[String]): Unit = {
 
     val (_, sparkMaster, datasets, _, _) =
@@ -15,16 +23,6 @@ object Test7 {
           args(2),
           args(3))
 
-
-    val sc = SparkContext.getOrCreate(
-      new SparkConf()
-        .setMaster(sparkMaster)
-        .setAppName("Test 7")
-    )
-    sc.setLogLevel("ERROR")
-
-    // create an accumulator in the driver and initialize it to an empty list
-    val expressionAccumulator = sc.collectionAccumulator[String]("ExpressionAccumulator")
 
 
     val sparkConf = new SparkConf()
