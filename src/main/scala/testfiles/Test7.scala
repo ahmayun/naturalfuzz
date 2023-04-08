@@ -50,8 +50,8 @@ object Test7 {
         row(0)
     }
 
-    b.take(10).foreach(println)
-    a.take(10).foreach(println)
+    b.collect().foreach(println)
+    a.collect().foreach(println)
 
     val exprList = expressionAccumulator.value.asScala.toList
     exprList.foreach(println)
