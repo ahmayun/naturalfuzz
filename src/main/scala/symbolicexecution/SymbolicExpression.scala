@@ -79,6 +79,10 @@ case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
     this //TODO: Convert expression to CNF
   }
 
+  def removeProv: SymbolicExpression = {
+    SymbolicExpression(expr.removeProv)
+  }
+
   def toQueries: List[Query] = {
     val atomicExpressions = expr.breakIntoAtomic
     atomicExpressions.map(_.toQuery)

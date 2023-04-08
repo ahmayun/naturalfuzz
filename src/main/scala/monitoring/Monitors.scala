@@ -231,7 +231,7 @@ object Monitors extends Serializable {
 //    println("=== PC ===")
 //    constraints.foreach(println)
 //    println("=== PC ===")
-    val exprList = expressionAccumulator.value.asScala.toList
+    val exprList = expressionAccumulator.value.asScala.toList.map(_.removeProv)
 
     println("=== ACC PC ===")
     exprList.foreach(println)

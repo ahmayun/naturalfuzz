@@ -30,22 +30,29 @@ class ConcreteValueNode(override val s: Any) extends SymTreeNode(s) with Seriali
 
 }
 
-@SerialVersionUID(8L)
-class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val offset: Int = 0) extends SymTreeNode(s) with Serializable {
 
-  def modifyProv(_ds: Int, _offset: Int): ProvValueNode = {
-    new ProvValueNode(s, prov, _ds, _offset)
+class ProvRemovedNode(override val s: Any, val prov: ListBuffer[(Int, Int, Int)], val ds: Int, val offset: Int) extends SymTreeNode(s) with Serializable {
+
+  def modifyProv(_ds: Int, _offset: Int): ProvRemovedNode = {
+    new ProvRemovedNode(s, prov, _ds, _offset)
   }
 
-
-  def getProv(): ListBuffer[(Int, Int, Int)] = {
-    prov.convertToTuples.map {
+  def getProv: ListBuffer[(Int, Int, Int)] = {
+    prov.map {
       case loc@(_ds, col, row) =>
         if (_ds == ds) {
           (_ds, col + offset, row)
         } else {
           loc
         }
+    }
+  }
+
+  def getCol: Int = {
+    getProv match {
+      case null => throw new Exception("_getProv is null")
+      case ListBuffer((_, col, _)) => col
+      case _ => throw new Exception("Provenance is ambiguous")
     }
   }
 
@@ -57,29 +64,41 @@ class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val 
       .toHashCode
   }
 
-  def getCol: Int = {
-    getProv match {
-      case ListBuffer((_, col, _)) => col
-      case _ => throw new Exception("Provenance is ambiguous")
-    }
-  }
-
   def getDS: Int = {
     getProv match {
+      case null => throw new Exception("_getProv is null")
       case ListBuffer((ds, _, _)) => ds
       case _ => throw new Exception("Provenance is ambiguous")
     }
   }
 
-  override def toString: String = getProv.map{case (ds, col, row) => s"rdd[d$ds,c$col]"}.mkString("|") //+ s"{$s}"
+  override def toString: String = getProv.map { case (ds, col, row) => s"rdd[d$ds,c$col]" }.mkString("|") //+ s"{$s}"
 
+}
+
+class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val offset: Int = 0) extends SymTreeNode(s) with Serializable {
+
+  def removeProv: ProvRemovedNode = {
+    new ProvRemovedNode(s, f_getProv(), ds, offset)
+  }
+
+  def f_getProv(): ListBuffer[(Int, Int, Int)] = {
+    prov.convertToTuples.map {
+      case loc@(_ds, col, row) =>
+        if (_ds == ds) {
+          (_ds, col + offset, row)
+        } else {
+          loc
+        }
+    }
+  }
 }
 
 @SerialVersionUID(4L)
 case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTree) extends Serializable {
   def offsetLocs(ds: Int, offset: Int): SymbolicTree = {
     val offsetNode = node match {
-      case n : ProvValueNode =>
+      case n : ProvRemovedNode =>
         n.modifyProv(ds, offset)
       case _ => node
     }
@@ -88,6 +107,14 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
     val r = if (right != null) right.offsetLocs(ds, offset) else null
 
     SymbolicTree(l, offsetNode, r)
+  }
+
+  def removeProv: SymbolicTree = {
+    this match {
+      case SymbolicTree(null, n: ProvValueNode, null) => SymbolicTree(null, n.removeProv, null)
+      case SymbolicTree(left, n: ProvValueNode, right) => SymbolicTree(left.removeProv, n.removeProv, right.removeProv)
+      case SymbolicTree(left, n, right) => SymbolicTree(left.removeProv, n, right.removeProv)
+    }
   }
 
 
@@ -157,7 +184,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
     if(height == 0) {
       return node match {
         case n: ConcreteValueNode => n.s
-        case n: ProvValueNode if ds.contains(n.getDS) =>
+        case n: ProvRemovedNode if ds.contains(n.getDS) =>
           // TODO: Add a callback to
           val nodeDS = n.getDS
           val col = n.getCol
@@ -196,7 +223,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
     }
   }
 
-  def encode(bool: Boolean): Int = if(bool) 2 else 1 // TODO: Interesting that 0x10 and 0x01 causes issues so have to do 2 and 1. Not sure why
+  def encode(bool: Boolean): Int = if(bool) 2 else 1
 
   def createFilterFn(ds: Array[Int], offsetDs2: Int = 0): Array[String] => Int = {
     node match {
@@ -214,7 +241,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
   def getProv: ListBuffer[(Int, Int, Int)] = {
 
     (node match {
-      case n: ProvValueNode => n.getProv
+      case n: ProvRemovedNode => n.getProv
       case _ => ListBuffer()
     }) ++
       (if(left != null) left.getProv else ListBuffer()) ++
