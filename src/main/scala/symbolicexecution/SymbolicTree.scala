@@ -229,7 +229,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
     node match {
       case _ if isNopTree => _ => 0
       case _ : OperationNode => row => {
-        println(s"running filter fn for $this")
+        println(s"running filter fn for $this\nrow: ${row.mkString(",")}")
         eval(row, ds, offsetDs2).asInstanceOf[Int]
       }
       case _ => throw new Exception("toQuery called on malformed tree")
