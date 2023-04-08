@@ -79,7 +79,7 @@ class ProvRemovedNode(override val s: Any, val prov: ListBuffer[(Int, Int, Int)]
 class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val offset: Int = 0) extends SymTreeNode(s) with Serializable {
 
   def removeProv: ProvRemovedNode = {
-    new ProvRemovedNode(s, f_getProv(), ds, offset)
+    new ProvRemovedNode(s, f_getProv().sorted, ds, offset)
   }
 
   def f_getProv(): ListBuffer[(Int, Int, Int)] = {
