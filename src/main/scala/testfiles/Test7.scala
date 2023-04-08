@@ -2,6 +2,8 @@ package testfiles
 
 import org.apache.spark.{SparkConf,SparkContext}
 import sparkwrapper.SparkContextWithDP
+import scala.collection.JavaConverters._
+
 object Test7 {
 
   def main(args: Array[String]): Unit = {
@@ -34,23 +36,25 @@ object Test7 {
     val before = ctx.textFileProv(before_data, _.split(','))
     val after = ctx.textFileProv(after_data, _.split(','))
 
-    before.map {
+    val b = before.map {
       row =>
         if(row(0) == "www.Vm.com")
           expressionAccumulator.add(row(0).value)
         row(0)
     }
 
-    after.map {
+    val a = after.map {
       row =>
         if (row(0) == "www.j0.com")
           expressionAccumulator.add(row(0).value)
         row(0)
     }
 
-    before.take(10).foreach(println)
-    after.take(10).foreach(println)
+    b.take(10).foreach(println)
+    a.take(10).foreach(println)
 
+    val exprList = expressionAccumulator.value.asScala.toList
+    exprList.foreach(println)
   }
 
 }
