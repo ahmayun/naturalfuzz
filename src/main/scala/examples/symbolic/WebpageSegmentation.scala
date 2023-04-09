@@ -11,9 +11,7 @@ import taintedprimitives.SymImplicits._
 import taintedprimitives.TaintedInt
 
 object WebpageSegmentation extends Serializable {
-  var expressionAccumulator: CollectionAccumulator[SymbolicExpression] = null
-  def main(args: Array[String], _expressionAccumulator: CollectionAccumulator[SymbolicExpression]): SymExResult = {
-    expressionAccumulator = _expressionAccumulator
+  def main(args: Array[String], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): SymExResult = {
     val sparkConf = new SparkConf()
     if (args.length < 3) throw new IllegalArgumentException("Program was called with too few args")
     sparkConf.setMaster(args(2))
@@ -43,11 +41,11 @@ object WebpageSegmentation extends Serializable {
       case (url, ((box1, _, _), lst)) =>
         (url, lst.map {
           case (box, _, _) => box
-        }.map(intersects(_, box1)))
+        }.map(intersects(_, box1, expressionAccumulator)))
     }.collect() //.foreach(println)
     _root_.monitoring.Monitors.finalizeSymEx(expressionAccumulator)
   }
-  def intersects(rect1: IndexedSeq[TaintedInt], rect2: IndexedSeq[TaintedInt]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
+  def intersects(rect1: IndexedSeq[TaintedInt], rect2: IndexedSeq[TaintedInt], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): Option[(TaintedInt, TaintedInt, TaintedInt, TaintedInt)] = {
     val IndexedSeq(aSWx, aSWy, aHeight, aWidth) = rect1
     val IndexedSeq(bSWx, bSWy, bHeight, bWidth) = rect2
     val endpointax = aSWx + aWidth
