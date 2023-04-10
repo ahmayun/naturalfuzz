@@ -15,13 +15,9 @@ import scala.util.Random
 object Q3 extends Serializable {
 
   def main(args: Array[String], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): SymExResult = {
-//  def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf()
     val ctx = new SparkContextWithDP(SparkContext.getOrCreate(sparkConf))
     ctx.setLogLevel("ERROR")
-//    val datasetsPath = "/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv"
-//    val seed = "ahmad35@vt.edu".hashCode()
-//    val rand = new Random(seed)
     val MANUFACT = 1 //rand.nextInt(1000 - 1) + 1
     val MONTH = 11 // rand.nextInt(2)+11
 

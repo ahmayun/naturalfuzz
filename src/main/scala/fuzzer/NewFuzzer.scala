@@ -16,7 +16,7 @@ object NewFuzzer {
     override def accept(pathname: File): Boolean = pathname.getName.startsWith(s"${Constants.MeasurementsPrefix}")
   })
 
-  def getCoverage(dataDir: String, iteration: Int): Coverage = {
+  def getCoverage(dataDir: String, iteration: Int = 0): Coverage = {
     val coverage = Serializer.deserialize(new File(s"$dataDir/${Constants.CoverageFileName}"))
     val measurementFiles = getMeasurementFile(new File(dataDir), iteration)
     coverage.apply(IOUtils.invoked(measurementFiles))
@@ -121,6 +121,9 @@ object NewFuzzer {
       fuzzer.Global.iteration += 1
     }
 
+    val coverage = getCoverage(refCoverageOutDir)
+    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(refCoverageOutDir)).write(coverage)
+
     (stats, t_start, System.currentTimeMillis())
   }
 
@@ -150,7 +153,7 @@ object NewFuzzer {
     println(
       s"""============COMPARE result: ${same} inputs: ${o1.input.mkString("(",",",")")} iter: ${Global.iteration} ================
          |------------REF crashed: ${o1.crashed} ---------------------
-         |${o1.stdout}
+         |${if(o1.crashed) o1.stderr else o1.stdout}
          |------------MUTANT crashed: ${o2.crashed} ---------------------
          |${if(o2.crashed) o2.stderr else o2.stdout}
          |============COMPARE END================
@@ -191,7 +194,7 @@ object NewFuzzer {
     }
 
     // write coverage information to coverageOutDir
-    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(refCoverageOutDir)).write(coverage)
+//    new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(refCoverageOutDir)).write(coverage)
     (stats, newCov, changed)
   }
 

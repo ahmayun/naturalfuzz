@@ -110,7 +110,7 @@ class DualRBProvenance(var bitmap: RoaringBitmap) extends DataStructureProvenanc
 object DualRBProvenance extends ProvenanceFactory {
   final val MAX_BITS = 32
   final val ROW_BITS = 22
-  final val COL_BITS = 8
+  final val COL_BITS = 7
   final val DS_BITS = MAX_BITS - ROW_BITS - COL_BITS
   final val MASK_DS = Int.MinValue >> DS_BITS
   final val MASK_COL = (Int.MinValue >> (DS_BITS + COL_BITS)) ^ MASK_DS

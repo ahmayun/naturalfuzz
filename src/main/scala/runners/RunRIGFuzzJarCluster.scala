@@ -30,7 +30,7 @@ object RunRIGFuzzJarCluster extends Serializable {
       if (!args.isEmpty) {
         (args(0),
           args(1),
-          args.slice(args.length - 2, args.length),
+          args.takeRight(args.length - 5),
           args(2),
           args(3))
       } else {
@@ -177,6 +177,9 @@ object RunRIGFuzzJarCluster extends Serializable {
         println("qr------")
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
+
+    println("JOIN TABLE")
+    joinTable.foreach(println)
 
     reducedDatasets
       .zipWithIndex

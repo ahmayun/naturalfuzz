@@ -13,6 +13,7 @@ import utils.{FilterQueries, Pickle, QueriedRDDs, QueryResult, RIGUtils}
 import RunRIGFuzzJar.{getLineNo, limitDP}
 import java.io.File
 import scala.collection.mutable.ListBuffer
+import java.net.InetAddress
 
 object RunRIGFuzzJarFuzzing extends Serializable {
 
@@ -20,16 +21,19 @@ object RunRIGFuzzJarFuzzing extends Serializable {
 
     println("RunRIGFuzzJar called with following args:")
     println(args.mkString("\n"))
+    var onCluster = false
 
     // ==P.U.T. dependent configurations=======================
-    val (benchmarkName, mutantName, sparkMaster, pargs, duration, outDir) =
+    val (benchmarkName, mutantName, sparkMaster, pargs, duration, outDir, pickleDir) =
       if (!args.isEmpty) {
         (args(0),
           args(1),
           args(2),
-          if (args.length == 7) args.takeRight(2) else args.takeRight(1),
+          args.takeRight(args.length - 6),
           args(3),
-          args(4))
+          args(4),
+          args(5)
+        )
       } else {
         //        val name = "FlightDistance"
         //        (name, "local[*]",
@@ -43,7 +47,8 @@ object RunRIGFuzzJarFuzzing extends Serializable {
           "local[1]",
           Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
           "20",
-          s"target/rig-output-local/${_mutantName}")
+          s"target/rig-output-local/${_mutantName}",
+          if(System.getProperty("user.name") == "ahmad") "./pickled" else { onCluster = true; "/home/student/pickled/qrs" })
         //        val name = "Delays"
         //        (name, "local[*]",
         //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
@@ -57,8 +62,6 @@ object RunRIGFuzzJarFuzzing extends Serializable {
     val benchmarkClass = s"examples.faulty.$benchmarkName"
     val mutantClass = s"examples.mutants.$benchmarkName.$mutantName"
     // ========================================================
-
-    val scoverageOutputDir = s"$outDir/scoverage-results"
 
     val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
     val mutantPath = s"src/main/scala/${mutantClass.split('.').mkString("/")}.scala"
@@ -83,10 +86,10 @@ object RunRIGFuzzJarFuzzing extends Serializable {
     }
 
 
-    val qrs = Pickle.load[List[QueryResult]](s"/home/student/pickled/qrs/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    val qrs = Pickle.load[List[QueryResult]](s"${pickleDir}/${createSafeFileName(benchmarkName, pargs)}.pkl")
     val guidance = new RIGGuidance(pargs, schema, duration.toInt, new QueriedRDDs(qrs))
 
-    val (stats, timeStartFuzz, timeEndFuzz) = NewFuzzer.FuzzMutants(program, mutantProgram, guidance, outDir, false)
+    val (stats, timeStartFuzz, timeEndFuzz) = NewFuzzer.FuzzMutants(program, mutantProgram, guidance, outDir, !onCluster)
 
     // Printing results
     stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(benchmarkName, msg.mkString(","))} $c x $msg") }

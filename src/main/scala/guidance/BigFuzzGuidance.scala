@@ -118,14 +118,14 @@ class BigFuzzGuidance(val input_files: Array[String], val schemas: Array[Array[S
     !deadline.hasTimeLeft()
   }
 
-  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", crashed: Boolean = true): Boolean = {
-    if(Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
-      this.coverage = cov
-      new FileWriter(new File(s"$outDir/cumulative.csv"), true)
-        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
-        .append("\n")
-        .flush()
+  override def updateCoverage(cov: Coverage, outDir: String = "/dev/null", updateInternal: Boolean = true): Boolean = {
+    var changed = false
+    if (Global.iteration == 0 || cov.statementCoveragePercent > this.coverage.statementCoveragePercent) {
+      if (updateInternal) {
+        this.coverage = cov
+      }
+      changed = true;
     }
-    true
+    changed
   }
 }
