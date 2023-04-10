@@ -179,6 +179,7 @@ object Config {
     "MapString" -> Switch(null, faulty.MapString.main, faultTest),
     "OldIncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
     "LoanType" -> Switch(null, faulty.LoanType.main, faultTest),
+    "Q3" -> faulty.Q3.main,
     "RIGTestProgram" -> fuzzable.RIGTestProgram.main,
     "RIGTestJoin" -> fuzzable.RIGTestJoin.main
   )
@@ -246,7 +247,8 @@ object Config {
 //    "RIGTestProgram" -> examples.symbolic.RIGTestProgram.main,
 //    "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
 //    "FlightDistance" -> examples.symbolic.FlightDistance.main,
-    "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main
+    "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main,
+    "Q3" -> examples.symbolic.Q3.main
 //    "CommuteType" -> examples.symbolic.CommuteType.main,
 //    "Delays" -> examples.symbolic.Delays.main
   )
@@ -298,7 +300,8 @@ object Config {
     "InsideCircle" -> BenchmarkSchemas.INSIDECIRCLE,
     "MapString" -> BenchmarkSchemas.MAPSTRING,
     "OldIncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
-    "LoanType" -> BenchmarkSchemas.LOANTYPE
+    "LoanType" -> BenchmarkSchemas.LOANTYPE,
+    "Q3" -> BenchmarkSchemas.Q3
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =

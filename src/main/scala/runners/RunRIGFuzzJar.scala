@@ -39,16 +39,21 @@ object RunRIGFuzzJar extends Serializable {
 //          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
 //          "10",
 //          s"target/rig-output-local/$name")
-        val name = "WebpageSegmentation"
-        (name, "local[*]",
-          Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
-          "10",
-          s"target/rig-output-local/$name")
+//        val name = "WebpageSegmentation"
+//        (name, "local[*]",
+//          Array("before", "after").map { s => s"seeds/reduced_data/webpage_segmentation/$s" },
+//          "10",
+//          s"target/rig-output-local/$name")
 //        val name = "Delays"
 //        (name, "local[*]",
 //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
 //          "30",
 //          s"target/rig-output-local/$name")
+        val name = "Q3"
+        (name, "local[*]",
+          Array("store_sales", "date_dim", "item").map { s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/reduced_data/$s" },
+          "20",
+          s"target/rig-output-local/$name")
       }
     Config.benchmarkName = benchmarkName
     Config.sparkMaster = sparkMaster
@@ -133,7 +138,7 @@ object RunRIGFuzzJar extends Serializable {
       case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
     }
 
-    joinTable.foreach(println)
+//    sys.exit(0)
 
     // get the maximum number of keys extracted from a row
     // this is how many duplicate rows will be allowed (duplicate w.r.t branch vector)
@@ -204,11 +209,15 @@ object RunRIGFuzzJar extends Serializable {
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
 
+
+    println("JOIN TABLE")
+    joinTable.foreach(println)
+
     reducedDatasets
       .zipWithIndex
       .foreach {
         case (ds, i) =>
-          println(s"==== Reduced DS: ${i + 1} =====")
+          println(s"==== Reduced DS: ${i} =====")
           ds.foreach(println)
           println("-----")
       }

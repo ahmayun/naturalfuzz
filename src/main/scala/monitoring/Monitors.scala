@@ -144,7 +144,9 @@ object Monitors extends Serializable {
           new SymbolicTree(new ProvValueNode(p.head, p.head.getProvenance())))
       )
 //      constraints.append(expr)
-      expressionAccumulator.add(expr)
+      if(expressionAccumulator != null) {
+        expressionAccumulator.add(expr)
+      }
     }
 
     joint.map {
@@ -173,7 +175,9 @@ object Monitors extends Serializable {
 
 //      println(s"PC for branch $id: $pc => ${bool.value}")
 //      constraints.append(pc)
-      expressionAccumulator.add(bool.symbolicExpression)
+      if(expressionAccumulator != null) {
+        expressionAccumulator.add(bool.symbolicExpression)
+      }
       cache(id) = true
     }
 
@@ -231,12 +235,12 @@ object Monitors extends Serializable {
 //    println("=== PC ===")
 //    constraints.foreach(println)
 //    println("=== PC ===")
-    val exprList = expressionAccumulator.value.asScala.toList.map(_.removeProv)
+    val exprList = expressionAccumulator.value.asScala.toList
 
     println("=== ACC PC ===")
     exprList.foreach(println)
     println("=== ACC PC ===")
 
-    new SymExResult(null, exprList.to[ListBuffer])
+    new SymExResult(null, exprList.to[ListBuffer].map(_.removeProv))
   }
 }

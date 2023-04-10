@@ -92,6 +92,7 @@ class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val 
         }
     }
   }
+
 }
 
 @SerialVersionUID(4L)
@@ -113,7 +114,10 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
     this match {
       case SymbolicTree(null, n: ProvValueNode, null) => SymbolicTree(null, n.removeProv, null)
       case SymbolicTree(left, n: ProvValueNode, right) => SymbolicTree(left.removeProv, n.removeProv, right.removeProv)
-      case SymbolicTree(left, n, right) => SymbolicTree(left.removeProv, n, right.removeProv)
+      case SymbolicTree(null, n, null) => SymbolicTree(null, n, null)
+      case node @ SymbolicTree(left, n, right) =>
+        println(s"SYMBOLIC TREE: $node")
+        SymbolicTree(left.removeProv, n, right.removeProv)
     }
   }
 

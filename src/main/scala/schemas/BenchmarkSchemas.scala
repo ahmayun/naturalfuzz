@@ -242,4 +242,92 @@ object BenchmarkSchemas {
       new Schema(Schema.TYPE_OTHER)
     )
   )
+
+  val store_sales: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL)
+  )
+
+  val date_dim: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER)
+  )
+
+  val item: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER)
+  )
+
+  val Q3 = Array[Array[Schema[Any]]](
+    store_sales,
+    date_dim,
+    item
+  )
 }
