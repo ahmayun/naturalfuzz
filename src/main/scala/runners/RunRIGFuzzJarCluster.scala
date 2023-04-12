@@ -26,12 +26,11 @@ object RunRIGFuzzJarCluster extends Serializable {
     println(args.mkString("\n"))
 
     // ==P.U.T. dependent configurations=======================
-    val (benchmarkName, sparkMaster, pargs, duration) =
+    val (benchmarkName, sparkMaster, pargs) =
       if (!args.isEmpty) {
         (args(0),
           args(1),
-          args.takeRight(args.length - 5),
-          args(2))
+          args.takeRight(args.length - 2))
       } else {
         ("FlightDistance", "local[*]",
           Array("flights", "airports").map { s => s"seeds/reduced_data/LongFlights/$s" },
