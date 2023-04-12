@@ -200,7 +200,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
             try {
               row(col).toInt //TODO: Remove hardcoded type conversion to INT
             } catch {
-              case _: Throwable => return encode(false)
+              case _: Throwable => row(n.getCol)
             }
           } else {
             row(n.getCol)
@@ -227,6 +227,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case (l: Int, r: Int, "+") => l + r
       case (l: Int, r: Int, "-") => l - r
       case (l: Int, r: Int, "/") => l / r
+      case (_:String, _, _) => encode(false)
       case (_, _, "contains") => encode(true)
       case (_, _, "nop") => 0
       case n => throw new Exception(s"n=$n imd=$isMultiDatasetQuery")
