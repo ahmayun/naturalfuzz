@@ -16,7 +16,8 @@ NAME=$1
 MUTANT_NAME=$2
 PACKAGE=$3
 DURATION=$4
-shift 4
+PICKLE_DIR=$5
+shift 5
 DATASETS=$@
 
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
@@ -49,6 +50,7 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           local[*] \
           $DURATION \
           $DIR_RIGFUZZ_OUT \
+          $PICKLE_DIR \
           $DATASETS
 
 date > $DIR_RIGFUZZ_OUT/end.time
