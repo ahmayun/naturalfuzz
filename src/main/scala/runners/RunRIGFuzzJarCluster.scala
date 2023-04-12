@@ -92,11 +92,13 @@ object RunRIGFuzzJarCluster extends Serializable {
 
     val savedJoins = createSavedJoins(preJoinFill, branchConditions)
     println("Saved Joins")
-    savedJoins
-      .head
-      ._1
-      .take(10)
-      .foreach(println)
+    if (savedJoins.length > 0) {
+      savedJoins
+        .head
+        ._1
+        .take(10)
+        .foreach(println)
+    }
 
     val rdds = branchConditions.createSatVectors(preJoinFill.map(_.zipWithIndex()), savedJoins.toArray)
       .map { rdd => rdd.map { case ((row, pv), _) => (row, pv) } }
