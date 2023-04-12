@@ -26,18 +26,16 @@ object RunRIGFuzzJarCluster extends Serializable {
     println(args.mkString("\n"))
 
     // ==P.U.T. dependent configurations=======================
-    val (benchmarkName, sparkMaster, pargs, duration, outDir) =
+    val (benchmarkName, sparkMaster, pargs, duration) =
       if (!args.isEmpty) {
         (args(0),
           args(1),
           args.takeRight(args.length - 5),
-          args(2),
-          args(3))
+          args(2))
       } else {
         ("FlightDistance", "local[*]",
           Array("flights", "airports").map { s => s"seeds/reduced_data/LongFlights/$s" },
-          "10",
-          "target/rig-output")
+          "10")
       }
     Config.benchmarkName = benchmarkName
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
