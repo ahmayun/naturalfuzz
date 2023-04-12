@@ -33,8 +33,7 @@ object RunRIGFuzzJarCluster extends Serializable {
           args.takeRight(args.length - 2))
       } else {
         ("FlightDistance", "local[*]",
-          Array("flights", "airports").map { s => s"seeds/reduced_data/LongFlights/$s" },
-          "10")
+          Array("flights", "airports").map { s => s"seeds/reduced_data/LongFlights/$s" })
       }
     Config.benchmarkName = benchmarkName
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
