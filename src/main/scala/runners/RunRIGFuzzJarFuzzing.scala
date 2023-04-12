@@ -64,6 +64,11 @@ object RunRIGFuzzJarFuzzing extends Serializable {
         //          "30",
         //          s"target/rig-output-local/$name")
       }
+    if(System.getProperty("user.name") != "ahmad") {
+      onCluster = true
+    }
+
+    println("onCluster=",onCluster)
     Config.benchmarkName = benchmarkName
     Config.sparkMaster = sparkMaster
     val Some(funFaulty) = Config.mapFunFuzzables.get(benchmarkName)
