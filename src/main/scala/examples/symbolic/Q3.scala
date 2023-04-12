@@ -55,7 +55,7 @@ object Q3 extends Serializable {
       }
       // and store_sales.ss_item_sk = item.i_item_sk
 
-    val filter2 = item.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(13) /*i_manufact_id*/ == MANUFACT.toString, (List(row(13), MANUFACT), List()), 1, expressionAccumulator)) // and item.i_manufact_id = [MANUFACT]
+    val filter2 = item.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(13).toInt /*i_manufact_id*/ == MANUFACT, (List(row(13).toInt, MANUFACT), List()), 1, expressionAccumulator)) // and item.i_manufact_id = [MANUFACT]
     val map4 = filter2.map(row => (row.head, row))
 
     println("filter2.map4")
