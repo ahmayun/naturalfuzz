@@ -1,7 +1,7 @@
 package taintedprimitives
 
 import provenance.data.{DualRBProvenance, Provenance}
-import symbolicexecution.{SymbolicInteger, SymbolicTree}
+import symbolicexecution.{SymbolicFloat, SymbolicInteger, SymbolicTree}
 
 import scala.reflect.runtime.universe._
 
@@ -92,7 +92,7 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
   }
 
   def toFloat: TaintedFloat =
-    TaintedFloat(value.toFloat, getProvenance())
+    TaintedFloat(value.toFloat, getProvenance(), new SymbolicFloat(value.toFloat, getProvenance()))
 
   def toDouble: TaintedDouble = {
     TaintedDouble(value.toDouble, getProvenance())

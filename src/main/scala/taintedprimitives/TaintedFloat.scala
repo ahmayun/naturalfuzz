@@ -1,6 +1,7 @@
 package taintedprimitives
 
-import provenance.data.Provenance
+import provenance.data.{DummyProvenance, Provenance}
+import symbolicexecution.{SymbolicExpression, SymbolicFloat, SymbolicTree}
 
 import scala.reflect.runtime.universe._
 
@@ -8,64 +9,76 @@ import scala.reflect.runtime.universe._
   * Created by malig on 4/25/19.
   */
 
-case class TaintedFloat(override val value: Float, p:Provenance) extends TaintedAny(value, p){
-  def <(x: TaintedFloat): Boolean = {
-    // mergeProvenance(x.getProvenance())
-    value < x.value
+case class TaintedFloat(override val value: Float, p:Provenance, expr: SymbolicExpression = SymbolicExpression(new SymbolicTree())) extends TaintedAny(value, p){
+
+  def this(value: Float) = {
+    this(value, DummyProvenance.create(), new SymbolicFloat(value))
+  }
+
+  def this(value: Float, p: Provenance) = {
+    this(value, p, new SymbolicFloat(value, p))
+  }
+
+  def <(x: TaintedFloat): TaintedBoolean = {
+    TaintedBoolean(value < x.value, newProvenance(x.getProvenance()), expr < x.expr)
   }
 
   /**
     * Overloading operators from here onwards
     */
 
+
   def +(x: Float): TaintedFloat = {
     val d = value + x
-    TaintedFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance(), expr + x)
   }
 
   def -(x: Float): TaintedFloat = {
     val d = value - x
-    TaintedFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance(), expr - x)
   }
 
   def *(x: Float): TaintedFloat = {
     val d = value * x
-    TaintedFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance(), expr * x)
 
   }
 
   def /(x: Float): TaintedFloat = {
     val d = value / x
-    TaintedFloat(d, getProvenance())
+    TaintedFloat(d, getProvenance(), expr / x)
   }
 
   def +(x: TaintedFloat): TaintedFloat = {
-    TaintedFloat(value + x.value, newProvenance(x.getProvenance()))
+    TaintedFloat(value + x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr + x.expr)
   }
 
-  def +(x: TaintedDouble): TaintedDouble = {
-    TaintedDouble(value + x.value, newProvenance(x.getProvenance()))
-  }
+
+//  def +(x: TaintedDouble): TaintedDouble = {
+//    TaintedDouble(value + x.value, newProvenance(x.getProvenance()))
+//  }
+
+//  def +(x: TaintedDouble): TaintedFloat = {
+//    TaintedFloat(value + x.value.toFloat, mergeProvenance(getProvenance(), x.getProvenance()), expr + x.value.toFloat)
+//  }
 
   def -(x: TaintedFloat): TaintedFloat = {
-    TaintedFloat(value - x.value, newProvenance(x.getProvenance()))
+    TaintedFloat(value - x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr - x.expr)
   }
 
-  def *(x: TaintedFloat): TaintedFloat = {
-    TaintedFloat(value * x.value, newProvenance(x.getProvenance()))
 
+  def *(x: TaintedFloat): TaintedFloat = {
+    TaintedFloat(value * x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr * x.expr)
   }
 
   def /(x: TaintedFloat): TaintedFloat = {
-    TaintedFloat(value / x.value, newProvenance(x.getProvenance()))
+    TaintedFloat(value / x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr / x.expr)
   }
   
   // Incomplete comparison operators - see discussion in TaintedDouble on provenance
-  def >(x: TaintedFloat): Boolean = {
-    // mergeProvenance(x.getProvenance())
-    value > x.value
+  def >(x: TaintedFloat): TaintedBoolean = {
+    TaintedBoolean(value > x.value, newProvenance(x.getProvenance()), expr > x.expr)
   }
-
   
   /**
     * Operators not Supported Symbolically yet

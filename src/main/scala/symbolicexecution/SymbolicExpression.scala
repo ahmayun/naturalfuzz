@@ -22,6 +22,10 @@ case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("+"), new SymbolicInteger(x).expr))
   }
 
+  def +(x: Float): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("+"), new SymbolicFloat(x).expr))
+  }
+
   def -(x: SymbolicExpression): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("-"), x.expr))
   }
@@ -30,6 +34,9 @@ case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("-"), new SymbolicInteger(x).expr))
   }
 
+  def -(x: Float): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("-"), new SymbolicFloat(x).expr))
+  }
   def *(x: SymbolicExpression): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("*"), x.expr))
   }
@@ -38,12 +45,20 @@ case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("*"), new SymbolicInteger(x).expr))
   }
 
+  def *(x: Float): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("*"), new SymbolicFloat(x).expr))
+  }
+
   def /(x: SymbolicExpression): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("/"), x.expr))
   }
 
   def /(x: Int): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("/"), new SymbolicInteger(x).expr))
+  }
+
+  def /(x: Float): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("/"), new SymbolicFloat(x).expr))
   }
 
   def <(x: SymbolicExpression): SymbolicExpression = {

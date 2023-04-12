@@ -27,7 +27,7 @@ object Q3 extends Serializable {
       .map(row => (row.head, row))
       // t.d_date_sk = store_sales.ss_sold_date_sk
       .join(store_sales.map(row => (row.last, row)))
-      .map{
+      .map {
         case (date_sk, (date_dim_row, ss_row)) =>
           (ss_row(1)/*ss_item_sk*/, (date_dim_row, ss_row))
       }

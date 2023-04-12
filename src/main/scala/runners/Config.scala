@@ -180,6 +180,7 @@ object Config {
     "OldIncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
     "LoanType" -> Switch(null, faulty.LoanType.main, faultTest),
     "Q3" -> faulty.Q3.main,
+    "Q1" -> faulty.Q1.main,
     "RIGTestProgram" -> fuzzable.RIGTestProgram.main,
     "RIGTestJoin" -> fuzzable.RIGTestJoin.main
   )
@@ -239,7 +240,9 @@ object Config {
     "FlightDistance_M6_40_div_times" -> mutants.FlightDistance.FlightDistance_M6_40_div_times.main,
     "FlightDistance_M8_41_minus_plus" -> mutants.FlightDistance.FlightDistance_M8_41_minus_plus.main,
     "FlightDistance_M7_41_times_plus" -> mutants.FlightDistance.FlightDistance_M7_41_times_plus.main,
-    "FlightDistance_M4_40_times_minus" -> mutants.FlightDistance.FlightDistance_M4_40_times_minus.main
+    "FlightDistance_M4_40_times_minus" -> mutants.FlightDistance.FlightDistance_M4_40_times_minus.main,
+    "Q1" -> faulty.Q1.main,
+    "Q3" -> faulty.Q3.main,
   )
 
 
@@ -248,7 +251,8 @@ object Config {
 //    "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
 //    "FlightDistance" -> examples.symbolic.FlightDistance.main,
     "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main,
-    "Q3" -> examples.symbolic.Q3.main
+    "Q3" -> examples.symbolic.Q3.main,
+    "Q1" -> examples.symbolic.Q1.main
 //    "CommuteType" -> examples.symbolic.CommuteType.main,
 //    "Delays" -> examples.symbolic.Delays.main
   )
@@ -301,7 +305,8 @@ object Config {
     "MapString" -> BenchmarkSchemas.MAPSTRING,
     "OldIncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
     "LoanType" -> BenchmarkSchemas.LOANTYPE,
-    "Q3" -> BenchmarkSchemas.Q3
+    "Q3" -> BenchmarkSchemas.Q3,
+    "Q1" -> BenchmarkSchemas.Q1
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =

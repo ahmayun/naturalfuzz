@@ -40,24 +40,35 @@ object RunRIGFuzzJar extends Serializable {
 //          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
 //          "10",
 //          s"target/rig-output-local/$name")
-        val name = "WebpageSegmentation"
-        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
-        (name,
-          _mutantName,
-          "local[1]",
-          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
-          "20",
-          s"target/rig-output-local/${_mutantName}")
+//        val name = "WebpageSegmentation"
+//        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
+//        (name,
+//          _mutantName,
+//          "local[1]",
+//          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
+//          "20",
+//          s"target/rig-output-local/${_mutantName}")
 //        val name = "Delays"
 //        (name, "local[*]",
 //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
 //          "30",
 //          s"target/rig-output-local/$name")
 //        val name = "Q3"
-//        (name, "local[*]",
-//          Array("store_sales", "date_dim", "item").map { s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/reduced_data/$s" },
+//        val _mutantName = "Q3"
+//        (name,
+//          _mutantName,
+//          "local[*]",
+//          Array("store_sales", "date_dim", "item").map { s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s" },
 //          "20",
 //          s"target/rig-output-local/$name")
+        val name = "Q1"
+        val _mutantName = "Q1"
+        (name,
+          _mutantName,
+          "local[1]",
+          Array("store_returns", "date_dim", "store", "customer").map(s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s"),
+          "20",
+          s"target/rig-output-local/${_mutantName}")
       }
     Config.benchmarkName = benchmarkName
     Config.sparkMaster = sparkMaster
@@ -117,20 +128,25 @@ object RunRIGFuzzJar extends Serializable {
       .map(sc.textFile(_))
 
     val preJoinFill = branchConditions.createSatVectors(rawDS)
+//    preJoinFill(1) = preJoinFill(1).filter(row => row._1.split(",")(8) == "11")
 
     printIntermediateRDDs("Pre Join Path Vectors:", preJoinFill, branchConditions)
 
     val savedJoins = createSavedJoins(preJoinFill, branchConditions)
     println(s"Saved Joins: ${savedJoins.length}")
-    savedJoins
-      .head
-      ._1
-      .take(10)
-      .foreach(println)
+
+    if(savedJoins.length > 0) {
+      savedJoins
+        .head
+        ._1
+        .take(10)
+        .foreach(println)
+    }
 
     val rdds = branchConditions.createSatVectors(preJoinFill.map(_.zipWithIndex), savedJoins.toArray)
       .map { rdd => rdd.map { case ((row, pv), _) => (row, pv) } }
 
+//    rdds(1) = rdds(1).filter(row => row._1.split(",")(8) == "11")
     printIntermediateRDDs("POST Join Path Vectors:", rdds, branchConditions)
 
     //    val joinTable = List[List[(Int, List[Int])]](
@@ -142,18 +158,53 @@ object RunRIGFuzzJar extends Serializable {
       case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
     }
 
-//    sys.exit(0)
+
+    val vecs = generateList(2 << 30, branchConditions.getCount)
+    vecs.foreach(x => println(toBinaryStringWithLeadingZeros(x)))
+//    sys.exit()
+    val qrs = vecs
+      .zip(branchConditions.filterQueries)
+      .map {
+        case (mask, q) =>
+          val qr = rdds.zipWithIndex.map {
+            case (rdd, i) =>
+              rdd.filter {
+                case (row, pv) =>
+                  val result = (pv & mask) != 0
+//                  if(q.involvesDS(i)) {
+//                    println(s"${toBinaryStringWithLeadingZeros(pv)} = $row")
+//                    println(s"${toBinaryStringWithLeadingZeros(mask)} = MASK")
+//                    println(s"$result = RESULT")
+//                  }
+                  result
+              }
+                .map {
+                  case (row, pv) =>
+                    s"$row${Config.delimiter}$pv"
+                }
+                .takeSample(false, 10).toSeq
+          }
+          new QueryResult(qr, Seq(q), q.locs)
+      }
+
+    qrs.foreach {
+      qr =>
+        println(s"qr: ${qr.query(0).tree}------")
+        qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
+    }
+
 
     // get the maximum number of keys extracted from a row
     // this is how many duplicate rows will be allowed (duplicate w.r.t branch vector)
     val maxKeysFromRow = 2
     //    sys.exit(0)
     val reducedDatasets = ListBuffer[List[(String, Long)]]()
+    val pvs = ListBuffer[Int]()
     rdds
       .zipWithIndex
       .foreach {
         case (rdd, d) =>
-          val (red, _, _) = rdd
+          val (red, cumuPV, _) = rdd
             .zipWithIndex
             .aggregate(
               (List[(String, Long)](), 0x0, 0))({
@@ -161,7 +212,7 @@ object RunRIGFuzzJar extends Serializable {
               // use join table to guide selection according to rdd1 selection
               case ((acc, accVec, selected), ((row, pv), rowi)) =>
                 val or = accVec | pv
-                if (or != accVec && checkMembership((row, d, rowi), reducedDatasets, joinTable)) { // Note: section can be optimized with areNewBitsAfterJoin()
+                if (or != accVec && (checkMembership((row, d, rowi), reducedDatasets, joinTable) || joinTable.isEmpty)) { // Note: section can be optimized with areNewBitsAfterJoin()
                   (acc :+ (row, rowi), or, selected + 1)
                 }
                 else if (or == accVec && selected < maxKeysFromRow && checkMembership((row, d, rowi), reducedDatasets, joinTable)) {
@@ -183,45 +234,18 @@ object RunRIGFuzzJar extends Serializable {
                 }
             })
           reducedDatasets.append(red)
+          pvs.append(cumuPV)
       }
-
-    //    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)
-    //    val minRDDs = new SatRDDs(blendedRows, branchConditions).getRandMinimumSatSet()
-
-    val qrs = generateList(3 << 30, branchConditions.getCount)
-      .zip(branchConditions.filterQueries)
-      .map {
-        case (mask, q) =>
-          val qr = rdds.map {
-            rdd =>
-              rdd.filter {
-                case (row, pv) =>
-                  (pv & mask) != 0
-              }
-                .map {
-                  case (row, pv) =>
-                    s"$row${Config.delimiter}$pv"
-                }
-                .takeSample(false, 10).toSeq
-          }
-          new QueryResult(qr, Seq(q), q.locs)
-      }
-
-    qrs.foreach {
-      qr =>
-        println("qr------")
-        qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
-    }
-
 
     println("JOIN TABLE")
     joinTable.foreach(println)
 
     reducedDatasets
+      .zip(pvs)
       .zipWithIndex
       .foreach {
-        case (ds, i) =>
-          println(s"==== Reduced DS: ${i} =====")
+        case ((ds, pv), i) =>
+          println(s"==== Reduced DS: ${i} ${toBinaryStringWithLeadingZeros(pv)}=====")
           ds.foreach(println)
           println("-----")
       }
@@ -391,7 +415,7 @@ object RunRIGFuzzJar extends Serializable {
               .map {
                 case ((row, _), i) =>
                   val cols = row.split(Config.delimiter)
-                  val key = colsB.map(c => cols(c)).mkString("|")
+                  val key = colsB.map(c => try{cols(c)} catch {case _ : Throwable => "null"}).mkString("|")
                   (key, (row, i))
               }
           ), dsA, dsB)

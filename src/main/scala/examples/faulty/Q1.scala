@@ -1,49 +1,26 @@
-package examples.symbolic
+package examples.faulty
 
-import org.apache.spark.util.CollectionAccumulator
-import org.apache.spark.{SparkConf, SparkContext}
-import provenance.data.Provenance
-import provenance.rdd.ProvenanceRDD.toPairRDD
-import runners.Config
-import symbolicexecution.{SymExResult, SymbolicExpression}
-import sparkwrapper.SparkContextWithDP
-import taintedprimitives.SymImplicits._
-import taintedprimitives.{TaintedString,TaintedInt, TaintedFloat}
-import scala.util.Random
+import abstraction.{SparkConf, SparkContext}
 
-object Q1 extends Serializable {
-  def main(args: Array[String], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): SymExResult = {
-//  def main(args: Array[String]): Unit = {
-    val sparkConf = new SparkConf()//.setMaster("local[*]").setAppName("TPC-DS Query 1")
-    val sc = SparkContext.getOrCreate(sparkConf)
-    val ctx = new SparkContextWithDP(sc)
-    ctx.setLogLevel("ERROR")
+object Q1 {
+  def main(args: Array[String]): Unit = {
+    val sparkConf = new SparkConf()
+      .setMaster("local[1]")
+      .setAppName("TPC-DS Query 1")
+    val sc = new SparkContext(sparkConf)
+    sc.setLogLevel("ERROR")
     val YEAR = 1999
     val STATE = "TN"
-//    val expressionAccumulator: CollectionAccumulator[SymbolicExpression] = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
 
-    val Array(store_returns, date_dim, store, customer) = if (!args.isEmpty) {
-      val store_returns = ctx.textFileProv(args(0),_.split(","))
-      val date_dim = ctx.textFileProv(args(1),_.split(","))
-      val store = ctx.textFileProv(args(2),_.split(","))
-      val customer = ctx.textFileProv(args(3),_.split(","))
+    val Array(store_returns, date_dim, store, customer) = {
+      val store_returns = sc.textFile(args(0)).map(_.split(","))
+      val date_dim = sc.textFile(args(1)).map(_.split(","))
+      val store = sc.textFile(args(2)).map(_.split(","))
+      val customer = sc.textFile(args(3)).map(_.split(","))
       Array(store_returns, date_dim, store, customer)
-    } else {
-      Array("store_returns", "date_dim", "store", "customer")
-        .map(s => ctx.textFileProv(s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s", _.split(",")))
     }
 
-//    _root_.monitoring.Monitors.monitorPredicateSymEx()
-//    store_returns.map(row => convertColToFloat(row, 10) + convertColToFloat(row, 11)).collect().foreach(x => println(x.expr))
-//    store_returns
-//      .filter(row => try{row(0).toInt + row(1).toInt; true} catch {case _: Throwable => false})
-//      .map(row => row(0).toInt + row(1).toInt)
-//      .collect()
-//      .foreach(x => println(x.expr))
-//    sys.exit(0)
-
-
-    val filter1 = date_dim.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6).toInt == YEAR, (List(row(6).toInt, YEAR), List()), 0, expressionAccumulator))
+    val filter1 = date_dim.filter(row => row(6).toInt == YEAR)
 
     println("filter1")
     filter1.take(10).foreach(println)
@@ -58,7 +35,7 @@ object Q1 extends Serializable {
     println("map2")
     map2.take(10).foreach(println)
 
-    val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map2, map1, 0, expressionAccumulator)
+    val join1 = map2.join(map1)
 
     println("join1")
     join1.take(10).foreach(println)
@@ -72,26 +49,26 @@ object Q1 extends Serializable {
       ((sr_customer_sk, sr_store_sk), (sr_customer_sk, sr_store_sk, sum_agg_field))
     }
 
-    println("map3")
-    map3.take(10).foreach(println)
+//    println("map3")
+//    map3.take(10).foreach(println)
 
     val rbk1 = map3.reduceByKey {
       case ((r1c1, r1c2, sum1), (r2c1, r2c2, sum2)) =>
-        (r1c1, r2c2, sum1.value + sum2.value)
+        (r1c1, r2c2, sum1 + sum2)
     }
 
-    println("rbk1")
-    rbk1.take(10).foreach(println)
+//    println("rbk1")
+//    rbk1.take(10).foreach(println)
 
     val map4 = rbk1.map {
       case ((sr_customer_sk, sr_store_sk), rest) => (sr_store_sk, rest)
     }
 
-    println("map4")
-    map4.take(10).foreach(println)
+//    println("map4")
+//    map4.take(10).foreach(println)
 
     val map10 = store.map(row => (row.head, row))
-    val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map4,map10,1,expressionAccumulator)
+    val join2 = map4.join(map10)
 
     println("join2")
     join2.take(10).foreach(println)
@@ -100,11 +77,11 @@ object Q1 extends Serializable {
         case (store_sk, (ctr_row @ (sr_customer_sk, st_store_sk, sum_agg_field), store_row)) => (sr_customer_sk, (ctr_row, store_row))
       }
 
-    println("map5")
-    map5.take(10).foreach(println)
+//    println("map5")
+//    map5.take(10).foreach(println)
 
     val map9 = customer.map(row => (row.head, row))
-    val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(map5, map9, 2, expressionAccumulator)
+    val join3 = map5.join(map9)
 
     println("join3")
     join3.take(10).foreach(println)
@@ -113,20 +90,20 @@ object Q1 extends Serializable {
         case (customer_sk, ((ctr_row, store_row), customer_row)) => (ctr_row, store_row, customer_row)
       }
 
-    println("map6")
-    map6.take(10).foreach(println)
+//    println("map6")
+//    map6.take(10).foreach(println)
 
     val map7 = map6.map {
       case ((_,_,total_return), _, _) => (total_return, 1)
     }
 
-    println("map7")
-    map7.take(10).foreach(println)
+//    println("map7")
+//    map7.take(10).foreach(println)
 
     val reduce1 = map7.reduce{case ((v1, c1), (v2, c2)) => (v1+v2, c1+c2)}
 
-    println("reduce1")
-    println(reduce1)
+//    println("reduce1")
+//    println(reduce1)
 
     val avg = reduce1._1 / reduce1._2.toFloat * 1.2f
 
@@ -150,12 +127,9 @@ object Q1 extends Serializable {
       }
     println("map8")
     map8.take(10).foreach(println)
-
-    _root_.monitoring.Monitors.finalizeSymEx(expressionAccumulator)
-
   }
 
-  def convertColToFloat(row: Array[TaintedString], col: Int): TaintedFloat = {
+  def convertColToFloat(row: Array[String], col: Int): Float = {
     try {
       row(col).toFloat
     } catch {

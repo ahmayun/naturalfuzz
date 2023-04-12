@@ -115,14 +115,18 @@ object RunRIGFuzzJarCluster extends Serializable {
     val joinTable = branchConditions.getJoinConditions.map {
       case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
     }
+
+    // get the maximum number of keys extracted from a row
+    // this is how many duplicate rows will be allowed (duplicate w.r.t branch vector)
     val maxKeysFromRow = 2
     //    sys.exit(0)
     val reducedDatasets = ListBuffer[List[(String, Long)]]()
+    val pvs = ListBuffer[Int]()
     rdds
       .zipWithIndex
       .foreach {
         case (rdd, d) =>
-          val (red, _, _) = rdd
+          val (red, cumuPV, _) = rdd
             .zipWithIndex
             .aggregate(
               (List[(String, Long)](), 0x0, 0))({
@@ -130,7 +134,7 @@ object RunRIGFuzzJarCluster extends Serializable {
               // use join table to guide selection according to rdd1 selection
               case ((acc, accVec, selected), ((row, pv), rowi)) =>
                 val or = accVec | pv
-                if (or != accVec && checkMembership((row, d, rowi), reducedDatasets, joinTable)) { // Note: section can be optimized with areNewBitsAfterJoin()
+                if (or != accVec && (checkMembership((row, d, rowi), reducedDatasets, joinTable) || joinTable.isEmpty)) { // Note: section can be optimized with areNewBitsAfterJoin()
                   (acc :+ (row, rowi), or, selected + 1)
                 }
                 else if (or == accVec && selected < maxKeysFromRow && checkMembership((row, d, rowi), reducedDatasets, joinTable)) {
@@ -152,6 +156,7 @@ object RunRIGFuzzJarCluster extends Serializable {
                 }
             })
           reducedDatasets.append(red)
+          pvs.append(cumuPV)
       }
 
     //    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)

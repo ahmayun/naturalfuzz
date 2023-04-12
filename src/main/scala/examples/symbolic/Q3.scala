@@ -25,69 +25,80 @@ object Q3 extends Serializable {
     val date_dim = ctx.textFileProv(args(1),_.split(","))
     val item = ctx.textFileProv(args(2),_.split(","))
 
-    store_sales.take(10).foreach(println)
-    date_dim.take(10).foreach(println)
-    item.take(10).foreach(println)
+//    store_sales.take(10).foreach(println)
+//    date_dim.take(10).foreach(println)
+//    item.take(10).foreach(println)
 
     val map1 = store_sales.map(row => (row.last, row))
+
     println("map1")
     map1.take(10).foreach(println)
+
     val filter1 = date_dim.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(8).toInt/*d_moy*/ == MONTH, (List(row(8).toInt, MONTH), List()),0, expressionAccumulator))
+
     println("filter1")
     filter1.take(10).foreach(println)
-    val map2 = filter1.map(row => (row.head, row))
-    println("map2")
-    map2.take(10).foreach(println)
-      // t.d_date_sk = store_sales.ss_sold_date_sk
-    val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map2,map1, 1, expressionAccumulator)
-    println("join1")
-    join1.take(10).foreach(println)
-    val map3 = join1.map{
-        case (date_sk, (date_dim_row, ss_row)) =>
-          (ss_row(1)/*ss_item_sk*/, (date_dim_row, ss_row))
-      }
-      // and store_sales.ss_item_sk = item.i_item_sk
 
-    val filter2 = item.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(13).toInt /*i_manufact_id*/ == MANUFACT, (List(row(13).toInt, MANUFACT), List()), 1, expressionAccumulator)) // and item.i_manufact_id = [MANUFACT]
-    val map4 = filter2.map(row => (row.head, row))
-    println("filter2.map4")
-    map4.take(10).foreach(println)
-    val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map3, map4, 1, expressionAccumulator)
-    println("join2")
-    join2.take(10).foreach(println)
+//    val map2 = filter1.map(row => (row.head, row))
+//
+//    println("map2")
+//    map2.take(10).foreach(println)
+//      // t.d_date_sk = store_sales.ss_sold_date_sk
+//    val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map2,map1, 1, expressionAccumulator)
+//
+//    println("join1")
+//    join1.take(10).foreach(println)
+//
+//    val map3 = join1.map{
+//        case (date_sk, (date_dim_row, ss_row)) =>
+//          (ss_row(1)/*ss_item_sk*/, (date_dim_row, ss_row))
+//      }
+//      // and store_sales.ss_item_sk = item.i_item_sk
+//
+//    val filter2 = item.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(13) /*i_manufact_id*/ == MANUFACT.toString, (List(row(13), MANUFACT), List()), 1, expressionAccumulator)) // and item.i_manufact_id = [MANUFACT]
+//    val map4 = filter2.map(row => (row.head, row))
+//
+//    println("filter2.map4")
+//    map4.take(10).foreach(println)
+//
+//    val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map3, map4, 1, expressionAccumulator)
+//
+//    println("join2")
+//    join2.take(10).foreach(println)
+//
+//    val map5 = join2.map {
+//        case (item_sk, ((date_dim_row, ss_row), item_row)) =>
+//          val ss_ext_sales_price = convertColToFloat(ss_row, 14)
+//          val ss_sales_price = convertColToFloat(ss_row, 12)
+//          val ss_ext_discount_amt = convertColToFloat(ss_row, 13)
+//          val ss_net_profit = convertColToFloat(ss_row, 21)
+//          val sum = ss_net_profit + ss_sales_price + ss_ext_sales_price + ss_ext_discount_amt
+//
+//          val d_year = date_dim_row(6)
+//          val i_brand = item_row(8)
+//          val i_brand_id = item_row(7)
+//
+//          ((d_year, i_brand, i_brand_id), (d_year, i_brand, i_brand_id, sum))
+//      }
+//
+//    println("map5")
+//    map5.take(10).foreach(println)
+//
+//    val rbk1 = map5.reduceByKey {
+//        case ((d_year, i_brand, i_brand_id, v1),(_, _, _, v2)) =>
+//          (d_year, i_brand, i_brand_id, v1+v2)
+//      }
+//
+//    println("rbk1")
+//    rbk1.take(10).foreach(println)
+//
+//    val map6 = rbk1.map {
+//        case (_, (d_year, i_brand, i_brand_id, agg)) => (d_year, i_brand_id, i_brand, agg)
+//      }
+//
+//    println("map6")
+//    map6.take(10).foreach(println)
 
-    val map5 = join2.map {
-        case (item_sk, ((date_dim_row, ss_row), item_row)) =>
-          val ss_ext_sales_price = convertColToFloat(ss_row, 14)
-          val ss_sales_price = convertColToFloat(ss_row, 12)
-          val ss_ext_discount_amt = convertColToFloat(ss_row, 13)
-          val ss_net_profit = convertColToFloat(ss_row, 21)
-          val sum = ss_net_profit + ss_sales_price + ss_ext_sales_price + ss_ext_discount_amt
-
-          val d_year = date_dim_row(6)
-          val i_brand = item_row(8)
-          val i_brand_id = item_row(7)
-
-          ((d_year, i_brand, i_brand_id), (d_year, i_brand, i_brand_id, sum))
-      }
-    println("map5")
-    map5.take(10).foreach(println)
-
-    val rbk1 = map5.reduceByKey {
-        case ((d_year, i_brand, i_brand_id, v1),(_, _, _, v2)) =>
-          (d_year, i_brand, i_brand_id, v1+v2)
-      }
-
-    println("rbk1")
-    rbk1.take(10).foreach(println)
-
-    val map6 = rbk1.map {
-        case (_, (d_year, i_brand, i_brand_id, agg)) => (d_year, i_brand_id, i_brand, agg)
-      }
-
-    println("map6")
-
-    map6.take(10).foreach(println)
     _root_.monitoring.Monitors.finalizeSymEx(expressionAccumulator)
 
     /*

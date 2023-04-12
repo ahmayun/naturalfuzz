@@ -92,6 +92,7 @@ class ProvValueNode(override val s: Any, prov: Provenance, val ds: Int = 0, val 
         }
     }
   }
+//  override def toString: String = f_getProv.map { case (ds, col, row) => s"rdd[d$ds,c$col]" }.mkString("|") //+ s"{$s}"
 
 }
 
@@ -116,7 +117,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case SymbolicTree(left, n: ProvValueNode, right) => SymbolicTree(left.removeProv, n.removeProv, right.removeProv)
       case SymbolicTree(null, n, null) => SymbolicTree(null, n, null)
       case node @ SymbolicTree(left, n, right) =>
-        println(s"SYMBOLIC TREE: $node")
+//        println(s"SYMBOLIC TREE: $node")
         SymbolicTree(left.removeProv, n, right.removeProv)
     }
   }
@@ -194,7 +195,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
           val col = n.getCol
           val Some(schema) = Config.mapSchemas.get(benchmarkName)
           val offset = if(ds.length == 2 && nodeDS == ds(1)) offsetDS2 else 0
-          println(s"Debug eval: benchmarkName: $benchmarkName nodeDS: $nodeDS, col: $col, offset: $offset")
+//          println(s"Debug eval: benchmarkName: $benchmarkName nodeDS: $nodeDS, col: $col, offset: $offset")
           if(schema(nodeDS)(col-offset).dataType == Schema.TYPE_NUMERICAL) {
             row(col).toInt //TODO: Remove hardcoded type conversion to INT
           } else {
@@ -234,7 +235,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
     node match {
       case _ if isNopTree => _ => 0
       case _ : OperationNode => row => {
-        println(s"running filter fn for $this\nrow: ${row.mkString(",")}")
+//        println(s"running filter fn for $this\nrow: ${row.mkString(",")}")
         eval(row, ds, offsetDs2).asInstanceOf[Int]
       }
       case _ => throw new Exception("toQuery called on malformed tree")

@@ -40,12 +40,21 @@ object RunRIGFuzzJarFuzzing extends Serializable {
         //          Array("flights", "airports").map { s => s"seeds/reduced_data/flightdistance/$s" },
         //          "10",
         //          s"target/rig-output-local/$name")
-        val name = "WebpageSegmentation"
-        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
+//        val name = "WebpageSegmentation"
+//        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
+//        (name,
+//          _mutantName,
+//          "local[1]",
+//          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
+//          "20",
+//          s"target/rig-output-local/${_mutantName}",
+//          if(System.getProperty("user.name") == "ahmad") "./pickled" else { onCluster = true; "/home/student/pickled/qrs" })
+        val name = "Q1"
+        val _mutantName = "Q1"
         (name,
           _mutantName,
           "local[1]",
-          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
+          Array("0", "1", "2", "3").map(s => s"./seeds/rig_reduced_data/$name/dataset_$s"),
           "20",
           s"target/rig-output-local/${_mutantName}",
           if(System.getProperty("user.name") == "ahmad") "./pickled" else { onCluster = true; "/home/student/pickled/qrs" })
@@ -87,6 +96,17 @@ object RunRIGFuzzJarFuzzing extends Serializable {
 
 
     val qrs = Pickle.load[List[QueryResult]](s"${pickleDir}/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    qrs.foreach {
+      qr =>
+        println(s"====QR: ${qr.query.map(_.tree).mkString(" <=>")} ===== ")
+        qr.filterQueryRDDs
+          .zipWithIndex
+          .foreach {
+            case (rdd, i) =>
+              println(s"=> RDD ${i}")
+              println(rdd.mkString("\n"))
+        }
+    }
     val guidance = new RIGGuidance(pargs, schema, duration.toInt, new QueriedRDDs(qrs))
 
     val (stats, timeStartFuzz, timeEndFuzz) = NewFuzzer.FuzzMutants(program, mutantProgram, guidance, outDir, !onCluster)

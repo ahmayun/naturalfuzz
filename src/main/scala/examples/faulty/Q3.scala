@@ -13,8 +13,8 @@ object Q3 {
     sparkConf.setAppName("TPC-DS Query 3")
     val ctx = new SparkContext(sparkConf)
     ctx.setLogLevel("ERROR")
-    val seed = "ahmad35@vt.edu".hashCode()
-    val rand = new Random(seed)
+//    val seed = "ahmad35@vt.edu".hashCode()
+//    val rand = new Random(seed)
 
     val store_sales = ctx.textFile(args(0)).map(_.split(","))
     val date_dim = ctx.textFile(args(1)).map(_.split(","))
