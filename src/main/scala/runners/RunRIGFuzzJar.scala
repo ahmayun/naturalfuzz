@@ -53,22 +53,22 @@ object RunRIGFuzzJar extends Serializable {
 //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
 //          "30",
 //          s"target/rig-output-local/$name")
-//        val name = "Q3"
-//        val _mutantName = "Q3"
-//        (name,
-//          _mutantName,
-//          "local[*]",
-//          Array("store_sales", "date_dim", "item").map { s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s" },
-//          "20",
-//          s"target/rig-output-local/$name")
-        val name = "Q1"
-        val _mutantName = "Q1"
+        val name = "Q3"
+        val _mutantName = "Q3"
         (name,
           _mutantName,
-          "local[1]",
-          Array("store_returns", "date_dim", "store", "customer").map(s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s"),
+          "local[*]",
+          Array("store_sales", "date_dim", "item").map { s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s" },
           "20",
-          s"target/rig-output-local/${_mutantName}")
+          s"target/rig-output-local/$name")
+//        val name = "Q1"
+//        val _mutantName = "Q1"
+//        (name,
+//          _mutantName,
+//          "local[1]",
+//          Array("store_returns", "date_dim", "store", "customer").map(s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s"),
+//          "20",
+//          s"target/rig-output-local/${_mutantName}")
       }
     Config.benchmarkName = benchmarkName
     Config.sparkMaster = sparkMaster
