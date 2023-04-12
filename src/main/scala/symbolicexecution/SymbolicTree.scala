@@ -200,7 +200,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
             try {
               row(col).toInt //TODO: Remove hardcoded type conversion to INT
             } catch {
-              case _: Throwable => row(n.getCol)
+              case _: Throwable => return encode(false)
             }
           } else {
             row(n.getCol)
