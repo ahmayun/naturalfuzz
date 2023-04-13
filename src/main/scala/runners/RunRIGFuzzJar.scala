@@ -54,7 +54,7 @@ object RunRIGFuzzJar extends Serializable {
 //          "30",
 //          s"target/rig-output-local/$name")
         val name = "Q3"
-        val _mutantName = "Q3"
+        val _mutantName = "Q3_M0"
         (name,
           _mutantName,
           "local[*]",

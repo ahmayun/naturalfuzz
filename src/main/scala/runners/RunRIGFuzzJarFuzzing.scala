@@ -49,20 +49,32 @@ object RunRIGFuzzJarFuzzing extends Serializable {
 //          "20",
 //          s"target/rig-output-local/${_mutantName}",
 //          if(System.getProperty("user.name") == "ahmad") "./pickled" else { onCluster = true; "/home/student/pickled/qrs" })
-        val name = "Q1"
-        val _mutantName = "Q1"
-        (name,
-          _mutantName,
-          "local[1]",
-          Array("0", "1", "2", "3").map(s => s"./seeds/rig_reduced_data/$name/dataset_$s"),
-          "20",
-          s"target/rig-output-local/${_mutantName}",
-          if(System.getProperty("user.name") == "ahmad") "./pickled" else { onCluster = true; "/home/student/pickled/qrs" })
+//        val name = "Q1"
+//        val _mutantName = "Q1"
+//        (name,
+//          _mutantName,
+//          "local[1]",
+//          Array("0", "1", "2", "3").map(s => s"./seeds/rig_reduced_data/$name/dataset_$s"),
+//          "20",
+//          s"target/rig-output-local/${_mutantName}",
+//          if(System.getProperty("user.name") == "ahmad") "./pickled" else { onCluster = true; "/home/student/pickled/qrs" })
         //        val name = "Delays"
         //        (name, "local[*]",
         //          Array("station1", "station2").map { s => s"seeds/reduced_data/delays/$s" },
         //          "30",
         //          s"target/rig-output-local/$name")
+
+        val name = "Q3"
+        val _mutantName = "Q3_M0"
+        (name,
+          _mutantName,
+          "local[1]",
+          Array("0", "1", "2").map(s => s"./seeds/rig_reduced_data/$name/dataset_$s"),
+          "20",
+          s"target/rig-output-local/${_mutantName}",
+          if (System.getProperty("user.name") == "ahmad") "./pickled" else {
+            onCluster = true; "/home/student/pickled/qrs"
+          })
       }
     if(System.getProperty("user.name") != "ahmad") {
       onCluster = true
