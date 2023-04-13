@@ -33,7 +33,7 @@ mkdir -p $DIR_BIGFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
-          $DIR_BIGFUZZ_OUT/scoverage-results \
+          $DIR_BIGFUZZ_OUT/scoverage-results/referenceProgram \
           || exit
 
 pushd target/scala-2.12/classes || exit 1
