@@ -13,7 +13,7 @@
 
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
-MUTANT=$2
+MUTANT_NAME=$2
 PACKAGE=$3
 DURATION=$4
 shift 4
@@ -22,7 +22,7 @@ DATASETS=$@
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
 PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
-DIR_BIGFUZZ_OUT="target/bigfuzz-output/$NAME"
+DIR_BIGFUZZ_OUT="target/bigfuzz-output/$MUTANT_NAME"
 
 rm -rf $DIR_BIGFUZZ_OUT
 mkdir -p $DIR_BIGFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1
@@ -49,7 +49,7 @@ date > $DIR_BIGFUZZ_OUT/start.time
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunBigFuzzJar \
           $NAME \
-          $MUTANT \
+          $MUTANT_NAME \
           $DURATION \
           $DIR_BIGFUZZ_OUT\
           $DATASETS
