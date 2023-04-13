@@ -57,18 +57,18 @@ object MutantGenerator extends Transformer {
     (oldOpSym, g_opNames(oldOpSym), node.pos.startLine, newOpSym, g_opNames(newOpSym))
   }
 
-  def generateMutants(tree: Tree, className: String): List[(Tree, String)] = {
+  def generateMutants(tree: Tree, className: String): List[(Tree, String, String)] = {
     g_className = className
     getAllBinOpsPositions(tree)
       .zipWithIndex
       .map {
         case (node, i) =>
           val (oldOpSym, oldOpName, lineNo, newOpSym, newOpName) = setCurrentOp(node)
-          g_mutantObjSuffix = s"M${i}_${lineNo}_${oldOpName}_$newOpName"
+          g_mutantObjSuffix = s"M${i}"
           g_currentNode = node
           g_mutantOp = newOpSym
           println(s"changing $oldOpSym to $newOpSym on line $lineNo: $node")
-          (apply(tree), g_mutantObjSuffix)
+          (apply(tree), g_mutantObjSuffix, s"M${i}_L${lineNo}_${oldOpName}_$newOpName: $node")
     }
   }
 

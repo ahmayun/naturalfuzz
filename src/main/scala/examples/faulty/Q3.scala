@@ -22,17 +22,21 @@ object Q3 {
 
     val map1 = store_sales.map(row => (row.last, row))
     val filter1 = date_dim.filter(row => row(8)/*d_moy*/ == MONTH.toString)
+    filter1.collect().foreach(_println)
     val map2 = filter1.map(row => (row.head, row))
     val join1 = map2.join(map1)
+    join1.collect().foreach(_println)
     val map3 = join1.map(map3_f)
 
     val filter2 = item.filter(filter2_f) // and item.i_manufact_id = [MANUFACT]
+    filter2.collect().foreach(_println)
     val map4 = filter2.map(row => (row.head, row))
     val join2 = map3.join(map4)
+    join2.collect().foreach(_println)
     val map5 = join2.map(map5_f)
     val rbk1 = map5.reduceByKey(rbk1_f)
+    rbk1.collect().foreach(_println)
     val map6 = rbk1.map(map6_f)
-
     map6.collect().foreach(_println)
   }
 

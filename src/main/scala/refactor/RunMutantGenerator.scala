@@ -3,11 +3,12 @@ package refactor
 import refactor.CodeTransformUtils.{treeFromFile,writeTransformed}
 import java.io.File
 import scala.meta._
+import utils.FileUtils.writeToFile
 
 object RunMutantGenerator {
   def main(args: Array[String]): Unit = {
     val inputFolder = "src/main/scala/examples/faulty"
-    val testName = "Q1"
+    val testName = "Q3"
     val outputFolder = s"src/main/scala/examples/mutants/${testName}"
     new File(outputFolder).mkdirs()
     val inputFile = s"$inputFolder/$testName.scala"
@@ -18,7 +19,8 @@ object RunMutantGenerator {
     mutants
       .zipWithIndex
       .foreach {
-      case ((transformed, mutantSuffix), i) =>
+      case ((transformed, mutantSuffix, mutantInfo), i) =>
+        writeToFile(Seq(s"$mutantInfo"), s"$outputFolder/$mutantSuffix.info")
         writeTransformed(transformed.toString(), s"$outputFolder/${testName}_$mutantSuffix.scala")
     }
 
