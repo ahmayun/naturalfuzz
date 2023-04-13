@@ -114,6 +114,33 @@ object RunRIGFuzzJarCluster extends Serializable {
       case (ds1, ds2, cols1, cols2) => List((ds1, cols1), (ds2, cols2))
     }
 
+    val vecs = generateList(2 << 30, branchConditions.getCount)
+    vecs.foreach(x => println(toBinaryStringWithLeadingZeros(x)))
+    val qrs = vecs
+      .zip(branchConditions.filterQueries)
+      .map {
+        case (mask, q) =>
+          val qr = rdds.zipWithIndex.map {
+            case (rdd, i) =>
+              rdd.filter {
+                case (row, pv) =>
+                  val result = (pv & mask) != 0
+                  //                  if(q.involvesDS(i)) {
+                  //                    println(s"${toBinaryStringWithLeadingZeros(pv)} = $row")
+                  //                    println(s"${toBinaryStringWithLeadingZeros(mask)} = MASK")
+                  //                    println(s"$result = RESULT")
+                  //                  }
+                  result
+              }
+                .map {
+                  case (row, pv) =>
+                    s"$row${Config.delimiter}$pv"
+                }
+                .takeSample(false, 10).toSeq
+          }
+          new QueryResult(qr, Seq(q), q.locs)
+      }
+
     // get the maximum number of keys extracted from a row
     // this is how many duplicate rows will be allowed (duplicate w.r.t branch vector)
     val maxKeysFromRow = 2
@@ -156,24 +183,6 @@ object RunRIGFuzzJarCluster extends Serializable {
           reducedDatasets.append(red)
           pvs.append(cumuPV)
       }
-
-    //    val blendedRows = rdds.map(rdd => rdd.map{case (row, pv) => s"$row${Config.delimiter}$pv"}.collect().toSeq)
-    //    val minRDDs = new SatRDDs(blendedRows, branchConditions).getRandMinimumSatSet()
-
-    val qrs = generateList(3 << 30, branchConditions.getCount).zip(branchConditions.filterQueries).map {
-      case (mask, q) =>
-        val qr = rdds.map {
-          rdd =>
-            rdd.filter {
-              case (row, pv) =>
-                (pv & mask) != 0
-            }
-              .map { case (row, pv) => s"$row${Config.delimiter}$pv" }
-              .takeSample(false, 10).toSeq
-        }
-        new QueryResult(qr, Seq(q), q.locs)
-
-    }
 
     qrs.foreach {
       qr =>
