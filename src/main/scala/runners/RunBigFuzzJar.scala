@@ -20,20 +20,20 @@ object RunBigFuzzJar {
           args(2),
           args(3))
       } else {
-//        val name = "Q3"
-//        val _mutantName = "Q3"
-//        (name,
-//          _mutantName,
-//          Array("store_sales", "date_dim", "item").map { s => s"seeds/bigfuzz/Q3/$s" },
-//          "20",
-//          s"target/bigfuzz-output/$name")
-        val name = "WebpageSegmentation"
-        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
+        val name = "Q3"
+        val _mutantName = "Q3_M0"
         (name,
           _mutantName,
-          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
+          Array("store_sales", "date_dim", "item").map { s => s"seeds/bigfuzz/Q3/$s" },
           "20",
-          s"target/bigfuzz-output/${name}")
+          s"target/bigfuzz-output/$name")
+//        val name = "WebpageSegmentation"
+//        val _mutantName = "WebpageSegmentation_M19_83_lte_neq"
+//        (name,
+//          _mutantName,
+//          Array("dataset_0", "dataset_1").map { s => s"./seeds/rig_reduced_data/$name/$s" },
+//          "20",
+//          s"target/bigfuzz-output/${name}")
       }
 
     val Some(fun_fuzzable) = Config.mapFunFuzzables.get(benchmark_name)

@@ -13,8 +13,11 @@
 
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
-PACKAGE=$2
-DURATION=$3
+MUTANT=$2
+PACKAGE=$3
+DURATION=$4
+shift 4
+DATASETS=$@
 
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
@@ -40,15 +43,16 @@ jar uvf  ../ProvFuzz-assembly-1.0.jar \
 popd || exit 1
 
 START_TIME=$(date +"%T %D")
-echo -e "Subject:[START] BigFuzz $(hostname)\n$NAME $START_TIME" | sendmail ahmad35@vt.edu
+#echo -e "Subject:[START] BigFuzz $(hostname)\n$NAME $START_TIME" | sendmail ahmad35@vt.edu
 date > $DIR_BIGFUZZ_OUT/start.time
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           runners.RunBigFuzzJar \
           $NAME \
-          $PACKAGE \
+          $MUTANT \
           $DURATION \
-          $DIR_BIGFUZZ_OUT
+          $DIR_BIGFUZZ_OUT\
+          $DATASETS
 
 date > $DIR_BIGFUZZ_OUT/end.time
-echo -e "Subject:[END] BigFuzz $(hostname)\n$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
+#echo -e "Subject:[END] BigFuzz $(hostname)\n$NAME $START_TIME exit $?" | sendmail ahmad35@vt.edu
