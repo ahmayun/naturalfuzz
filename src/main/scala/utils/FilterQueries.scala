@@ -89,7 +89,7 @@ class FilterQueries(val symExResult: SymExResult) extends Serializable {
           case (k, ((rowA, rowAi), (rowB, rowBi))) =>
             val combinedRow = s"$rowA${Config.delimiter}$rowB"
             val pv = makeSatVector(filterFns.zip(filterQueriesDS), combinedRow.split(Config.delimiter), true)
-            println(s"jrow: $combinedRow - ${toBinaryStringWithLeadingZeros(pv)}")
+//            println(s"jrow: $combinedRow - ${toBinaryStringWithLeadingZeros(pv)}")
             (k, ((rowA, rowAi, pv), (rowB, rowBi, pv)))
         }, dsA, dsB)
     }

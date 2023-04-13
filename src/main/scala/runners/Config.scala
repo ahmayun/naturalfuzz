@@ -241,8 +241,25 @@ object Config {
     "FlightDistance_M8_41_minus_plus" -> mutants.FlightDistance.FlightDistance_M8_41_minus_plus.main,
     "FlightDistance_M7_41_times_plus" -> mutants.FlightDistance.FlightDistance_M7_41_times_plus.main,
     "FlightDistance_M4_40_times_minus" -> mutants.FlightDistance.FlightDistance_M4_40_times_minus.main,
+    "Q3_M2_64_plus_times" -> mutants.Q3.Q3_M2_64_plus_times.main,
+    "Q3_M5_77_plus_minus" -> mutants.Q3.Q3_M5_77_plus_minus.main,
+    "Q3_M1_54_eq_neq" -> mutants.Q3.Q3_M1_54_eq_neq.main,
+    "Q3_M3_64_plus_times" -> mutants.Q3.Q3_M3_64_plus_times.main,
+    "Q3_M0_23_eq_lt" -> mutants.Q3.Q3_M0_23_eq_lt.main,
+    "Q3_M4_64_plus_times" -> mutants.Q3.Q3_M4_64_plus_times.main,
+    "Q1_M7_117_gt_neq" -> mutants.Q1.Q1_M7_117_gt_neq.main,
+    "Q1_M2_56_plus_times" -> mutants.Q1.Q1_M2_56_plus_times.main,
+    "Q1_M1_47_plus_minus" -> mutants.Q1.Q1_M1_47_plus_minus.main,
+    "Q1_M0_22_eq_lt" -> mutants.Q1.Q1_M0_22_eq_lt.main,
+    "Q1_M8_117_eq_neq" -> mutants.Q1.Q1_M8_117_eq_neq.main,
+    "Q1_M5_107_times_plus" -> mutants.Q1.Q1_M5_107_times_plus.main,
+    "Q1_M4_102_plus_times" -> mutants.Q1.Q1_M4_102_plus_times.main,
+    "Q1_M6_107_div_times" -> mutants.Q1.Q1_M6_107_div_times.main,
+    "Q1_M3_102_plus_times" -> mutants.Q1.Q1_M3_102_plus_times.main,
     "Q1" -> faulty.Q1.main,
     "Q3" -> faulty.Q3.main,
+    "FlightDistance" -> faulty.FlightDistance.main,
+    "WebpageSegmentation" -> faulty.WebpageSegmentation.main
   )
 
 
