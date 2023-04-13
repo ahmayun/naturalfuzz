@@ -5,3 +5,4 @@ python3 ./run-rigfuzz.py FlightDistance faulty 10 ~/pickled/reduced_data/FlightD
 python3 print_mutant_map.py FlightDistance src/main/scala/examples/mutants/FlightDistance/
 ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJarCluster Q3 spark://zion-headnode:7077 /TPCDS_1G_NOHEADER_NOCOMMAS/{store_sales,date_dim,item}
 ./run-rigfuzz.sh Q3 Q3 faulty 20 ~/pickled/qrs ~/pickled/reduced_data/Q3/dataset_*
+./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJarCluster Q1 spark://zion-headnode:7077 /TPCDS_1G_NOHEADER_NOCOMMAS/{store_returns,date_dim,store,customer}
