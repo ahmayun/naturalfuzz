@@ -121,6 +121,11 @@ object NewFuzzer {
       fuzzer.Global.iteration += 1
     }
 
+    new FileWriter(new File(s"$refCoverageOutDir/coverage.tuples"), true)
+      .append(s"(${(System.currentTimeMillis() - t_start) / 1000.0f},${lastCoverage}) % iter=${Global.iteration} ")
+      .append("\n")
+      .flush()
+
     val coverage = getCoverage(refCoverageOutDir)
     new ScoverageHtmlWriter(Seq(new File("src/main/scala")), new File(refCoverageOutDir)).write(coverage)
 
