@@ -54,3 +54,4 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DATASETS
 
 date > $DIR_RIGFUZZ_OUT/end.time
+cat $DIR_RIGFUZZ_OUT/scoverage-results/referenceProgram/coverage.tuples

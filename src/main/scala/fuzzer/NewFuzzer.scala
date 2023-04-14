@@ -50,6 +50,10 @@ object NewFuzzer {
     writer.close()
   }
 
+  def getElapsedSeconds(t_start: Long): Float = {
+    (System.currentTimeMillis() - t_start)/1000.0f
+  }
+
   def FuzzMutants(refProgram: ExecutableProgram, mutantProgram: ExecutableProgram, guidance: Guidance, outDir: String, compile: Boolean = true): (FuzzStats, Long, Long) = {
     val testCaseOutDir = s"$outDir/interesting-inputs"
     val coverageOutDir = s"$outDir/scoverage-results"
@@ -122,7 +126,7 @@ object NewFuzzer {
     }
 
     new FileWriter(new File(s"$refCoverageOutDir/coverage.tuples"), true)
-      .append(s"(${(System.currentTimeMillis() - t_start) / 1000.0f},${lastCoverage}) % iter=${Global.iteration} ")
+      .append(s"(${getElapsedSeconds(t_start)},${lastCoverage}) % iter=${Global.iteration} ")
       .append("\n")
       .flush()
 
@@ -194,7 +198,7 @@ object NewFuzzer {
     if (changed) {
       newCov = coverage.statementCoveragePercent
       new FileWriter(new File(s"$refCoverageOutDir/coverage.tuples"), true)
-        .append(s"(${(System.currentTimeMillis() - t_start)/1000.0f},${coverage.statementCoveragePercent}) % iter=${Global.iteration} ")
+        .append(s"(${getElapsedSeconds(t_start)},${coverage.statementCoveragePercent}) % iter=${Global.iteration} ")
         .append("\n")
         .flush()
     }
