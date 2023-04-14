@@ -36,6 +36,7 @@ object RunBigFuzzJar {
 //          s"target/bigfuzz-output/${name}")
       }
 
+
     val Some(fun_fuzzable) = Config.mapFunFuzzables.get(benchmark_name)
     val Some(schema) = Config.mapSchemas.get(benchmark_name)
     val benchmark_class = s"examples.faulty.$benchmark_name"

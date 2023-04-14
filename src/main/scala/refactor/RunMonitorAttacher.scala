@@ -8,8 +8,8 @@ import scala.meta._
 object RunMonitorAttacher {
   def main(args: Array[String]): Unit = {
     val outputFolder = "src/main/scala/examples/symbolic"
-    val inputFolder = "src/main/scala/examples/benchmarks"
-    val testName = "RIGTestProgram"
+    val inputFolder = "src/main/scala/examples/tpcds"
+    val testName = "Q6"
     new File(outputFolder).mkdirs()
     val inputFile = s"$inputFolder/$testName.scala"
 

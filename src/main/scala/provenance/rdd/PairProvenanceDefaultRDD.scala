@@ -28,6 +28,8 @@ class PairProvenanceDefaultRDD[K, V](override val rdd: RDD[(K, ProvenanceRow[V])
     })
   }
 
+  override def distinct(): ProvenanceRDD[(K, V)] = new PairProvenanceDefaultRDD(rdd.distinct)
+
   private def flatProvenanceRDD: FlatProvenanceDefaultRDD[(K, V)] = {
     FlatProvenanceDefaultRDD
       .pairToFlat(this)

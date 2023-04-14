@@ -28,7 +28,7 @@ trait ProvenanceRDD[T] extends Serializable {
 //
 //  def distinct(numPartitions: Int)(implicit ord: Ordering[T] = null): ProvenanceRDD[T]
 //
-//  def distinct(): ProvenanceRDD[T]
+  def distinct(): ProvenanceRDD[T]
 //
 //  def persist(newLevel: StorageLevel): this.type
 //

@@ -17,6 +17,10 @@ class FlatProvenanceDefaultRDD[T: ClassTag](override val rdd: RDD[ProvenanceRow[
       row => Utils.computeOneToOneUDF(f, row, _enableUDFAwareProv)
     })
   }
+
+  def distinct(): FlatProvenanceDefaultRDD[T] = {
+    new FlatProvenanceDefaultRDD(rdd.distinct)
+  }
   
 //  override def mapPartitions[U: ClassTag](f: Iterator[T] => Iterator[U], enableUDFAwareProv: Option[Boolean] = None): ProvenanceRDD[U] = {
 //    val _enableUDFAwareProv = Utils.getUDFAwareEnabledValue(enableUDFAwareProv)

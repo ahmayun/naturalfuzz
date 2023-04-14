@@ -13,10 +13,8 @@ object Q6 extends Serializable {
     val sc = new SparkContext(conf)
     sc.setLogLevel("ERROR")
     val datasetsPath = "./data_tpcds"
-    val seed = "ahmad".hashCode()
-    val rand = new Random(seed)
-    val MONTH = rand.nextInt(12)+1
-    val YEAR = rand.nextInt(2002 - 1998) + 1998
+    val MONTH = 1 // rand.nextInt(12)+1
+    val YEAR = 2001 // rand.nextInt(2002 - 1998) + 1998
 
     val customer_address = sc.textFile(s"$datasetsPath/customer_address").map(_.split(","))
     val customer = sc.textFile(s"$datasetsPath/customer").map(_.split(","))
@@ -25,82 +23,84 @@ object Q6 extends Serializable {
     val item = sc.textFile(s"$datasetsPath/item").map(_.split(","))
 
 
+    val filter1 = date_dim.filter { row => row(6) == YEAR.toString && row(8) == MONTH.toString }
+    val map1 = filter1.map(row => row(3) /*d_month_seq*/)
+    val distinct = map1.distinct
+    val take1 = distinct.take(1).head
 
-    val subquery1_result = date_dim.filter { row =>
-      val d_year = row(6)
-      val d_moy = row(8)
-      d_year == YEAR.toString && d_moy == MONTH.toString
+
+    val map2 = customer_address.map(row => (row.head, row))
+    val map3 = customer.map(row => (row(4) /*c_current_addr_sk*/ , row))
+    val join1 = map2.join(map3)
+    val map4 = join1.map {
+      case (addr_sk, (ca_row, c_row)) =>
+        (c_row.head /*c_customer_sk*/ , (ca_row, c_row))
     }
-      .map(row => row(3) /*d_month_seq*/)
-      .distinct
-      .take(1)
-      .head
+    val map5 = store_sales.map(row => (row(2) /*ss_customer_sk*/ , row))
+    val join2 = map4.join(map5)
+    val map6 = join2.map {
+      case (customer_sk, ((ca_row, c_row), ss_row)) =>
+        (ss_row.last /*ss_sold_date_sk*/ , (ca_row, c_row, ss_row))
+    }
+    val map7 = date_dim.map(row => (row.head /*d_date_sk*/ , row))
+    val join3 = map6.join(map7)
+    val map8 = join3.map {
+      case (date_sk, ((ca_row, c_row, ss_row), dd_row)) =>
+        (ss_row(1) /*ss_item_sk*/ , (ca_row, c_row, ss_row, dd_row))
+    }
+    val map9 = item.map(row => (row.head /*i_item_sk*/ , row))
+    val join4 = map8.join(map9)
 
-
-    val main_query_part1 = customer_address
-      .map(row => (row.head, row))
-      .join(customer.map(row => (row(4)/*c_current_addr_sk*/, row)))
-      .map {
-        case (addr_sk, (ca_row, c_row)) =>
-          (c_row.head /*c_customer_sk*/, (ca_row, c_row))
-      }
-      .join(store_sales.map(row => (row(2)/*ss_customer_sk*/, row)))
-      .map {
-        case (customer_sk, ((ca_row, c_row), ss_row)) =>
-          (ss_row.last/*ss_sold_date_sk*/, (ca_row, c_row, ss_row))
-      }
-      .join(date_dim.map(row => (row.head /*d_date_sk*/, row)))
-      .map {
-        case (date_sk, ((ca_row, c_row, ss_row), dd_row)) =>
-          (ss_row(1)/*ss_item_sk*/, (ca_row, c_row, ss_row, dd_row))
-      }
-      .join(item.map(row => (row.head/*i_item_sk*/, row)))
-      .map {
-        case (item_sk, ((ca_row, c_row, ss_row, dd_row), i_row)) =>
-          (ca_row, c_row, ss_row, dd_row, i_row)
-      }
+    val map10 = join4.map {
+      case (item_sk, ((ca_row, c_row, ss_row, dd_row), i_row)) =>
+        (ca_row, c_row, ss_row, dd_row, i_row)
+    }
 
     // Not sure if this should be applied to the original item table or the partial result
     // confirm with someone
-    val reduce1 = main_query_part1
+    val map11 = map10
       .map {
         case (_, _, _, _, i_row) =>
           (convertColToFloat(i_row, 5), 1) // j.i_current_price in sql query
       }
-      .reduce {
-        case ((v1, c1), (v2, c2)) =>
-          (v1 + v2, c1 + c2)
-      }
+    val reduce1 = map11.reduce {
+      case ((v1, c1), (v2, c2)) =>
+        (v1 + v2, c1 + c2)
+    }
 
-    val subquery2_result = reduce1._1/reduce1._2
+    val subquery2_result = reduce1._1 / reduce1._2
 
 
-    main_query_part1
-      .filter {
-        case (_, _, _, dd_row, _) =>
-          dd_row(3)/*d_month_seq*/ == subquery1_result
-      }
-      .filter {
-        case (_, _, _, _, i_row) =>
-          val i_current_price = convertColToFloat(i_row, 5)
-          i_current_price > 1.2 * subquery2_result
-      }
-      .map {
-        case (ca_row, c_row, ss_row, dd_row, i_row) =>
-//          println(ca_row.mkString(", "))
-          (try { ca_row(8) /*ca_state*/ } catch { case _ => "NULL"}, 1) // Took some liberty here, ca_row(8) fails due to array out of bounds
-      }
-      .reduceByKey(_+_)
-      .filter {
-        case (state, count) =>
-          count > 10
-      }
-      .sortBy(_._2)
-      .take(10)
-      .sortWith {case (a, b) => (a._2 < b._2) || (a._2 == b._2 && a._1 < b._1)}
-      .foreach{
-        case (state, count) => println(state, count)
-      }
+    val filter2 = map10.filter(tup => tup._4(3) /*d_month_seq*/ == take1)
+
+    val filter3 = filter2.filter {
+      case (_, _, _, _, i_row) =>
+        val i_current_price = convertColToFloat(i_row, 5)
+        i_current_price > 1.2 * subquery2_result
+    }
+
+    val map12 = filter3.map {
+      case (ca_row, c_row, ss_row, dd_row, i_row) =>
+        //          println(ca_row.mkString(", "))
+        (try {
+          ca_row(8) /*ca_state*/
+        } catch {
+          case _ => "NULL"
+        }, 1) // Took some liberty here, ca_row(8) fails due to array out of bounds
+    }
+    val rbk1 = map12.reduceByKey(_ + _)
+    val filter4 = rbk1.filter {
+      case (state, count) =>
+        count > 10
+    }
+
+    val sortBy1 = filter4.sortBy(_._2)
+    val take2 = sortBy1.take(10)
+    val sortWith1 = take2.sortWith { case (a, b) => (a._2 < b._2) || (a._2 == b._2 && a._1 < b._1) }
+
+    sortWith1.foreach {
+      case (state, count) => println(state, count)
+    }
 
 
 

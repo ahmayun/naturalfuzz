@@ -1,6 +1,6 @@
 package taintedprimitives
 
-import provenance.data.{DualRBProvenance, Provenance}
+import provenance.data.{DualRBProvenance, DummyProvenance, Provenance}
 import symbolicexecution.{SymbolicFloat, SymbolicInteger, SymbolicTree}
 
 import scala.reflect.runtime.universe._
@@ -13,6 +13,10 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
   /**
     * Unsupported Operations
     */
+
+  def this(value: String) = {
+    this(value, DummyProvenance.create())
+  }
 
   def length: TaintedInt = {
     TaintedInt(value.length, getProvenance())
@@ -109,6 +113,14 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
 
   def +(x: String): TaintedString = {
     TaintedString(value + x, getProvenance())
+  }
+
+  def <(x: TaintedString): Boolean = {
+    value < x.value
+  }
+
+  def <(x: String): Boolean = {
+    value < x
   }
 
   def hashCodeTainted: TaintedInt = new TaintedInt(value.hashCode, getProvenance())
