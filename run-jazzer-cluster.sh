@@ -14,16 +14,17 @@
 
 # Temporarily hard-coded, should be parsed from args
 NAME=$1
-MODE=$2
-PACKAGE=$3
-DURATION=$4
+MUTANT_NAME=$2
+MODE=$3
+PACKAGE=$4
+DURATION=$5
 SCALA_VER=2.12
 
 CLASS_TARGET=jazzer.JazzerTarget$NAME
 #CLASS_INSTRUMENTED=examples.fuzzable.$NAME # which class needs to be fuzzed DISC vs FWA
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
 PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
-DIR_JAZZER_OUT="target/jazzer-output/$NAME"
+DIR_JAZZER_OUT="target/jazzer-output/$MUTANT_NAME"
 
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
@@ -68,7 +69,7 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
                 --cp=/fuzzing/ProvFuzz-assembly-1.0.jar \
                 --target_class=$CLASS_TARGET \
                 --reproducer_path=/reproducers \
-                --target_args="$DIR_JAZZER_OUT/measurements $MODE $PACKAGE" \
+                --target_args="$DIR_JAZZER_OUT/measurements $MODE $PACKAGE $MUTANT_NAME" \
                 --keep_going=200
 #                -v "$(pwd)"/$DIR_JAZZER_OUT/log:/log \
 #                --log_dir=/log \
