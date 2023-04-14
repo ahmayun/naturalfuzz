@@ -51,7 +51,7 @@ object NewFuzzer {
   }
 
   def getElapsedSeconds(t_start: Long): Float = {
-    (System.currentTimeMillis() - t_start)/1000.0f
+    (System.currentTimeMillis() - t_start)/1000.0f + 1
   }
 
   def FuzzMutants(refProgram: ExecutableProgram, mutantProgram: ExecutableProgram, guidance: Guidance, outDir: String, compile: Boolean = true): (FuzzStats, Long, Long) = {
