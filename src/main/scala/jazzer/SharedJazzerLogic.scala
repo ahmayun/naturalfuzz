@@ -11,11 +11,12 @@ object SharedJazzerLogic {
 
   var i = 0
   var prevCov = 0.0
+  var t_start: Long = 0
 
   def updateIteration(measurementsDir: String): Unit = {
     i+=1
     new FileWriter(new File(s"$measurementsDir/iter"))
-    .append(s"$i\n")
+    .append(s"${getElapsedSeconds(t_start)}\n")
     .flush()
   }
 
@@ -53,14 +54,18 @@ object SharedJazzerLogic {
     f(newDatasets)
   }
 
+  def getElapsedSeconds(t_start: Long): Float = {
+    (System.currentTimeMillis() - t_start) / 1000.0f + 1.0f
+  }
+
   def trackCumulativeCoverage(measurementsDir: String): Unit = {
     val coverage = Serializer.deserialize(new File(s"$measurementsDir/scoverage.coverage")) // scoverage.coverage will be produced at compiler time by ScoverageInstrumenter.scala
     val measurementFiles = IOUtils.findMeasurementFiles(measurementsDir)
     val measurements = scoverage.IOUtils.invoked(measurementFiles)
     coverage.apply(measurements)
     if(coverage.statementCoveragePercent > prevCov) {
-      new FileWriter(new File(s"$measurementsDir/cumulative.csv"), true)
-          .append(s"$i,${coverage.statementCoveragePercent}")
+      new FileWriter(new File(s"$measurementsDir/coverage.tuples"), true)
+          .append(s"(${getElapsedSeconds(t_start)},${coverage.statementCoveragePercent}) %iter=$i")
           .append("\n")
           .flush()
       prevCov = coverage.statementCoveragePercent

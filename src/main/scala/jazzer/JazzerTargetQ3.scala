@@ -7,6 +7,7 @@ object JazzerTargetQ3 {
   var mode: String = ""
   var pkg: String = ""
   var measurementsDir: String = ""
+  var mutantName = ""
   val datasets: Array[String] = Array(
     "/inputs/ds1",
     "/inputs/ds2",
@@ -19,6 +20,7 @@ object JazzerTargetQ3 {
     pkg = args(2)
     mutantName = args(3)
 
+    SharedJazzerLogic.t_start = System.currentTimeMillis()
     SharedJazzerLogic.createMeasurementDir(measurementsDir)
   }
 
