@@ -93,7 +93,7 @@ object NewFuzzer {
         postMutantKill = true
       }
 
-      val (newStats, newLastCoverage, changed) = analyzeAndLogCoverage(refCoverageOutDir, stats, lastCoverage)
+      val (newStats, newLastCoverage, changed) = analyzeAndLogCoverage(refCoverageOutDir, stats, lastCoverage, t_start)
 //      val (newMutantStats, newMutantLastCoverage, _) = analyzeAndLogCoverage(mutantCoverageOutDir, mutantStats, mutantLastCoverage)
 
       logTimeAndIteration(outDir, t_start)
@@ -179,7 +179,8 @@ object NewFuzzer {
   def analyzeAndLogCoverage(
                              refCoverageOutDir: String,
                              stats: FuzzStats,
-                             lastCoverage: Double): (FuzzStats, Double, Boolean) = {
+                             lastCoverage: Double,
+                             t_start: Long): (FuzzStats, Double, Boolean) = {
 
     var newCov = lastCoverage
     val coverage = getCoverage(refCoverageOutDir, fuzzer.Global.iteration)
@@ -187,8 +188,8 @@ object NewFuzzer {
     val changed = updateCoverage(coverage, lastCoverage)
     if (changed) {
       newCov = coverage.statementCoveragePercent
-      new FileWriter(new File(s"$refCoverageOutDir/cumulative.csv"), true)
-        .append(s"${Global.iteration},${coverage.statementCoveragePercent}")
+      new FileWriter(new File(s"$refCoverageOutDir/coverage.tuples"), true)
+        .append(s"(${(System.currentTimeMillis() - t_start)/1000.0f},${coverage.statementCoveragePercent}) % iter=${Global.iteration} ")
         .append("\n")
         .flush()
     }
@@ -201,7 +202,7 @@ object NewFuzzer {
   def logTimeAndIteration(outDir: String, t_start: Long): Unit = {
     val writer = new FileWriter(new File(s"$outDir/iter_time"))
     writer
-      .append(s"${Global.iteration},${System.currentTimeMillis() - t_start}")
+      .append(s"${Global.iteration},${(System.currentTimeMillis() - t_start)/1000.0f}")
       .append("\n")
       .flush()
     writer.close()
