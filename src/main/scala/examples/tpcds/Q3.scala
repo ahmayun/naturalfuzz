@@ -7,20 +7,18 @@ import scala.util.Random
 object Q3 extends Serializable {
 
   def main(args: Array[String]) {
-    val conf = new SparkConf()
-    conf.setMaster("local[*]")
-    conf.setAppName("TPC-DS Query 3")
-    val sc = new SparkContext(conf)
+    val sparkConf = new SparkConf()
+    sparkConf.setAppName("TPC-DS Query 3")
+    val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
-    val datasetsPath = "./data_tpcds"
     val seed = "ahmad".hashCode()
     val rand = new Random(seed)
-    val MANUFACT = rand.nextInt(1000 - 1) + 1
-    val MONTH = rand.nextInt(2)+11
+    val MANUFACT = 1 // rand.nextInt(1000 - 1) + 1
+    val MONTH = 11 // rand.nextInt(2)+11
 
-    val store_sales = sc.textFile(s"$datasetsPath/store_sales").map(_.split(","))
-    val date_dim = sc.textFile(s"$datasetsPath/date_dim").map(_.split(","))
-    val item = sc.textFile(s"$datasetsPath/item").map(_.split(","))
+    val store_sales = sc.textFile(args(0)).map(_.split(","))
+    val date_dim = sc.textFile(args(1)).map(_.split(","))
+    val item = sc.textFile(args(2)).map(_.split(","))
 
     val check = date_dim
       .filter(row => row(8)/*d_moy*/ == MONTH.toString)

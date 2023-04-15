@@ -1,6 +1,6 @@
 package runners
 
-import examples.{benchmarks, faulty, fuzzable, monitored, mutants}
+import examples.{benchmarks, faulty, fuzzable, monitored, mutants,tpcds}
 import fuzzer.{ProvInfo, Schema}
 import org.apache.spark.util.CollectionAccumulator
 import schemas.BenchmarkSchemas
@@ -281,7 +281,8 @@ object Config {
     "CommuteType" -> benchmarks.CommuteType.main,
     "Delays" -> benchmarks.Delays.main,
     "Customers" -> benchmarks.Customers.main,
-    "DeliveryFaults" -> benchmarks.DeliveryFaults.main
+    "DeliveryFaults" -> benchmarks.DeliveryFaults.main,
+    "Q3" -> tpcds.Q3.main,
   )
 
   val mapFunProbeAble: Map[String, Array[String] => ProvInfo] = Map[String, Array[String] => ProvInfo](elems =
