@@ -50,7 +50,8 @@ case class TaintedFloat(override val value: Float, p:Provenance, expr: SymbolicE
   }
 
   def +(x: TaintedFloat): TaintedFloat = {
-    TaintedFloat(value + x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr + x.expr)
+    val newExpr = if(expr.length > 10) expr else if(x.expr.length > 10) x.expr else expr + x.expr
+    TaintedFloat(value + x.value, mergeProvenance(getProvenance(), x.getProvenance()), newExpr)
   }
 
 

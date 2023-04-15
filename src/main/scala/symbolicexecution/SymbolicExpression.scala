@@ -6,6 +6,11 @@ import utils.{Query, RDDLocations}
 
 case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
 
+
+  def length: Int = {
+    expr.height
+  }
+
   def or(symbolicExpression: SymbolicExpression): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("||"), symbolicExpression.expr))
   }
