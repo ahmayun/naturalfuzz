@@ -6,21 +6,20 @@ import scala.util.Random
 object Q1 extends Serializable {
 
   def main(args: Array[String]) {
-    val conf = new SparkConf()
-    conf.setMaster("local[*]")
-    conf.setAppName("TPC-DS Query 1")
-    val sc = new SparkContext(conf)
+    val sparkConf = new SparkConf()
+    sparkConf.setAppName("TPC-DS Query 1")
+    val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
-    val datasetsPath = "./data_tpcds"
-    val seed = "ahmad".hashCode()
-    val rand = new Random(seed)
-    val YEAR = rand.nextInt(2002 - 1998) + 1998
+//    val datasetsPath = "./data_tpcds"
+//    val seed = "ahmad".hashCode()
+//    val rand = new Random(seed)
+    val YEAR = 1999 // rand.nextInt(2002 - 1998) + 1998
     val STATE = "TN"
 
-    val store_returns = sc.textFile(s"$datasetsPath/store_returns").map(_.split(","))
-    val date_dim = sc.textFile(s"$datasetsPath/date_dim").map(_.split(","))
-    val store = sc.textFile(s"$datasetsPath/store").map(_.split(","))
-    val customer = sc.textFile(s"$datasetsPath/customer").map(_.split(","))
+    val store_returns = sc.textFile(args(0)).map(_.split(","))
+    val date_dim = sc.textFile(args(1)).map(_.split(","))
+    val store = sc.textFile(args(2)).map(_.split(","))
+    val customer = sc.textFile(args(3)).map(_.split(","))
 
     val customers_total_return = store_returns
       .map(row => (row.last, row))

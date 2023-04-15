@@ -9,22 +9,21 @@ import scala.util.Random
 object Q12 extends Serializable {
 
   def main(args: Array[String]) {
-    val conf = new SparkConf()
-    conf.setMaster("local[*]")
-    conf.setAppName("TPC-DS Query 12")
-    val sc = new SparkContext(conf)
+    val sparkConf = new SparkConf()
+    sparkConf.setAppName("TPC-DS Query 12")
+    val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
-    val datasetsPath = "./data_tpcds"
-    val seed = "ahmad".hashCode()
-    val rand = new Random(seed)
-    val YEAR = rand.nextInt(2003 - 1998) + 1998
+//    val datasetsPath = "./data_tpcds"
+//    val seed = "ahmad".hashCode()
+//    val rand = new Random(seed)
+    val YEAR = 1999 // rand.nextInt(2003 - 1998) + 1998
     val START_DATE = s"$YEAR-01-01"
     val END_DATE = s"$YEAR-02-01"
     val CAT = List("Home", "Electronics", "Shoes") // many more
 
-    val web_sales = sc.textFile(s"$datasetsPath/web_sales").map(_.split(","))
-    val date_dim = sc.textFile(s"$datasetsPath/date_dim").map(_.split(","))
-    val item = sc.textFile(s"$datasetsPath/item").map(_.split(","))
+    val web_sales = sc.textFile(args(0)).map(_.split(","))
+    val date_dim = sc.textFile(args(1)).map(_.split(","))
+    val item = sc.textFile(args(2)).map(_.split(","))
 
     val filtered_item = item.filter {
       row =>

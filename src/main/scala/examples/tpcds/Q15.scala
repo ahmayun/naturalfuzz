@@ -7,23 +7,22 @@ import scala.util.Random
 object Q15 extends Serializable {
 
   def main(args: Array[String]) {
-    val conf = new SparkConf()
-    conf.setMaster("local[*]")
-    conf.setAppName("TPC-DS Query 1")
-    val sc = new SparkContext(conf)
+    val sparkConf = new SparkConf()
+    sparkConf.setAppName("TPC-DS Query 15")
+    val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
-    val datasetsPath = "./data_tpcds"
-    val seed = "ahmad".hashCode()
-    val rand = new Random(seed)
-    val YEAR = rand.nextInt(2002 - 1998) + 1998
-    val QOY = rand.nextInt(1) + 1
+//    val datasetsPath = "./data_tpcds"
+//    val seed = "ahmad".hashCode()
+//    val rand = new Random(seed)
+    val YEAR = 1999 // rand.nextInt(2002 - 1998) + 1998
+    val QOY = 1 // rand.nextInt(1) + 1
     val ZIPS = List("85669","86197","88274","83405","86475","85392","85460","80348","81792")
     val STATES = List("CA", "WA", "GA")
 
-    val catalog_sales = sc.textFile(s"$datasetsPath/catalog_sales").map(_.split(","))
-    val customer = sc.textFile(s"$datasetsPath/customer").map(_.split(","))
-    val customer_address = sc.textFile(s"$datasetsPath/customer_address").map(_.split(","))
-    val date_dim = sc.textFile(s"$datasetsPath/date_dim").map(_.split(","))
+    val catalog_sales = sc.textFile(args(0)).map(_.split(","))
+    val customer = sc.textFile(args(1)).map(_.split(","))
+    val customer_address = sc.textFile(args(2)).map(_.split(","))
+    val date_dim = sc.textFile(args(3)).map(_.split(","))
 
     val filtered_dd = date_dim
       .filter {

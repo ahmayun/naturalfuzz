@@ -7,20 +7,19 @@ import scala.util.Random
 object Q6 extends Serializable {
 
   def main(args: Array[String]) {
-    val conf = new SparkConf()
-    conf.setMaster("local[*]")
-    conf.setAppName("TPC-DS Query 1")
-    val sc = new SparkContext(conf)
+    val sparkConf = new SparkConf()
+    sparkConf.setAppName("TPC-DS Query 6")
+    val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
-    val datasetsPath = "./data_tpcds"
+//    val datasetsPath = "./data_tpcds"
     val MONTH = 1 // rand.nextInt(12)+1
     val YEAR = 2001 // rand.nextInt(2002 - 1998) + 1998
 
-    val customer_address = sc.textFile(s"$datasetsPath/customer_address").map(_.split(","))
-    val customer = sc.textFile(s"$datasetsPath/customer").map(_.split(","))
-    val store_sales = sc.textFile(s"$datasetsPath/store_sales").map(_.split(","))
-    val date_dim = sc.textFile(s"$datasetsPath/date_dim").map(_.split(","))
-    val item = sc.textFile(s"$datasetsPath/item").map(_.split(","))
+    val customer_address = sc.textFile(args(0)).map(_.split(","))
+    val customer = sc.textFile(args(1)).map(_.split(","))
+    val store_sales = sc.textFile(args(2)).map(_.split(","))
+    val date_dim = sc.textFile(args(3)).map(_.split(","))
+    val item = sc.textFile(args(4)).map(_.split(","))
 
 
     val filter1 = date_dim.filter { row => row(6) == YEAR.toString && row(8) == MONTH.toString }
