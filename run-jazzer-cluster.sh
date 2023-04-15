@@ -35,7 +35,13 @@ mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
 			$DIR_JAZZER_OUT/measurements/errors.csv &
 
 
-sbt assembly || exit 1
+exitScript() {
+    mv ~/jazzerresults src/main/scala
+    exit 1;
+}
+
+mv src/main/scala/jazzerresults ~ # sbt gets stuck in infinite loop so move this out of directory
+sbt assembly || exitScript
 
 java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
