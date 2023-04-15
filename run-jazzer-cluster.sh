@@ -31,7 +31,7 @@ rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
 
 ./crash-checker.sh 	$DIR_JAZZER_OUT/reproducers/  \
-			target/scala-$SCALA_VER/target/jazzer-output/$NAME/measurements/iter \
+			target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/iter \
 			$DIR_JAZZER_OUT/measurements/errors.csv &
 
 
