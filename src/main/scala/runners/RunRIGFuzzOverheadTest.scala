@@ -67,7 +67,8 @@ object RunRIGFuzzOverheadTest extends Serializable {
     val t_start_orig = System.currentTimeMillis()
     origProgram.invokeMain(origProgram.args)
     val t_end_orig = System.currentTimeMillis()
-    writeStringToFile(s"Original Runtime(ms) : ${t_end_orig - t_start_orig}", s"$foldername/runtime")
+    val durationOrig = t_end_orig - t_start_orig
+    writeStringToFile(s"Original Runtime(ms) : ${durationOrig}", s"$foldername/runtime")
 
     // start timing
     val t_start_symex = System.currentTimeMillis()
@@ -75,8 +76,8 @@ object RunRIGFuzzOverheadTest extends Serializable {
     println("Running monitored program")
     val pathExpressions = SymbolicExecutor.execute(symProgram, expressionAccumulator)
     val t_end_symex = System.currentTimeMillis()
-
-    writeStringToFile(s"Instrumented Runtime(ms) : ${t_end_symex - t_start_symex}", s"$foldername/runtime", true)
+    val durationSym = t_end_symex - t_start_symex
+    writeStringToFile(s"Instrumented Runtime(ms) : ${durationSym}", s"$foldername/runtime", true)
 
     val t_start_post = System.currentTimeMillis()
     println("Creating filter queries")
@@ -220,8 +221,11 @@ object RunRIGFuzzOverheadTest extends Serializable {
     Pickle.dump(qrs, s"$foldername/qrs.pkl")
     finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"$foldername/reduced_data", e, i) }
     val t_end_post = System.currentTimeMillis()
+    val durationPost = t_end_post - t_start_post
 
-    writeStringToFile(s"Post Processing (ms) : ${t_end_post - t_start_post}", s"$foldername/runtime", true)
+    writeStringToFile(s"Post Processing (ms) : ${durationPost}", s"$foldername/runtime", true)
+    writeStringToFile(s"Overhead w/o post : ${durationSym.toFloat/durationOrig.toFloat}", s"$foldername/runtime", true)
+    writeStringToFile(s"Overhead w/ post : ${(durationSym+durationPost).toFloat/durationOrig}", s"$foldername/runtime", true)
 
   }
 
