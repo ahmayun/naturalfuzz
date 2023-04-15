@@ -20,8 +20,10 @@ object Q3 extends Serializable {
     val date_dim = sc.textFile(args(1)).map(_.split(","))
     val item = sc.textFile(args(2)).map(_.split(","))
 
+    val safety1 = item.filter(row => try {row(13).toInt; true} catch {case _: Throwable => false})
+
     val check = date_dim
-      .filter(row => row(8)/*d_moy*/ == MONTH.toString)
+      .filter(row => row(8).toInt/*d_moy*/ == MONTH)
       .map(row => (row.head, row))
       // t.d_date_sk = store_sales.ss_sold_date_sk
       .join(store_sales.map(row => (row.last, row)))
@@ -31,8 +33,8 @@ object Q3 extends Serializable {
       }
       // and store_sales.ss_item_sk = item.i_item_sk
       .join {
-        item
-          .filter(row => row(13) /*i_manufact_id*/ == MANUFACT.toString) // and item.i_manufact_id = [MANUFACT]
+        safety1
+          .filter(row => row(13).toInt /*i_manufact_id*/ == MANUFACT) // and item.i_manufact_id = [MANUFACT]
           .map(row => (row.head, row))
       }
       .map {
