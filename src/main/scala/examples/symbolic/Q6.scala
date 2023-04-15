@@ -12,19 +12,18 @@ import taintedprimitives._
 import taintedprimitives.SymImplicits._
 object Q6 extends Serializable {
   def main(args: Array[String], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): Unit = {
-    val conf = new SparkConf()
-    conf.setMaster("local[*]")
-    conf.setAppName("TPC-DS Query 1")
-    val sc = new SparkContextWithDP(new SparkContext(conf))
+    val sparkConf = new SparkConf()
+    sparkConf.setAppName("TPC-DS Query 6")
+    val sc = new SparkContextWithDP(SparkContext.getOrCreate(sparkConf))
     sc.setLogLevel("ERROR")
-    val datasetsPath = "./data_tpcds"
+//    val datasetsPath = "./data_tpcds"
     val MONTH = 1
     val YEAR = 2001
-    val customer_address = sc.textFileProv(s"$datasetsPath/customer_address", _.split(","))
-    val customer = sc.textFileProv(s"$datasetsPath/customer", _.split(","))
-    val store_sales = sc.textFileProv(s"$datasetsPath/store_sales", _.split(","))
-    val date_dim = sc.textFileProv(s"$datasetsPath/date_dim", _.split(","))
-    val item = sc.textFileProv(s"$datasetsPath/item", _.split(","))
+    val customer_address = sc.textFileProv(args(0), _.split(","))
+    val customer = sc.textFileProv(args(1), _.split(","))
+    val store_sales = sc.textFileProv(args(2), _.split(","))
+    val date_dim = sc.textFileProv(args(3), _.split(","))
+    val item = sc.textFileProv(args(4), _.split(","))
     val filter1 = date_dim.filter {
       row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6) == YEAR.toString && row(8) == MONTH.toString, (List(), List()), 0, expressionAccumulator)
     }
