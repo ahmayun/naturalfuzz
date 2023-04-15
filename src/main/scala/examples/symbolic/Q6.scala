@@ -68,7 +68,7 @@ object Q6 extends Serializable {
     val filter3 = filter2.filter({
       case (_, _, _, _, i_row) =>
         val i_current_price = convertColToFloat(i_row, 5)
-        _root_.monitoring.Monitors.monitorPredicateSymEx(i_current_price > 1.2f * subquery2_result, (List(), List()), 6, expressionAccumulator)
+        _root_.monitoring.Monitors.monitorPredicateSymEx(i_current_price > (subquery2_result * 1.2f), (List(), List()), 6, expressionAccumulator)
     })
     val map12 = filter3.map({
       case (ca_row, c_row, ss_row, dd_row, i_row) =>

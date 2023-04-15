@@ -181,6 +181,7 @@ object Config {
     "LoanType" -> Switch(null, faulty.LoanType.main, faultTest),
     "Q3" -> faulty.Q3.main,
     "Q1" -> faulty.Q1.main,
+    "Q6" -> faulty.Q1.main,
     "RIGTestProgram" -> fuzzable.RIGTestProgram.main,
     "RIGTestJoin" -> fuzzable.RIGTestJoin.main
   )
@@ -333,6 +334,7 @@ object Config {
     "OldIncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
     "LoanType" -> BenchmarkSchemas.LOANTYPE,
     "Q3" -> BenchmarkSchemas.Q3,
+    "Q6" -> BenchmarkSchemas.Q3,
     "Q1" -> BenchmarkSchemas.Q1
   )
 
