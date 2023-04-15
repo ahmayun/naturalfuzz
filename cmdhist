@@ -6,3 +6,5 @@ python3 print_mutant_map.py FlightDistance src/main/scala/examples/mutants/Fligh
 ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJarCluster Q3 spark://zion-headnode:7077 /TPCDS_1G_NOHEADER_NOCOMMAS/{store_sales,date_dim,item}
 ./run-rigfuzz.sh Q3 Q3 faulty 20 ~/pickled/qrs ~/pickled/reduced_data/Q3/dataset_*
 ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzJarCluster Q1 spark://zion-headnode:7077 /TPCDS_1G_NOHEADER_NOCOMMAS/{store_returns,date_dim,store,customer}
+./run-bigfuzz.sh Q3 Q3_M0 faulty 20 seeds/bigfuzz/Q3/{store_sales,date_dim,item}
+./run-jazzer-cluster.sh Q3 Q3_M0 fuzz faulty 300
