@@ -32,25 +32,25 @@ object Q6 extends Serializable {
     val take1 = distinct.take(1).head
     val map2 = customer_address.map(row => (row.head, row))
     val map3 = customer.map(row => (row(4), row))
-    val join1 = _root_.monitoring.Monitors.monitorJoin(map2, map3, 1)
+    val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map2, map3, 1, expressionAccumulator)
     val map4 = join1.map({
       case (addr_sk, (ca_row, c_row)) =>
         (c_row.head, (ca_row, c_row))
     })
     val map5 = store_sales.map(row => (row(2), row))
-    val join2 = _root_.monitoring.Monitors.monitorJoin(map4, map5, 2)
+    val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map4, map5, 2, expressionAccumulator)
     val map6 = join2.map({
       case (customer_sk, ((ca_row, c_row), ss_row)) =>
         (ss_row.last, (ca_row, c_row, ss_row))
     })
     val map7 = date_dim.map(row => (row.head, row))
-    val join3 = _root_.monitoring.Monitors.monitorJoin(map6, map7, 3)
+    val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(map6, map7, 3, expressionAccumulator)
     val map8 = join3.map({
       case (date_sk, ((ca_row, c_row, ss_row), dd_row)) =>
         (ss_row(1), (ca_row, c_row, ss_row, dd_row))
     })
     val map9 = item.map(row => (row.head, row))
-    val join4 = _root_.monitoring.Monitors.monitorJoin(map8, map9, 4)
+    val join4 = _root_.monitoring.Monitors.monitorJoinSymEx(map8, map9, 4, expressionAccumulator)
     val map10 = join4.map({
       case (item_sk, ((ca_row, c_row, ss_row, dd_row), i_row)) =>
         (ca_row, c_row, ss_row, dd_row, i_row)
