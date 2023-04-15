@@ -282,7 +282,15 @@ object Config {
     "Delays" -> benchmarks.Delays.main,
     "Customers" -> benchmarks.Customers.main,
     "DeliveryFaults" -> benchmarks.DeliveryFaults.main,
+    "Q1" -> tpcds.Q1.main,
     "Q3" -> tpcds.Q3.main,
+    "Q6" -> tpcds.Q6.main,
+    "Q7" -> tpcds.Q7.main,
+    "Q12" -> tpcds.Q12.main,
+    "Q13" -> tpcds.Q13.main,
+    "Q15" -> tpcds.Q15.main,
+    "Q19" -> tpcds.Q19.main,
+    "Q20" -> tpcds.Q20.main
   )
 
   val mapFunProbeAble: Map[String, Array[String] => ProvInfo] = Map[String, Array[String] => ProvInfo](elems =
