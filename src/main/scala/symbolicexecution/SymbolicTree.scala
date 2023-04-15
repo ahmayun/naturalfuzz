@@ -154,6 +154,8 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
   }
 
   def isOp(op: String): Boolean = {
+    println(s"NODE: ${node}")
+    println(s"OP: ${node.s}")
     node.s.equals(op)
   }
 
