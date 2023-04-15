@@ -268,8 +268,9 @@ object Config {
 //    "RIGTestJoin" -> examples.symbolic.RIGTestJoin.main,
 //    "FlightDistance" -> examples.symbolic.FlightDistance.main,
     "WebpageSegmentation" -> examples.symbolic.WebpageSegmentation.main,
+    "Q1" -> examples.symbolic.Q1.main,
     "Q3" -> examples.symbolic.Q3.main,
-    "Q1" -> examples.symbolic.Q1.main
+    "Q6" -> examples.symbolic.Q6.main,
 //    "CommuteType" -> examples.symbolic.CommuteType.main,
 //    "Delays" -> examples.symbolic.Delays.main
   )

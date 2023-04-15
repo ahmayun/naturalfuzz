@@ -25,7 +25,8 @@ object RunRIGFuzzOverheadTest extends Serializable {
       if (!args.isEmpty) {
         (args(0),
           args(1),
-          args.takeRight(args.length - 3), args(2))
+          args.takeRight(args.length - 3),
+          args(2))
       } else {
         val name = "Q3"
         (name, "local[*]",

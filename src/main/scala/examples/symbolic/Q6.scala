@@ -4,19 +4,19 @@ import org.apache.spark.{SparkConf, SparkContext}
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives._
 import taintedprimitives.SymImplicits._
-
+import symbolicexecution.SymExResult
 import scala.util.Random
 import sparkwrapper.SparkContextWithDP
 import symbolicexecution.SymbolicExpression
 import taintedprimitives._
 import taintedprimitives.SymImplicits._
 object Q6 extends Serializable {
-  def main(args: Array[String], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): Unit = {
+  def main(args: Array[String], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): SymExResult = {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("TPC-DS Query 6")
     val sc = new SparkContextWithDP(SparkContext.getOrCreate(sparkConf))
     sc.setLogLevel("ERROR")
-//    val datasetsPath = "./data_tpcds"
+    //    val datasetsPath = "./data_tpcds"
     val MONTH = 1
     val YEAR = 2001
     val customer_address = sc.textFileProv(args(0), _.split(","))
