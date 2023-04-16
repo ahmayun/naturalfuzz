@@ -13,7 +13,7 @@ class SymExResult(val program: Program, val pathExpressions: ListBuffer[Symbolic
     pathExpressions.flatMap(_.toCNF.toQueries).toList
     println("=== DISTINCT ===")
     pathExpressions.foreach(exp => println(exp.expr))
-    println(s"=== len: ${exprList.length} ===")
+    println(s"=== len: ${pathExpressions.length} ===")
 //    List(
 //      new Query(fq1a, new RDDLocations(Array((0, 1, 0), (0, 2, 0)))),
 //      new Query(fq1b, new RDDLocations(Array((0, 3, 0), (0, 4, 0)))),
