@@ -239,7 +239,7 @@ object Monitors extends Serializable {
 
     println("=== ACC PC ===")
     exprList.foreach(println)
-    println("=== ACC PC ===")
+    println(s"=== ACC PC len: ${exprList.length} ===")
 
     new SymExResult(null, exprList.to[ListBuffer])
   }
