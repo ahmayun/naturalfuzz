@@ -36,7 +36,11 @@ object Q12 extends Serializable {
         0,
         expressionAccumulator)
     }
-    val filtered_dd = date_dim.filter { row => 
+
+    println("filtered_item")
+    filtered_item.take(10).foreach(println)
+
+    val filtered_dd = date_dim.filter { row =>
       val d_date = row(2)
       _root_.monitoring.Monitors.monitorPredicateSymEx(
         isBetween(d_date, START_DATE, END_DATE),
@@ -44,6 +48,8 @@ object Q12 extends Serializable {
         1,
         expressionAccumulator)
     }
+    println("filtered_dd")
+    filtered_dd.take(10).foreach(println)
     val map1 = web_sales.map(row => (row(2), row))
     val map7 = filtered_item.map(row => (row.head, row))
     val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map1, map7, 2, expressionAccumulator)

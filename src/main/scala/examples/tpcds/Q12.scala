@@ -35,11 +35,17 @@ object Q12 extends Serializable {
         category == CAT(0) || category == CAT(1) || category == CAT(2)
     }
 
+    println("filtered_item")
+    filtered_item.take(10).foreach(println)
+
     val filtered_dd = date_dim.filter {
       row =>
         val d_date = row(2)
         isBetween(d_date, START_DATE, END_DATE)
     }
+
+    println("filtered_dd")
+    filtered_dd.take(10).foreach(println)
 
     val map1 = web_sales.map(row => (row(2)/*ws_item_sk*/, row))
     val map7 = filtered_item.map(row => (row.head, row))
