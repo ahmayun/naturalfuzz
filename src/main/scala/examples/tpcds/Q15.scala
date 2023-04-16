@@ -7,7 +7,7 @@ import scala.util.Random
 object Q15 extends Serializable {
 
   def main(args: Array[String]) {
-    val sparkConf = new SparkConf()
+    val sparkConf = new SparkConf().setMaster("spark://zion-headnode:7077")
     sparkConf.setAppName("TPC-DS Query 15")
     val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
@@ -19,9 +19,14 @@ object Q15 extends Serializable {
     val ZIPS = List("85669","86197","88274","83405","86475","85392","85460","80348","81792")
     val STATES = List("CA", "WA", "GA")
 
+    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+    args(0) = s"$p/catalog_sales"
     val catalog_sales = sc.textFile(args(0)).map(_.split(","))
+    args(1) = s"$p/customer"
     val customer = sc.textFile(args(1)).map(_.split(","))
+    args(2) = s"$p/customer_address"
     val customer_address = sc.textFile(args(2)).map(_.split(","))
+    args(3) = s"$p/date_dim"
     val date_dim = sc.textFile(args(3)).map(_.split(","))
 
     val filtered_dd = date_dim
