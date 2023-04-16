@@ -72,8 +72,8 @@ object Q13 extends Serializable {
           val cd_education_status = cd_row(3)
           val ss_sales_price = convertColToFloat(ss_row, 12)
           val hd_dep_count = convertColToInt(hd_row, 3)
-          val ca_country = ca_row(7)
-          val ca_state = ca_row(8)
+          val ca_country = try {ca_row(7)} catch {case _: Throwable => ""}
+          val ca_state = try {ca_row(8)} catch {case _: Throwable => ""}
           val ss_net_profit = convertColToFloat(ss_row, ss_row.length-1)
 
           (
