@@ -15,7 +15,9 @@ object SymImplicits {
 //  implicit def symInt2String(s: TaintedInt): String = s.value.toString
 //  implicit def symFloat2String(s: TaintedFloat): String = s.value.toString
 //  implicit def symDouble2String(s: TaintedDouble): String = s.value.toString
-  implicit def symString2String(s: TaintedString): String = s.value.toString
+  implicit def symString2String(s: TaintedString): String = s.value
+
+  implicit def string2SymString(s: String): TaintedString = TaintedString(s, Provenance.create())
 
   implicit def symInt2SymFloat(s: TaintedInt): TaintedFloat = TaintedFloat(s.value, s.getProvenance())
   implicit def symFloat2SymInt(s: TaintedFloat): TaintedInt = TaintedInt(s.value.toInt, s.getProvenance())

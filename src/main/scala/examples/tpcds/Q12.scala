@@ -42,7 +42,8 @@ object Q12 extends Serializable {
     }
 
     val map1 = web_sales.map(row => (row(2)/*ws_item_sk*/, row))
-    val join1 = map1.join(filtered_item.map(row => (row.head, row)))
+    val map7 = filtered_item.map(row => (row.head, row))
+    val join1 = map1.join(map7)
     val map2 = join1.map {
         case (item_sk, (ws_row, i_row)) =>
           (ws_row.last/*ws_sold_date*/, (ws_row, i_row))
