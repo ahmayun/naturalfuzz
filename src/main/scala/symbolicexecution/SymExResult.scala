@@ -10,10 +10,11 @@ import scala.collection.mutable.ListBuffer
 class SymExResult(val program: Program, val pathExpressions: ListBuffer[SymbolicExpression]) extends Serializable {
   def getPathQueries: List[Query] = {
 
-    pathExpressions.flatMap(_.toCNF.toQueries).toList
+    val queries = pathExpressions.flatMap(_.toCNF.toQueries).toList
     println("=== DISTINCT ===")
-    pathExpressions.foreach(exp => println(exp.expr))
-    println(s"=== len: ${pathExpressions.length} ===")
+    queries.foreach(q => println(q.tree))
+    println(s"=== len: ${queries.length} ===")
+    queries
 //    List(
 //      new Query(fq1a, new RDDLocations(Array((0, 1, 0), (0, 2, 0)))),
 //      new Query(fq1b, new RDDLocations(Array((0, 3, 0), (0, 4, 0)))),
