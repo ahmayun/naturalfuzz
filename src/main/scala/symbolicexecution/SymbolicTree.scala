@@ -274,7 +274,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case (_:String, _, _) => encode(false)
       case (_, _, "contains") => encode(true)
       case (_, _, "nop") => 0
-      case n => throw new Exception(s"n=$n imd=$isMultiDatasetQuery")
+      case n => encode(false) // throw new Exception(s"n=$n imd=$isMultiDatasetQuery")
     }
   }
 
