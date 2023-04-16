@@ -12,7 +12,7 @@ import taintedprimitives.SymImplicits._
 object Q7 extends Serializable {
   def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 7")
+    sparkConf.setAppName("TPC-DS Query 7").setMaster("spark://zion-headnode:7077")
     val osc = SparkContext.getOrCreate(sparkConf)
     val expressionAccumulator = osc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
     val sc = new SparkContextWithDP(osc)
@@ -21,10 +21,17 @@ object Q7 extends Serializable {
     val GENDER = "M"
     val MS = "M"
     val ES = "Primary"
+
+    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+    args(0) = s"$p/customer_demographics"
     val customer_demographics = sc.textFileProv(args(0), _.split(","))
+    args(1) = s"$p/promotion"
     val promotion = sc.textFileProv(args(1), _.split(","))
+    args(2) = s"$p/store_sales"
     val store_sales = sc.textFileProv(args(2), _.split(","))
+    args(3) = s"$p/date_dim"
     val date_dim = sc.textFileProv(args(3), _.split(","))
+    args(4) = s"$p/item"
     val item = sc.textFileProv(args(4), _.split(","))
 
     val filter_cd = customer_demographics.filter { row => 
