@@ -46,40 +46,44 @@ object Q19 extends Serializable {
           val d_year = row(6)
           d_moy == MONTH.toString && d_year == YEAR.toString
       }
-    date_dim
-      .map(row => (row.head, row))
-      .join(store_sales.map(row => (row.last /*ss_sold_date_sk*/, row)))
-      .map {
+    val map1 = date_dim.map(row => (row.head, row))
+    val map2 = store_sales.map(row => (row.last /*ss_sold_date_sk*/, row))
+    val join1 = map1.join(map2)
+    val map3 = join1.map {
         case (_, (dd_row, ss_row)) =>
           (ss_row(1) /*ss_item_sk*/, (dd_row, ss_row))
       }
-      .join(item.map(row => (row.head, row)))
-      .map {
+    val map4 = item.map(row => (row.head, row))
+    val join2 = map3.join(map4)
+    val map5 = join2.map {
         case (_, ((dd_row, ss_row), i_row)) =>
           (ss_row(2)/*ss_customer_sk*/, (dd_row, ss_row, i_row))
       }
-      .join(customer.map(row => (row.head, row)))
-      .map {
+    val map6 = customer.map(row => (row.head, row))
+    val join3 = map5.join(map6)
+    val map7 = join3.map {
         case (_, ((dd_row, ss_row, i_row), c_row)) =>
           (c_row(4)/*c_current_addr_sk*/, (dd_row, ss_row, i_row, c_row))
       }
-      .join(customer_address.map(row => (row.head, row)))
-      .map {
+    val map8 = customer_address.map(row => (row.head, row))
+    val join4 = map7.join(map8)
+    val map9 = join4.map {
         case (_, ((dd_row, ss_row, i_row, c_row), ca_row)) =>
           (ss_row(6)/*ss_store_sk*/, (dd_row, ss_row, i_row, c_row, ca_row))
       }
-      .join(store.map(row => (row.head, row)))
-      .map {
+    val map10 = store.map(row => (row.head, row))
+    val join5 = map9.join(map10)
+    val map11 = join5.map {
         case (_, ((dd_row, ss_row, i_row, c_row, ca_row), s_row)) =>
           (dd_row, ss_row, i_row, c_row, ca_row, s_row)
       }
-      .filter {
+    val filter1 = map11.filter {
         case (_, _, _, _, ca_row, s_row) =>
           val ca_zip = try { ca_row(9) } catch { case _ => "error"}
           val s_zip = s_row(25)
           ca_zip.take(5) != s_zip.take(5)
       }
-      .map {
+    val map12 = filter1.map {
         case (_, ss_row, i_row, _, _, _) =>
           val ss_ext_sales_price = convertColToFloat(ss_row, 14)
           val i_brand_id = i_row(7)
@@ -88,10 +92,10 @@ object Q19 extends Serializable {
           val i_manufact = i_row(14)
           ((i_brand_id, i_brand, i_manufact_id, i_manufact), ss_ext_sales_price)
       }
-      .reduceByKey(_+_)
-      .sortBy(_._1)
-      .take(10)
-      .foreach(println)
+    val rbk1 = map12.reduceByKey(_+_)
+    val sortBy1 = rbk1.sortBy(_._1)
+
+    sortBy1.take(10).foreach(println)
     
   }
 
