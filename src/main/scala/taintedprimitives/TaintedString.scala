@@ -123,6 +123,8 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
     value < x
   }
 
+
+
   def hashCodeTainted: TaintedInt = new TaintedInt(value.hashCode, getProvenance())
 
 }
@@ -130,5 +132,13 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
 object TaintedString {
   implicit def lift = Liftable[TaintedString] { si =>
     q"(_root_.taintedprimitives.TaintedString(${si.value}, ${si.p}))"
+  }
+
+  implicit object TaintedStringOrdering extends Ordering[TaintedString] {
+    override def compare(x: TaintedString, y: TaintedString) = {
+      if(x.value < y.value) -1
+      else if(x.value > y.value) 1
+      else 0
+    }
   }
 }

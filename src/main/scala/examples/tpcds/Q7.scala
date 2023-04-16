@@ -74,7 +74,7 @@ object Q7 extends Serializable {
       }
     val map8 = filtered_p.map(row => (row.head, row))
     val join4 = map6.join(map8)
-      .map {
+    val map10 = join4.map {
         case (promo_sk, ((ss_row, dd_row, i_row, cd_row), p_row)) =>
           val ss_quantity = convertColToFloat(ss_row, 9)
           val ss_list_price = convertColToFloat(ss_row, 11)
@@ -83,7 +83,7 @@ object Q7 extends Serializable {
 
           (i_row(1)/*i_item_id*/, (ss_quantity, ss_list_price, ss_coupon_amt, ss_sales_price, 1))
       }
-    val rbk1 = join4.reduceByKey {
+    val rbk1 = map10.reduceByKey {
         case ((a1, a2, a3, a4, count1), (b1, b2, b3, b4, count2)) =>
           (a1+b1, a2+b2, a3+b3, a4+b4, count1+count2)
       }
