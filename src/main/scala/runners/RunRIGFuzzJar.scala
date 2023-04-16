@@ -415,7 +415,7 @@ object RunRIGFuzzJar extends Serializable {
           .map {
             case ((row, _), i) =>
               val cols = row.split(Config.delimiter)
-              val key = colsA.map(c => cols(c)).mkString("|")
+              val key = colsA.map(c => try{cols(c)} catch {case _ : Throwable => "null"}).mkString("|")
               (key, (row, i))
           }
           .join(
