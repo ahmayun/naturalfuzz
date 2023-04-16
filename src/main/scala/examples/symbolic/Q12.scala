@@ -1,4 +1,4 @@
-package examples.symbolics
+package examples.symbolic
 import org.apache.spark.{SparkConf, SparkContext}
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives._
