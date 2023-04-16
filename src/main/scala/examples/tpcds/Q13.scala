@@ -85,7 +85,7 @@ object Q13 extends Serializable {
 
       }
     println("filter1")
-    filter1.take(10).foreach(println)
+    filter1.take(10).foreach(row => println(row._6.mkString("|")))
 
     val filter2 = filter1.filter {
       case (ss_row, s_row, dd_row, hd_row, cd_row, ca_row) =>
