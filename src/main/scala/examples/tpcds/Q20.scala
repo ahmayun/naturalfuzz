@@ -10,7 +10,7 @@ object Q20 extends Serializable {
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 20")
+    sparkConf.setAppName("TPC-DS Query 20").setMaster("spark://zion-headnode:7077")
     val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
 //    val datasetsPath = "./data_tpcds"
@@ -21,8 +21,12 @@ object Q20 extends Serializable {
     val END_DATE = s"$YEAR-02-01"
     val CAT = List("Home", "Electronics", "Shoes") // many more
 
+    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+    args(0) = s"$p/catalog_sales"
     val catalog_sales = sc.textFile(args(0)).map(_.split(","))
+    args(1) = s"$p/date_dim"
     val date_dim = sc.textFile(args(1)).map(_.split(","))
+    args(2) = s"$p/item"
     val item = sc.textFile(args(2)).map(_.split(","))
 
     val filtered_item = item.filter {
