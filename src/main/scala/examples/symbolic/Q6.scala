@@ -25,7 +25,7 @@ object Q6 extends Serializable {
     val date_dim = sc.textFileProv(args(3), _.split(","))
     val item = sc.textFileProv(args(4), _.split(","))
     val filter1 = date_dim.filter {
-      row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6).toInt == YEAR.toInt && row(8) == MONTH, (List(), List()), 0, expressionAccumulator)
+      row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6).toInt == YEAR.toInt && row(8).toInt == MONTH, (List(), List()), 0, expressionAccumulator)
     }
     val map1 = filter1.map(row => row(3))
     val distinct = map1.distinct
