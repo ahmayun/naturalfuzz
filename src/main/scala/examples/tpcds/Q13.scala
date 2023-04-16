@@ -10,7 +10,7 @@ object Q13 extends Serializable {
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 13")
+    sparkConf.setAppName("TPC-DS Query 13").setMaster("spark://zion-headnode:7077")
     val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
 //    val datasetsPath = "./data_tpcds"
@@ -21,41 +21,52 @@ object Q13 extends Serializable {
     val ES = List("Primary", "4 yr Degree", "Secondary", "College") // education status
     val BETWEEN = (v:Float, l:Float, u:Float) => v < u && v > l
 
+    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+    args(0) = s"$p/store_sales"
     val store_sales = sc.textFile(args(0)).map(_.split(","))
+    args(1) = s"$p/store"
     val store = sc.textFile(args(1)).map(_.split(","))
+    args(2) = s"$p/date_dim"
     val date_dim = sc.textFile(args(2)).map(_.split(","))
+    args(3) = s"$p/household_demographics"
     val household_demographics = sc.textFile(args(3)).map(_.split(","))
+    args(4) = s"$p/customer_demographics"
     val customer_demographics = sc.textFile(args(4)).map(_.split(","))
+    args(5) = s"$p/customer_address"
     val customer_address = sc.textFile(args(5)).map(_.split(","))
 
-    store_sales
-      .map(row => (row(6)/*ss_store_sk*/, row))
-      .join(store.map(row => (row.head, row)))
-      .map {
+    val map1 = store_sales.map(row => (row(6)/*ss_store_sk*/, row))
+    val map3 = store.map(row => (row.head, row))
+    val join1 = map1.join(map3)
+    val map2 = join1.map {
         case (_, (ss_row, s_row)) =>
           (ss_row.last /*ss_sold_date*/, (ss_row, s_row))
       }
-      .join(date_dim.map(row => (row.head, row)))
-      .map {
+    val map4 = date_dim.map(row => (row.head, row))
+    val join2 = map2.join(map4)
+    val map5 = join2.map {
         case (_, ((ss_row, s_row), dd_row)) =>
           (ss_row(4)/*ss_hdemo_sk*/, (ss_row, s_row, dd_row))
       }
-      .join(household_demographics.map(row => (row.head, row)))
-      .map {
+    val map9 = household_demographics.map(row => (row.head, row))
+    val join3 = map5.join(map9)
+    val map6 = join3.map {
         case (_, ((ss_row, s_row, dd_row), hd_row)) =>
           (ss_row(3)/*ss_cdemo_sk*/, (ss_row, s_row, dd_row, hd_row))
       }
-      .join(customer_demographics.map(row => (row.head, row)))
-      .map {
+    val map8 = customer_demographics.map(row => (row.head, row))
+    val join4 = map6.join(map8)
+    val map7 = join4.map {
         case (_, ((ss_row, s_row, dd_row, hd_row), cd_row)) =>
           (ss_row(5)/*ss_addr_sk*/, (ss_row, s_row, dd_row, hd_row, cd_row))
       }
-      .join(customer_address.map(row => (row.head, row)))
+    val map10 = customer_address.map(row => (row.head, row))
+    val join5 = map7.join(map10)
       .map {
         case (_, ((ss_row, s_row, dd_row, hd_row, cd_row), ca_row)) =>
           (ss_row, s_row, dd_row, hd_row, cd_row, ca_row)
       }
-      .filter {
+    val filter1 = join5.filter {
         case (ss_row, s_row, dd_row, hd_row, cd_row, ca_row) =>
           val cd_marital_status = cd_row(2)
           val cd_education_status = cd_row(3)
@@ -78,8 +89,8 @@ object Q13 extends Serializable {
             )
 
       }
-      .take(10)
-      .foreach(println)
+
+    filter1.take(10).foreach(println)
 
 
 
