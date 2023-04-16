@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 object Config {
 
   // RIGFuzz params
-  var benchmarkName = "Q3" // this value is overridden by a runner
+  var benchmarkName = "Q6" // this value is overridden by a runner
   var sparkMaster = "local[*]" // this value is overridden by a runner
   var expressionAccumulator: CollectionAccumulator[SymbolicExpression] = null
   val keepColProb = 0.2f
@@ -334,7 +334,7 @@ object Config {
     "OldIncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
     "LoanType" -> BenchmarkSchemas.LOANTYPE,
     "Q3" -> BenchmarkSchemas.Q3,
-    "Q6" -> BenchmarkSchemas.Q3,
+    "Q6" -> BenchmarkSchemas.Q6,
     "Q1" -> BenchmarkSchemas.Q1
   )
 

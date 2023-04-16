@@ -401,6 +401,22 @@ object BenchmarkSchemas {
    new Schema(Schema.TYPE_OTHER)
   )
 
+  val customer_address: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER)
+  )
+
   val Q3 = Array[Array[Schema[Any]]](
     store_sales,
     date_dim,
@@ -412,5 +428,13 @@ object BenchmarkSchemas {
     date_dim,
     store,
     customer
+  )
+
+  val Q6 = Array[Array[Schema[Any]]](
+    customer_address,
+    customer,
+    store_sales,
+    date_dim,
+    item
   )
 }
