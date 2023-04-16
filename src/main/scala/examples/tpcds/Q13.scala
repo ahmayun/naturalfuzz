@@ -73,9 +73,6 @@ object Q13 extends Serializable {
           val cd_education_status = cd_row(3)
           val ss_sales_price = convertColToFloat(ss_row, 12)
           val hd_dep_count = convertColToInt(hd_row, 3)
-          val ca_country = try {ca_row(7)} catch {case _: Throwable => ""}
-          val ca_state = try {ca_row(8)} catch {case _: Throwable => ""}
-          val ss_net_profit = convertColToFloat(ss_row, ss_row.length-1)
 
           (
             (cd_marital_status == MS(0) && cd_education_status == ES(0) && BETWEEN(ss_sales_price, 100.0f, 150.0f) && hd_dep_count == 3) ||
@@ -89,12 +86,8 @@ object Q13 extends Serializable {
 
     val filter2 = filter1.filter {
       case (ss_row, s_row, dd_row, hd_row, cd_row, ca_row) =>
-        val cd_marital_status = cd_row(2)
-        val cd_education_status = cd_row(3)
-        val ss_sales_price = convertColToFloat(ss_row, 12)
-        val hd_dep_count = convertColToInt(hd_row, 3)
         val ca_country = try {
-          ca_row(7)
+          ca_row(10)
         } catch {
           case _: Throwable => ""
         }
