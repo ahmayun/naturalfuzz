@@ -31,7 +31,7 @@ object Q12 extends Serializable {
     val filtered_item = item.filter { row => 
       val category = row(12)
       _root_.monitoring.Monitors.monitorPredicateSymEx(
-        CAT.contains(category),
+        category == CAT(0) || category == CAT(1) || category == CAT(2),
         (List(), List()),
         0,
         expressionAccumulator)
@@ -51,7 +51,8 @@ object Q12 extends Serializable {
       case (item_sk, (ws_row, i_row)) =>
         (ws_row.last, (ws_row, i_row))
     })
-    val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map2, filtered_dd.map(row => (row.head, row)), 3, expressionAccumulator)
+    val map8 = filtered_dd.map(row => (row.head, row))
+    val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map2, map8, 3, expressionAccumulator)
     val map3 = join2.map({
       case (_, ((ws_row, i_row), dd_row)) =>
         val i_item_id = i_row(1)

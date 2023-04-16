@@ -32,7 +32,7 @@ object Q12 extends Serializable {
     val filtered_item = item.filter {
       row =>
         val category = row(12)
-        CAT.contains(category)
+        category == CAT(0) || category == CAT(1) || category == CAT(2)
     }
 
     val filtered_dd = date_dim.filter {
@@ -48,7 +48,8 @@ object Q12 extends Serializable {
         case (item_sk, (ws_row, i_row)) =>
           (ws_row.last/*ws_sold_date*/, (ws_row, i_row))
       }
-    val join2 = map2.join(filtered_dd.map(row => (row.head, row)))
+    val map8 = filtered_dd.map(row => (row.head, row))
+    val join2 = map2.join(map8)
     val map3 = join2.map {
         case (_, ((ws_row, i_row), dd_row)) =>
           val i_item_id = i_row(1)
