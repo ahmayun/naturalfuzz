@@ -36,6 +36,7 @@ object Q13 extends Serializable {
     val customer_address = sc.textFile(args(5)).map(_.split(","))
 
     val map1 = store_sales.map(row => (row(6)/*ss_store_sk*/, row))
+    println("hi")
     val map3 = store.map(row => (row.head, row))
     val join1 = map1.join(map3)
     val map2 = join1.map {
@@ -43,6 +44,7 @@ object Q13 extends Serializable {
           (ss_row.last /*ss_sold_date*/, (ss_row, s_row))
       }
     val map4 = date_dim.map(row => (row.head, row))
+    println("hi")
     val join2 = map2.join(map4)
     val map5 = join2.map {
         case (_, ((ss_row, s_row), dd_row)) =>
@@ -50,6 +52,7 @@ object Q13 extends Serializable {
       }
     val map9 = household_demographics.map(row => (row.head, row))
     val join3 = map5.join(map9)
+    println("hi")
     val map6 = join3.map {
         case (_, ((ss_row, s_row, dd_row), hd_row)) =>
           (ss_row(3)/*ss_cdemo_sk*/, (ss_row, s_row, dd_row, hd_row))
