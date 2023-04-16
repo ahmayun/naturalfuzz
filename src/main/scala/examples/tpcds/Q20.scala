@@ -41,15 +41,16 @@ object Q20 extends Serializable {
         isBetween(d_date, START_DATE, END_DATE)
     }
 
-    val main_query_part1 = catalog_sales
-      .map(row => (row(2)/*ws_item_sk*/, row))
-      .join(filtered_item.map(row => (row.head, row)))
-      .map {
+    val map1 = catalog_sales.map(row => (row(2)/*ws_item_sk*/, row))
+    val map2 = filtered_item.map(row => (row.head, row))
+    val join1 = map1.join(map2)
+    val map3 = join1.map {
         case (item_sk, (cs_row, i_row)) =>
           (cs_row.last/*ws_sold_date*/, (cs_row, i_row))
       }
-      .join(filtered_dd.map(row => (row.head, row)))
-      .map {
+    val map4 = filtered_dd.map(row => (row.head, row))
+    val join2 = map3.join(map4)
+    val map5 = join2.map {
         case (_, ((cs_row, i_row), dd_row)) =>
           val i_item_id = i_row(1)
           val i_item_desc = i_row(4)
@@ -62,27 +63,25 @@ object Q20 extends Serializable {
           ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) // there should be another value here
       }
 
-    val revenue_by_class = main_query_part1
-      .map {
+    val map6 = map5.map {
         case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
           (i_class, cs_ext_sales_price)
       }
-      .reduceByKey(_+_)
+    val rbk1 = map6.reduceByKey(_+_)
 
-    val item_revenues = main_query_part1
-      .reduceByKey(_ + _)
-      .map {
+    val rbk2 = map5.reduceByKey(_ + _)
+    val map7 = rbk2.map {
         case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
           (i_class, (i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price))
       }
-      .join(revenue_by_class)
-      .map {
+    val join3 = map7.join(rbk1)
+    val map8 = join3.map {
         case (i_class, ((i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price), class_rev)) =>
           (i_item_id, i_item_desc, i_category, i_class, i_current_price, cs_ext_sales_price, cs_ext_sales_price/class_rev)
       }
-      .sortBy(_._3)
-      .take(10)
-      .foreach(println)
+    val sortBy1 = map8.sortBy(_._3)
+
+    sortBy1.take(10).foreach(println)
 
     /*
 
