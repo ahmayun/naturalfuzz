@@ -33,7 +33,7 @@ object WebpageSegmentation extends Serializable {
       case (_, ((_, v1), (_, v2))) => !v1.equals(v2)
     }).map({
       case (k, ((url, b), (_, a))) =>
-        val Array(_, cid, ctype) = k.split('*')
+        val Array(_, cid, ctype) = k.split("*")
         (url, (b, cid, ctype))
     })
     val inter = _root_.monitoring.Monitors.monitorJoinSymEx(changed, boxes_after_by_site, 2, expressionAccumulator)

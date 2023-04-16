@@ -1,21 +1,25 @@
 package taintedprimitives
 
 import provenance.data.{DualRBProvenance, DummyProvenance, Provenance}
-import symbolicexecution.{SymbolicFloat, SymbolicInteger, SymbolicTree}
+import symbolicexecution.{ConcreteValueNode, ProvValueNode, SymbolicExpression, SymbolicFloat, SymbolicInteger, SymbolicTree}
 
 import scala.reflect.runtime.universe._
 
 /**
   * Created by malig on 4/29/19.
   */
-case class TaintedString(override val value: String, p: Provenance) extends TaintedAny(value, p) {
+case class TaintedString(override val value: String, p: Provenance, expr: SymbolicExpression) extends TaintedAny(value, p) {
 
   /**
     * Unsupported Operations
     */
 
   def this(value: String) = {
-    this(value, DummyProvenance.create())
+    this(value, DummyProvenance.create(), SymbolicExpression(SymbolicTree(null, new ConcreteValueNode(value), null)))
+  }
+
+  def this(value: String, p: Provenance) = {
+    this(value, p, SymbolicExpression(SymbolicTree(null, new ProvValueNode(value, p.cloneProvenance()), null)))
   }
 
   def length: TaintedInt = {
@@ -123,6 +127,14 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
     value < x
   }
 
+  def ==(x: String): TaintedBoolean = {
+    TaintedBoolean(value == x, getProvenance(), expr == x)
+  }
+
+  def ==(x: TaintedString): TaintedBoolean = {
+    TaintedBoolean(value == x.value, newProvenance(x.getProvenance()), expr == x.expr)
+  }
+
   def hashCodeTainted: TaintedInt = new TaintedInt(value.hashCode, getProvenance())
 
 }
@@ -131,4 +143,5 @@ object TaintedString {
   implicit def lift = Liftable[TaintedString] { si =>
     q"(_root_.taintedprimitives.TaintedString(${si.value}, ${si.p}))"
   }
+  def apply(value: String, p: Provenance): TaintedString = TaintedString(value, p)
 }

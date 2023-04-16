@@ -7,6 +7,7 @@ import utils.{Query, RDDLocations}
 case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
 
 
+
   def length: Int = {
     expr.height
   }
@@ -92,6 +93,10 @@ case class SymbolicExpression (expr: SymbolicTree) extends Serializable {
 
   def ==(x: Int): SymbolicExpression = {
     SymbolicExpression(SymbolicTree(expr, new OperationNode("=="), new SymbolicInteger(x).expr))
+  }
+
+  def ==(x: String): SymbolicExpression = {
+    SymbolicExpression(SymbolicTree(expr, new OperationNode("=="), new SymbolicString(x).expr))
   }
 
   def toCNF: SymbolicExpression = {

@@ -22,7 +22,7 @@ object Q6 extends Serializable {
     val item = sc.textFile(args(4)).map(_.split(","))
 
 
-    val filter1 = date_dim.filter { row => row(6) == YEAR.toString && row(8) == MONTH.toString }
+    val filter1 = date_dim.filter { row => row(6).toInt == YEAR && row(8).toInt == MONTH }
     val map1 = filter1.map(row => row(3) /*d_month_seq*/)
     val distinct = map1.distinct
     val take1 = distinct.take(1).head
