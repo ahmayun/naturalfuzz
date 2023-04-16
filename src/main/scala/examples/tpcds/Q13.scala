@@ -36,7 +36,6 @@ object Q13 extends Serializable {
     val customer_address = sc.textFile(args(5)).map(_.split(","))
 
     val map1 = store_sales.map(row => (row(6)/*ss_store_sk*/, row))
-    println("hi")
     val map3 = store.map(row => (row.head, row))
     val join1 = map1.join(map3)
     val map2 = join1.map {
@@ -44,7 +43,6 @@ object Q13 extends Serializable {
           (ss_row.last /*ss_sold_date*/, (ss_row, s_row))
       }
     val map4 = date_dim.map(row => (row.head, row))
-    println("hi")
     val join2 = map2.join(map4)
     val map5 = join2.map {
         case (_, ((ss_row, s_row), dd_row)) =>
@@ -52,7 +50,6 @@ object Q13 extends Serializable {
       }
     val map9 = household_demographics.map(row => (row.head, row))
     val join3 = map5.join(map9)
-    println("hi")
     val map6 = join3.map {
         case (_, ((ss_row, s_row, dd_row), hd_row)) =>
           (ss_row(3)/*ss_cdemo_sk*/, (ss_row, s_row, dd_row, hd_row))
@@ -69,6 +66,7 @@ object Q13 extends Serializable {
         case (_, ((ss_row, s_row, dd_row, hd_row, cd_row), ca_row)) =>
           (ss_row, s_row, dd_row, hd_row, cd_row, ca_row)
       }
+    join5.take(10).foreach(println)
     val filter1 = join5.filter {
         case (ss_row, s_row, dd_row, hd_row, cd_row, ca_row) =>
           val cd_marital_status = cd_row(2)
@@ -83,17 +81,37 @@ object Q13 extends Serializable {
             (cd_marital_status == MS(0) && cd_education_status == ES(0) && BETWEEN(ss_sales_price, 100.0f, 150.0f) && hd_dep_count == 3) ||
               (cd_marital_status == MS(1) && cd_education_status == ES(1) && BETWEEN(ss_sales_price, 50.0f, 100.0f) && hd_dep_count == 1) ||
               (cd_marital_status == MS(2) && cd_education_status == ES(2) && BETWEEN(ss_sales_price, 150.0f, 200.0f) && hd_dep_count == 1)
-
-            ) &&
-            (
-              (ca_country == "United States" && STATES.slice(0, 3).contains(ca_state) && BETWEEN(ss_net_profit, 100, 200)) ||
-                (ca_country == "United States" && STATES.slice(3, 6).contains(ca_state) && BETWEEN(ss_net_profit, 150, 300)) ||
-                (ca_country == "United States" && STATES.slice(6, 9).contains(ca_state) && BETWEEN(ss_net_profit, 50, 200))
             )
 
       }
-
+    println("filter1")
     filter1.take(10).foreach(println)
+
+    val filter2 = filter1.filter {
+      case (ss_row, s_row, dd_row, hd_row, cd_row, ca_row) =>
+        val cd_marital_status = cd_row(2)
+        val cd_education_status = cd_row(3)
+        val ss_sales_price = convertColToFloat(ss_row, 12)
+        val hd_dep_count = convertColToInt(hd_row, 3)
+        val ca_country = try {
+          ca_row(7)
+        } catch {
+          case _: Throwable => ""
+        }
+        val ca_state = try {
+          ca_row(8)
+        } catch {
+          case _: Throwable => ""
+        }
+        val ss_net_profit = convertColToFloat(ss_row, ss_row.length - 1)
+
+        ((ca_country == "United States" && STATES.slice(0, 3).contains(ca_state) && BETWEEN(ss_net_profit, 100, 200)) ||
+          (ca_country == "United States" && STATES.slice(3, 6).contains(ca_state) && BETWEEN(ss_net_profit, 150, 300)) ||
+          (ca_country == "United States" && STATES.slice(6, 9).contains(ca_state) && BETWEEN(ss_net_profit, 50, 200)))
+    }
+    println("filter2")
+    filter2.take(10).foreach(println)
+
 
 
 
