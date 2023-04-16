@@ -240,6 +240,10 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case (l: Int, r: Float, "/") => l / r
       case (l: Float, r: Int, "/") => l / r
       case (l: Float, r: Float, "/") => l / r
+      case (l: Int, r: Int, "*") => l * r
+      case (l: Int, r: Float, "*") => l * r
+      case (l: Float, r: Int, "*") => l * r
+      case (l: Float, r: Float, "*") => l * r
       case (_:String, _, _) => encode(false)
       case (_, _, "contains") => encode(true)
       case (_, _, "nop") => 0
