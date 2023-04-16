@@ -10,7 +10,7 @@ object Q12 extends Serializable {
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 12")//.setMaster("local[*]")
+    sparkConf.setAppName("TPC-DS Query 12").setMaster("spark://zion-headnode:7077")
     val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
 //    val datasetsPath = "./data_tpcds"
