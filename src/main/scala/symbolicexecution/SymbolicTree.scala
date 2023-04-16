@@ -203,7 +203,11 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
             try {
               row(col).toInt //TODO: Remove hardcoded type conversion to INT
             } catch {
-              case _: Throwable => row(n.getCol)
+              case _ => try {
+                row(col).toFloat
+              } catch {
+                case _: Throwable => row(n.getCol)
+              }
             }
           } else {
             row(n.getCol)
