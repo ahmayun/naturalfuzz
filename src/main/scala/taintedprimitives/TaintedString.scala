@@ -1,7 +1,7 @@
 package taintedprimitives
 
 import provenance.data.{DualRBProvenance, DummyProvenance, Provenance}
-import symbolicexecution.{SymbolicFloat, SymbolicInteger, SymbolicTree}
+import symbolicexecution.{ConcreteValueNode, OperationNode, ProvValueNode, SymbolicExpression, SymbolicFloat, SymbolicInteger, SymbolicTree}
 
 import scala.reflect.runtime.universe._
 
@@ -109,6 +109,18 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
 
   def +(x: TaintedString): TaintedString = {
     TaintedString(value + x.value, getProvenance().merge(x.getProvenance()))
+  }
+
+  def ==(x: String): TaintedBoolean = {
+    TaintedBoolean(value == x, getProvenance(),
+      SymbolicExpression(
+        SymbolicTree(
+          new SymbolicTree(new ProvValueNode(value, getProvenance())),
+          new OperationNode("=="),
+          new SymbolicTree(new ConcreteValueNode(x))
+        )
+      )
+    )
   }
 
   def +(x: String): TaintedString = {
