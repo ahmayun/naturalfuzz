@@ -37,19 +37,20 @@ object Q15 extends Serializable {
           d_qoy == QOY.toString && d_year == YEAR.toString
       }
 
-    catalog_sales
-      .map(row => (row(2)/*cs_bill_customer_sk*/, row))
-      .join(customer.map(row => (row.head, row)))
-      .map {
+    val map1 = catalog_sales.map(row => (row(2)/*cs_bill_customer_sk*/, row))
+    val map2 = customer.map(row => (row.head, row))
+    val join1 = map1.join(map2)
+    val map3 = join1.map {
         case (_, (cs_row, c_row)) =>
           (c_row(4)/*c_current_addr_sk*/, (cs_row, c_row))
       }
-      .join(customer_address.map(row => (row.head, row)))
-      .map {
+    val map4 = customer_address.map(row => (row.head, row))
+    val join2 = map3.join(map4)
+    val map5 = join2.map {
         case (_, ((cs_row, c_row), ca_row)) =>
           (cs_row.last/*cs_sold_date_sk*/, (cs_row, c_row, ca_row))
       }
-      .filter {
+    val filter1 = map5.filter {
         case (_, (cs_row, c_row, ca_row)) =>
           val ca_zip = try { ca_row(9) } catch { case _ => "error"} // took liberty here (if the row is malformed for some reason
           val ca_state = try { ca_row(8) } catch { case _ => "error"}
@@ -58,16 +59,17 @@ object Q15 extends Serializable {
           ca_zip != "error" && ca_state != "error" &&
             (ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500 || STATES.contains(ca_state))
       }
-      .join(filtered_dd.map(row => (row.head, row)))
-      .map {
+    val map6 = filtered_dd.map(row => (row.head, row))
+    val join3 = filter1.join(map6)
+    val map7 = join3.map {
         case (_, ((cs_row, c_row, ca_row), dd_row)) =>
           val cs_sales_price = convertColToFloat(cs_row, 20)
           (ca_row(9)/*ca_zip*/, cs_sales_price)
       }
-      .reduceByKey(_+_)
-      .sortBy(_._1)
-      .take(10)
-      .foreach(println)
+    val rbk1 = map7.reduceByKey(_+_)
+    val sortBy1 = rbk1.sortBy(_._1)
+
+    sortBy1.take(10).foreach(println)
 
     
   }
