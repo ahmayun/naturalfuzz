@@ -272,6 +272,12 @@ object Config {
     "Q1" -> examples.symbolic.Q1.main,
     "Q3" -> examples.symbolic.Q3.main,
     "Q6" -> examples.symbolic.Q6.main,
+    "Q7" -> examples.symbolic.Q7.main,
+    "Q12" -> examples.symbolic.Q12.main,
+    "Q13" -> examples.symbolic.Q13.main,
+    "Q15" -> examples.symbolic.Q15.main,
+    "Q19" -> examples.symbolic.Q19.main,
+    "Q20" -> examples.symbolic.Q20.main,
 //    "CommuteType" -> examples.symbolic.CommuteType.main,
 //    "Delays" -> examples.symbolic.Delays.main
   )
@@ -333,9 +339,15 @@ object Config {
     "MapString" -> BenchmarkSchemas.MAPSTRING,
     "OldIncomeAggregation" -> BenchmarkSchemas.INCOMEAGGREGATION,
     "LoanType" -> BenchmarkSchemas.LOANTYPE,
+    "Q1" -> BenchmarkSchemas.Q1,
     "Q3" -> BenchmarkSchemas.Q3,
     "Q6" -> BenchmarkSchemas.Q6,
-    "Q1" -> BenchmarkSchemas.Q1
+    "Q7" -> BenchmarkSchemas.Q7,
+    "Q12" -> BenchmarkSchemas.Q12,
+    "Q13" -> BenchmarkSchemas.Q13,
+    "Q15" -> BenchmarkSchemas.Q15,
+    "Q19" -> BenchmarkSchemas.Q19,
+    "Q20" -> BenchmarkSchemas.Q20
   )
 
   val mapErrorCountAll: Map[String, Int] = Map[String, Int](elems =

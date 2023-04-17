@@ -1,4 +1,5 @@
 package examples.symbolic
+import org.apache.spark.util.CollectionAccumulator
 import org.apache.spark.{SparkConf, SparkContext}
 import sparkwrapper.SparkContextWithDP
 import taintedprimitives._
@@ -6,15 +7,14 @@ import taintedprimitives.SymImplicits._
 
 import scala.util.Random
 import sparkwrapper.SparkContextWithDP
-import symbolicexecution.SymbolicExpression
+import symbolicexecution.{SymExResult, SymbolicExpression}
 import taintedprimitives._
 import taintedprimitives.SymImplicits._
 object Q19 extends Serializable {
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String], expressionAccumulator: CollectionAccumulator[SymbolicExpression]): SymExResult = {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("TPC-DS Query 19").setMaster("spark://zion-headnode:7077")
     val osc = SparkContext.getOrCreate(sparkConf)
-    val expressionAccumulator = osc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
     val sc = new SparkContextWithDP(osc)
     sc.setLogLevel("ERROR")
     val YEAR = "1999"

@@ -417,6 +417,123 @@ object BenchmarkSchemas {
     new Schema(Schema.TYPE_OTHER)
   )
 
+  val customer_demographics: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL)
+  )
+
+  val promotion: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_OTHER)
+  )
+
+  val web_sales: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL)
+  )
+
+  val household_demographics: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_OTHER),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL)
+  )
+
+
+  val catalog_sales: Array[Schema[Any]] = Array(
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL),
+    new Schema(Schema.TYPE_NUMERICAL)
+  )
+
   val Q3 = Array[Array[Schema[Any]]](
     store_sales,
     date_dim,
@@ -434,6 +551,51 @@ object BenchmarkSchemas {
     customer_address,
     customer,
     store_sales,
+    date_dim,
+    item
+  )
+
+  val Q7 = Array[Array[Schema[Any]]](
+    customer_demographics,
+    promotion,
+    store_sales,
+    date_dim,
+    item
+  )
+
+  val Q12 = Array[Array[Schema[Any]]](
+    web_sales,
+    date_dim,
+    item
+  )
+
+  val Q13 = Array[Array[Schema[Any]]](
+    store_sales,
+    store,
+    date_dim,
+    household_demographics,
+    customer_demographics,
+    customer_address
+  )
+
+  val Q15 = Array[Array[Schema[Any]]](
+    catalog_sales,
+    customer,
+    customer_address,
+    date_dim
+  )
+
+  val Q19 = Array[Array[Schema[Any]]](
+    date_dim,
+    store_sales,
+    item,
+    customer,
+    customer_address,
+    store
+  )
+
+  val Q20 = Array[Array[Schema[Any]]](
+    catalog_sales,
     date_dim,
     item
   )
