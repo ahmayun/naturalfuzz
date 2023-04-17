@@ -13,8 +13,8 @@ object Q3 extends Serializable {
     sc.setLogLevel("ERROR")
     val seed = "ahmad".hashCode()
     val rand = new Random(seed)
-    val MANUFACT = 1 // rand.nextInt(1000 - 1) + 1
-    val MONTH = 11 // rand.nextInt(2)+11
+    val MANUFACT = "1" // rand.nextInt(1000 - 1) + 1
+    val MONTH = "11" // rand.nextInt(2)+11
 
     val store_sales = sc.textFile(args(0)).map(_.split(","))
     val date_dim = sc.textFile(args(1)).map(_.split(","))
@@ -25,7 +25,7 @@ object Q3 extends Serializable {
     println("map1")
     map1.take(10).foreach(println)
 
-    val filter1 = date_dim.filter(row => row(8).toInt /*d_moy*/ == MONTH)
+    val filter1 = date_dim.filter(row => row(8) /*d_moy*/ == MONTH)
 
     println("filter1")
     filter1.take(10).foreach(println)
@@ -46,12 +46,7 @@ object Q3 extends Serializable {
     }
     // and store_sales.ss_item_sk = item.i_item_sk
 
-    val safety1 = item.filter(row => try {
-      row(13).toInt; true
-    } catch {
-      case _: Throwable => false
-    })
-    val filter2 = safety1.filter(row => row(13).toInt /*i_manufact_id*/ == MANUFACT) // and item.i_manufact_id = [MANUFACT]
+    val filter2 = item.filter(row => row(13) /*i_manufact_id*/ == MANUFACT) // and item.i_manufact_id = [MANUFACT]
     val map4 = filter2.map(row => (row.head, row))
 
     println("filter2.map4")
