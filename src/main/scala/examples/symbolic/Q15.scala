@@ -33,7 +33,7 @@ object Q15 extends Serializable {
     val filtered_dd = date_dim.filter { row => 
       val d_qoy = row(10)
       val d_year = row(6)
-      d_qoy == QOY.toString && d_year == YEAR.toString
+      _root_.monitoring.Monitors.monitorPredicateSymEx(d_qoy == QOY.toString && d_year == YEAR.toString, (List(), List()), 0, expressionAccumulator)
     }
     val map1 = catalog_sales.map(row => (row(2), row))
     val map2 = customer.map(row => (row.head, row))
@@ -53,7 +53,12 @@ object Q15 extends Serializable {
         val ca_zip = getColOrEmpty(ca_row, 9)
         val ca_state = getColOrEmpty(ca_row, 8)
         val cs_sales_price = convertColToFloat(cs_row, 20)
-        ca_zip != "error" && ca_state != "error" && (ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500.0f || STATES.contains(ca_state))
+        _root_.monitoring.Monitors.monitorPredicateSymEx(
+          ca_zip != "error" && ca_state != "error" && (ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500.0f || STATES.contains(ca_state)),
+          (List(), List()),
+          3,
+          expressionAccumulator
+        )
     })
     val map6 = filtered_dd.map(row => (row.head, row))
     val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(filter1, map6, 4, expressionAccumulator)
