@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter, sparkwrapper.SparkContextWithDP, tain
 import scala.util.Random, sparkwrapper.SparkContextWithDP, taintedprimitives._, taintedprimitives.SymImplicits._
 import symbolicexecution.SymbolicExpression
 object Q13 extends Serializable {
-  def main(args: Array[TaintedString]): Unit = {
+  def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("TPC-DS Query 13").setMaster("spark://zion-headnode:7077")
     val osc = SparkContext.getOrCreate(sparkConf)
