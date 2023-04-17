@@ -20,18 +20,18 @@ object Q19 extends Serializable {
     val YEAR = "1999"
     val MONTH = "11"
     val MANAGER = "50"
-    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
-    args(0) = s"$p/date_dim"
+//    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+//    args(0) = s"$p/date_dim"
     val date_dim = sc.textFileProv(args(0), _.split(","))
-    args(1) = s"$p/store_sales"
+//    args(1) = s"$p/store_sales"
     val store_sales = sc.textFileProv(args(1), _.split(","))
-    args(2) = s"$p/item"
+//    args(2) = s"$p/item"
     val item = sc.textFileProv(args(2), _.split(","))
-    args(3) = s"$p/customer"
+//    args(3) = s"$p/customer"
     val customer = sc.textFileProv(args(3), _.split(","))
-    args(4) = s"$p/customer_address"
+//    args(4) = s"$p/customer_address"
     val customer_address = sc.textFileProv(args(4), _.split(","))
-    args(5) = s"$p/store"
+//    args(5) = s"$p/store"
     val store = sc.textFileProv(args(5), _.split(","))
     val filtered_i = item.filter { row =>
       val i_manager_id = row(row.length - 2)

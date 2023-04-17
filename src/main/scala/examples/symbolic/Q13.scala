@@ -31,18 +31,18 @@ object Q13 extends Serializable {
     val MS = List("M", "U", "D", "W", "S")
     val ES = List("Primary", "4 yr Degree", "Secondary", "College")
     val BETWEEN = (v: TaintedFloat, l: TaintedFloat, u: TaintedFloat) => v < u && v > l
-    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
-    args(0) = s"$p/store_sales"
+//    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+//    args(0) = s"$p/store_sales"
     val store_sales = sc.textFileProv(args(0), _.split(","))
-    args(1) = s"$p/store"
+//    args(1) = s"$p/store"
     val store = sc.textFileProv(args(1), _.split(","))
-    args(2) = s"$p/date_dim"
+//    args(2) = s"$p/date_dim"
     val date_dim = sc.textFileProv(args(2), _.split(","))
-    args(3) = s"$p/household_demographics"
+//    args(3) = s"$p/household_demographics"
     val household_demographics = sc.textFileProv(args(3), _.split(","))
-    args(4) = s"$p/customer_demographics"
+//    args(4) = s"$p/customer_demographics"
     val customer_demographics = sc.textFileProv(args(4), _.split(","))
-    args(5) = s"$p/customer_address"
+//    args(5) = s"$p/customer_address"
     val customer_address = sc.textFileProv(args(5), _.split(","))
     val map1 = store_sales.map(row => (row(6), row))
     val map3 = store.map(row => (row.head, row))

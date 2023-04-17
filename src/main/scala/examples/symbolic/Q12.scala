@@ -22,12 +22,12 @@ object Q12 extends Serializable {
     val END_DATE = s"$YEAR-02-01"
     val CAT = List("Home", "Electronics", "Shoes")
 
-    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
-    args(0) = s"$p/web_sales"
+//    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+//    args(0) = s"$p/web_sales"
     val web_sales = sc.textFileProv(args(0), _.split(","))
-    args(1) = s"$p/date_dim"
+//    args(1) = s"$p/date_dim"
     val date_dim = sc.textFileProv(args(1), _.split(","))
-    args(2) = s"$p/item"
+//    args(2) = s"$p/item"
     val item = sc.textFileProv(args(2), _.split(","))
     val filtered_item = item.filter { row => 
       val category = row(12)

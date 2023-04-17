@@ -21,14 +21,14 @@ object Q15 extends Serializable {
     val QOY = 1
     val ZIPS = List("85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792")
     val STATES = List("CA", "WA", "GA")
-    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
-    args(0) = s"$p/catalog_sales"
+//    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+//    args(0) = s"$p/catalog_sales"
     val catalog_sales = sc.textFileProv(args(0), _.split(","))
-    args(1) = s"$p/customer"
+//    args(1) = s"$p/customer"
     val customer = sc.textFileProv(args(1), _.split(","))
-    args(2) = s"$p/customer_address"
+//    args(2) = s"$p/customer_address"
     val customer_address = sc.textFileProv(args(2), _.split(","))
-    args(3) = s"$p/date_dim"
+//    args(3) = s"$p/date_dim"
     val date_dim = sc.textFileProv(args(3), _.split(","))
     val filtered_dd = date_dim.filter { row => 
       val d_qoy = row(10)
