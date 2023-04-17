@@ -10,7 +10,7 @@ import symbolicexecution.SymbolicExpression
 import taintedprimitives._
 import taintedprimitives.SymImplicits._
 object Q15 extends Serializable {
-  def main(args: Array[TaintedString]): Unit = {
+  def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("TPC-DS Query 15").setMaster("spark://zion-headnode:7077")
     val osc = SparkContext.getOrCreate(sparkConf)
