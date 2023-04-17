@@ -91,6 +91,10 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
     TaintedString(value.trim, getProvenance())
   }
 
+  def take(n: Int): TaintedString = {
+    TaintedString(value.take(n), getProvenance())
+  }
+
   def toInt: TaintedInt = {
     TaintedInt(value.toInt, getProvenance(), new SymbolicInteger(value.toInt, getProvenance()))
   }
