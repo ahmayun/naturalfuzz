@@ -81,8 +81,6 @@ object Q13 extends Serializable {
             )
 
       }
-    println("filter1")
-    filter1.take(10).foreach(row => println(row._6.mkString("|")))
 
     val filter2 = filter1.filter {
       case (ss_row, s_row, dd_row, hd_row, cd_row, ca_row) =>
@@ -102,7 +100,7 @@ object Q13 extends Serializable {
           (ca_country == "United States" && STATES.slice(3, 6).contains(ca_state) && BETWEEN(ss_net_profit, 150, 300)) ||
           (ca_country == "United States" && STATES.slice(6, 9).contains(ca_state) && BETWEEN(ss_net_profit, 50, 200)))
     }
-    println("filter2")
+
     filter2.take(10).foreach(println)
 
 
