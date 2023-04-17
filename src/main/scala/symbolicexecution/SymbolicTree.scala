@@ -269,6 +269,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case (l: Float, r: Float, "*") => l * r
 
       case (l: String, r: String, "==") => encode(l == r)
+      case (l: String, r: String, "!=") => encode(l != r)
 
       case (_:String, _, _) => encode(false)
       case (_, _, "contains") => encode(true)

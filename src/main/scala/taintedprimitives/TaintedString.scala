@@ -127,6 +127,42 @@ case class TaintedString(override val value: String, p: Provenance) extends Tain
     )
   }
 
+  def ==(x: TaintedString): TaintedBoolean = {
+    TaintedBoolean(value == x, getProvenance(),
+      SymbolicExpression(
+        SymbolicTree(
+          new SymbolicTree(new ProvValueNode(value, getProvenance())),
+          new OperationNode("=="),
+          new SymbolicTree(new ProvValueNode(x.value, x.getProvenance()))
+        )
+      )
+    )
+  }
+
+  def !=(x: String): TaintedBoolean = {
+    TaintedBoolean(value != x, getProvenance(),
+      SymbolicExpression(
+        SymbolicTree(
+          new SymbolicTree(new ProvValueNode(value, getProvenance())),
+          new OperationNode("!="),
+          new SymbolicTree(new ConcreteValueNode(x))
+        )
+      )
+    )
+  }
+
+  def !=(x: TaintedString): TaintedBoolean = {
+    TaintedBoolean(value != x, getProvenance(),
+      SymbolicExpression(
+        SymbolicTree(
+          new SymbolicTree(new ProvValueNode(value, getProvenance())),
+          new OperationNode("!="),
+          new SymbolicTree(new ProvValueNode(x.value, x.getProvenance()))
+        )
+      )
+    )
+  }
+
   def +(x: String): TaintedString = {
     TaintedString(value + x, getProvenance())
   }

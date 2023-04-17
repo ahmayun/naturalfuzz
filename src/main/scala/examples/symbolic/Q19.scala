@@ -17,8 +17,8 @@ object Q19 extends Serializable {
     val expressionAccumulator = osc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
     val sc = new SparkContextWithDP(osc)
     sc.setLogLevel("ERROR")
-    val YEAR = 1999
-    val MONTH = 11
+    val YEAR = "1999"
+    val MONTH = "11"
     val MANAGER = "50"
     val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
     args(0) = s"$p/date_dim"
@@ -40,7 +40,7 @@ object Q19 extends Serializable {
     val filtered_dd = date_dim.filter { row =>
       val d_moy = row(8)
       val d_year = row(6)
-      _root_.monitoring.Monitors.monitorPredicateSymEx(d_moy == MONTH.toString && d_year == YEAR.toString, (List(), List()), 1, expressionAccumulator)
+      _root_.monitoring.Monitors.monitorPredicateSymEx(d_moy == MONTH && d_year == YEAR, (List(), List()), 1, expressionAccumulator)
     }
     val map1 = date_dim.map(row => (row.head, row))
     val map2 = store_sales.map(row => (row.last, row))
