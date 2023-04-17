@@ -22,7 +22,7 @@ import taintedprimitives.SymImplicits._
 object Q20 extends Serializable {
   def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 19").setMaster("spark://zion-headnode:7077")
+    sparkConf.setAppName("TPC-DS Query 20").setMaster("spark://zion-headnode:7077")
     val osc = SparkContext.getOrCreate(sparkConf)
     val expressionAccumulator = osc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
     val sc = new SparkContextWithDP(osc)
