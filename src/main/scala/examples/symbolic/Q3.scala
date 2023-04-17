@@ -18,8 +18,8 @@ object Q3 extends Serializable {
     val sparkConf = new SparkConf()
     val ctx = new SparkContextWithDP(SparkContext.getOrCreate(sparkConf))
     ctx.setLogLevel("ERROR")
-    val MANUFACT = 1 //rand.nextInt(1000 - 1) + 1
-    val MONTH = 11 // rand.nextInt(2)+11
+    val MANUFACT = "1" //rand.nextInt(1000 - 1) + 1
+    val MONTH = "11" // rand.nextInt(2)+11
 
     val store_sales = ctx.textFileProv(args(0),_.split(","))
     val date_dim = ctx.textFileProv(args(1),_.split(","))
@@ -34,7 +34,7 @@ object Q3 extends Serializable {
     println("map1")
     map1.take(10).foreach(println)
 
-    val filter1 = date_dim.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(8).toInt/*d_moy*/ == MONTH, (List(row(8).toInt, MONTH), List()),0, expressionAccumulator))
+    val filter1 = date_dim.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(8)/*d_moy*/ == MONTH, (List(), List()),0, expressionAccumulator))
 
     println("filter1")
     filter1.take(10).foreach(println)
@@ -56,7 +56,7 @@ object Q3 extends Serializable {
       // and store_sales.ss_item_sk = item.i_item_sk
 
     val safety1 = item.filter(row => try {row(13).toInt; true} catch {case _: Throwable => false})
-    val filter2 = safety1.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(13).toInt /*i_manufact_id*/ == MANUFACT, (List(row(13).toInt, MANUFACT), List()), 1, expressionAccumulator)) // and item.i_manufact_id = [MANUFACT]
+    val filter2 = safety1.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(13) /*i_manufact_id*/ == MANUFACT, (List(), List()), 1, expressionAccumulator)) // and item.i_manufact_id = [MANUFACT]
     val map4 = filter2.map(row => (row.head, row))
 
     println("filter2.map4")
