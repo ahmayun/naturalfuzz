@@ -84,7 +84,7 @@ object Q15 extends Serializable {
     try {
       row(col)
     } catch {
-      case _: Throwable => ""
+      case _: Throwable => "error"
     }
   }
 }

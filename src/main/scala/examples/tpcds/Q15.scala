@@ -52,8 +52,8 @@ object Q15 extends Serializable {
       }
     val filter1 = map5.filter {
         case (_, (cs_row, c_row, ca_row)) =>
-          val ca_zip = try { ca_row(9) } catch { case _ => "error"} // took liberty here (if the row is malformed for some reason
-          val ca_state = try { ca_row(8) } catch { case _ => "error"}
+          val ca_zip = getColOrEmpty(ca_row, 9) // took liberty here (if the row is malformed for some reason
+          val ca_state = getColOrEmpty(ca_row, 8)
           val cs_sales_price = convertColToFloat(cs_row, 20)
 
           ca_zip != "error" && ca_state != "error" &&
@@ -79,6 +79,14 @@ object Q15 extends Serializable {
       row(col).toFloat
     } catch {
       case _ => 0
+    }
+  }
+
+  def getColOrEmpty(row: Array[String], col: Int): String = {
+    try {
+      row(col)
+    } catch {
+      case _: Throwable => "error"
     }
   }
   /* ORIGINAL QUERY:

@@ -79,7 +79,7 @@ object Q19 extends Serializable {
       }
     val filter1 = map11.filter {
         case (_, _, _, _, ca_row, s_row) =>
-          val ca_zip = try { ca_row(9) } catch { case _ => "error"}
+          val ca_zip = getColOrEmpty(ca_row, 9)
           val s_zip = s_row(25)
           ca_zip.take(5) != s_zip.take(5)
       }
@@ -104,6 +104,14 @@ object Q19 extends Serializable {
       row(col).toFloat
     } catch {
       case _ => 0
+    }
+  }
+
+  def getColOrEmpty(row: Array[String], col: Int): String = {
+    try {
+      row(col)
+    } catch {
+      case _: Throwable => "error"
     }
   }
   /* ORIGINAL QUERY:
