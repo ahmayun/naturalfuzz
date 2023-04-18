@@ -1,6 +1,7 @@
 package examples.faulty
 
 import abstraction.{SparkConf, SparkContext}
+import capture.IOStreams._println
 
 object Q19 extends Serializable {
 
@@ -36,7 +37,7 @@ object Q19 extends Serializable {
           val i_manager_id = row(row.length-2)
           i_manager_id == MANAGER
       }
-    filtered_i.take(10).foreach(println)
+    filtered_i.take(10).foreach(_println)
 
     val filtered_dd = date_dim
       .filter {
@@ -45,12 +46,12 @@ object Q19 extends Serializable {
           val d_year = row(6)
           d_moy == MONTH.toString && d_year == YEAR.toString
       }
-    filtered_dd.take(10).foreach(println)
+    filtered_dd.take(10).foreach(_println)
 
     val map1 = date_dim.map(row => (row.head, row))
     val map2 = store_sales.map(row => (row.last /*ss_sold_date_sk*/, row))
     val join1 = map1.join(map2)
-    join1.take(10).foreach(println)
+    join1.take(10).foreach(_println)
 
     val map3 = join1.map {
         case (_, (dd_row, ss_row)) =>
@@ -58,7 +59,7 @@ object Q19 extends Serializable {
       }
     val map4 = item.map(row => (row.head, row))
     val join2 = map3.join(map4)
-    join2.take(10).foreach(println)
+    join2.take(10).foreach(_println)
 
     val map5 = join2.map {
         case (_, ((dd_row, ss_row), i_row)) =>
@@ -66,7 +67,7 @@ object Q19 extends Serializable {
       }
     val map6 = customer.map(row => (row.head, row))
     val join3 = map5.join(map6)
-    join3.take(10).foreach(println)
+    join3.take(10).foreach(_println)
 
     val map7 = join3.map {
         case (_, ((dd_row, ss_row, i_row), c_row)) =>
@@ -74,7 +75,7 @@ object Q19 extends Serializable {
       }
     val map8 = customer_address.map(row => (row.head, row))
     val join4 = map7.join(map8)
-    join4.take(10).foreach(println)
+    join4.take(10).foreach(_println)
 
     val map9 = join4.map {
         case (_, ((dd_row, ss_row, i_row, c_row), ca_row)) =>
@@ -82,7 +83,7 @@ object Q19 extends Serializable {
       }
     val map10 = store.map(row => (row.head, row))
     val join5 = map9.join(map10)
-    join5.take(10).foreach(println)
+    join5.take(10).foreach(_println)
 
     val map11 = join5.map {
         case (_, ((dd_row, ss_row, i_row, c_row, ca_row), s_row)) =>
@@ -94,7 +95,7 @@ object Q19 extends Serializable {
           val s_zip = s_row(25)
           ca_zip.take(5) != s_zip.take(5)
       }
-    filter1.take(10).foreach(println)
+    filter1.take(10).foreach(_println)
 
     val map12 = filter1.map {
         case (_, ss_row, i_row, _, _, _) =>
@@ -106,10 +107,10 @@ object Q19 extends Serializable {
           ((i_brand_id, i_brand, i_manufact_id, i_manufact), ss_ext_sales_price)
       }
     val rbk1 = map12.reduceByKey(_+_)
-    rbk1.take(10).foreach(println)
+    rbk1.take(10).foreach(_println)
     val sortBy1 = rbk1.sortBy(_._1)
 
-    sortBy1.take(10).foreach(println)
+    sortBy1.take(10).foreach(_println)
     
   }
 
