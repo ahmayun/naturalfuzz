@@ -43,7 +43,7 @@ object Q1 extends Serializable {
 //    sys.exit(0)
 
 
-    val filter1 = date_dim.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6) == YEAR, (List(), List()), 0, expressionAccumulator))
+    val filter1 = date_dim.filter(row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6).toInt == YEAR, (List(row(6).toInt, YEAR), List()), 0, expressionAccumulator))
 
     println("filter1")
     filter1.take(10).foreach(println)
