@@ -24,7 +24,7 @@ object RunRIGFuzzJarFuzzing extends Serializable {
     var onCluster = false
 
     // ==P.U.T. dependent configurations=======================
-    val (benchmarkName, mutantName, sparkMaster, pargs, duration, outDir, pickleDir) =
+    val (benchmarkName, mutantName, sparkMaster, pargs, duration, outDir, pickleFile) =
       if (!args.isEmpty) {
         (args(0),
           args(1),
@@ -112,7 +112,7 @@ object RunRIGFuzzJarFuzzing extends Serializable {
     }
 
 
-    val qrs = Pickle.load[List[QueryResult]](s"${pickleDir}/${createSafeFileName(benchmarkName, pargs)}.pkl")
+    val qrs = Pickle.load[List[QueryResult]](pickleFile)
     qrs.foreach {
       qr =>
         println(s"====QR: ${qr.query.map(_.tree).mkString(" <=>")} ===== ")
