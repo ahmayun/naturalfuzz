@@ -21,7 +21,7 @@ object Q1 extends Serializable {
     val store = sc.textFile(args(2)).map(_.split(","))
     val customer = sc.textFile(args(3)).map(_.split(","))
 
-    val filter1 = date_dim.filter(row => row(6).toInt == YEAR)
+    val filter1 = date_dim.filter(row => row(6) == YEAR)
 
     println("filter1")
     filter1.take(10).foreach(println)
