@@ -44,6 +44,8 @@ object Q7 extends Serializable {
         0,
         expressionAccumulator)
     }
+    filter_cd.take(10).foreach(println)
+
     val filtered_p = promotion.filter { row => 
       val p_channel_email = row(9)
       val p_channel_event = row(14)
@@ -52,6 +54,8 @@ object Q7 extends Serializable {
         1,
         expressionAccumulator)
     }
+    filtered_p.take(10).foreach(println)
+
     val filtered_dd = date_dim.filter { row => 
       val d_year = row(6)
       _root_.monitoring.Monitors.monitorPredicateSymEx(d_year == YEAR.toString,
@@ -59,27 +63,37 @@ object Q7 extends Serializable {
         1,
         expressionAccumulator)
     }
+    filtered_p.take(10).foreach(println)
+
     val map2 = filtered_dd.map(row => (row.head, row))
     val map1 = store_sales.map(row => (row.last, row))
     val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map1, map2, 3, expressionAccumulator)
+    join1.take(10).foreach(println)
+
     val map3 = join1.map({
       case (date_sk, (ss_row, dd_row)) =>
         (ss_row(1), (ss_row, dd_row))
     })
     val map4 = item.map(row => (row.head, row))
     val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map3, map4, 4, expressionAccumulator)
+    join2.take(10).foreach(println)
+
     val map5 = join2.map({
       case (item_sk, ((ss_row, dd_row), i_row)) =>
         (ss_row(3), (ss_row, dd_row, i_row))
     })
     val map9 = filter_cd.map(row => (row.head, row))
     val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(map5, map9, 5, expressionAccumulator)
+    join3.take(10).foreach(println)
+
     val map6 = join3.map({
       case (cdemo_sk, ((ss_row, dd_row, i_row), cd_row)) =>
         (ss_row(7), (ss_row, dd_row, i_row, cd_row))
     })
     val map8 = filtered_p.map(row => (row.head, row))
     val join4 = _root_.monitoring.Monitors.monitorJoinSymEx(map6, map8, 6, expressionAccumulator)
+    join4.take(10).foreach(println)
+
     val map10 = join4.map({
       case (promo_sk, ((ss_row, dd_row, i_row, cd_row), p_row)) =>
         val ss_quantity = convertColToFloat(ss_row, 9)
@@ -92,10 +106,14 @@ object Q7 extends Serializable {
       case ((a1, a2, a3, a4, count1), (b1, b2, b3, b4, count2)) =>
         (a1 + b1, a2 + b2, a3 + b3, a4 + b4, count1 + count2)
     }
+    rbk1.take(10).foreach(println)
+
     val map7 = rbk1.map({
       case (i_item_id, (sum1, sum2, sum3, sum4, count)) =>
         (i_item_id, sum1 / count, sum2 / count, sum3 / count, sum4 / count)
     })
+    map7.take(10).foreach(println)
+
     val sortBy1 = map7.sortBy(_._1)
     sortBy1.take(10).foreach(println)
     _root_.monitoring.Monitors.finalizeSymEx(expressionAccumulator)

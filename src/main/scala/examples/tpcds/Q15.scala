@@ -36,6 +36,7 @@ object Q15 extends Serializable {
           val d_year = row(6)
           d_qoy == QOY.toString && d_year == YEAR.toString
       }
+    filtered_dd.foreach(println)
 
     val map1 = catalog_sales.map(row => (row(2)/*cs_bill_customer_sk*/, row))
     val map2 = customer.map(row => (row.head, row))
@@ -58,8 +59,7 @@ object Q15 extends Serializable {
           val ca_state = getColOrEmpty(ca_row, 8)
           val cs_sales_price = convertColToFloat(cs_row, 20)
 
-          ca_zip != "error" && ca_state != "error" &&
-            (ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500 || STATES.contains(ca_state))
+          (ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500 || STATES.contains(ca_state))
       }
     filter1.take(10).foreach(println)
 

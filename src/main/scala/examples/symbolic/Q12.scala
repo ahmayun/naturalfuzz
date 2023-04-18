@@ -37,7 +37,6 @@ object Q12 extends Serializable {
         0,
         expressionAccumulator)
     }
-
     println("filtered_item")
     filtered_item.take(10).foreach(println)
 
@@ -54,12 +53,16 @@ object Q12 extends Serializable {
     val map1 = web_sales.map(row => (row(2), row))
     val map7 = filtered_item.map(row => (row.head, row))
     val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map1, map7, 2, expressionAccumulator)
+    join1.take(10).foreach(println)
+
     val map2 = join1.map({
       case (item_sk, (ws_row, i_row)) =>
         (ws_row.last, (ws_row, i_row))
     })
     val map8 = filtered_dd.map(row => (row.head, row))
     val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map2, map8, 3, expressionAccumulator)
+    join2.take(10).foreach(println)
+
     val map3 = join2.map({
       case (_, ((ws_row, i_row), dd_row)) =>
         val i_item_id = i_row(1)
@@ -75,12 +78,18 @@ object Q12 extends Serializable {
         (i_class, ws_ext_sales_price)
     })
     val rbk1 = map4.reduceByKey(_+_)
+    rbk1.take(10).foreach(println)
+
     val rbk2 = map3.reduceByKey(_ + _)
+    rbk2.take(10).foreach(println)
+
     val map5 = rbk2.map({
       case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), ws_ext_sales_price) =>
         (i_class, (i_item_id, i_item_desc, i_category, i_current_price, ws_ext_sales_price))
     })
     val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(map5, rbk1, 6, expressionAccumulator)
+    join3.take(10).foreach(println)
+
     val map6 = join3.map({
       case (i_class, ((i_item_id, i_item_desc, i_category, i_current_price, ws_ext_sales_price), class_rev)) =>
         (i_item_id, i_item_desc, i_category, i_class, i_current_price, ws_ext_sales_price, ws_ext_sales_price / class_rev)

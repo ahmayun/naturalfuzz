@@ -37,38 +37,52 @@ object Q19 extends Serializable {
       val i_manager_id = row(row.length - 2)
       _root_.monitoring.Monitors.monitorPredicateSymEx(i_manager_id == MANAGER, (List(), List()), 0, expressionAccumulator)
     }
+    filtered_i.take(10).foreach(println)
+
     val filtered_dd = date_dim.filter { row =>
       val d_moy = row(8)
       val d_year = row(6)
       _root_.monitoring.Monitors.monitorPredicateSymEx(d_moy == MONTH && d_year == YEAR, (List(), List()), 1, expressionAccumulator)
     }
+    filtered_dd.take(10).foreach(println)
+
     val map1 = date_dim.map(row => (row.head, row))
     val map2 = store_sales.map(row => (row.last, row))
     val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map1, map2, 2, expressionAccumulator)
+    join1.take(10).foreach(println)
+
     val map3 = join1.map({
       case (_, (dd_row, ss_row)) =>
         (ss_row(1), (dd_row, ss_row))
     })
     val map4 = item.map(row => (row.head, row))
     val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map3, map4, 3, expressionAccumulator)
+    join2.take(10).foreach(println)
+
     val map5 = join2.map({
       case (_, ((dd_row, ss_row), i_row)) =>
         (ss_row(2), (dd_row, ss_row, i_row))
     })
     val map6 = customer.map(row => (row.head, row))
     val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(map5, map6, 4, expressionAccumulator)
+    join3.take(10).foreach(println)
+
     val map7 = join3.map({
       case (_, ((dd_row, ss_row, i_row), c_row)) =>
         (c_row(4), (dd_row, ss_row, i_row, c_row))
     })
     val map8 = customer_address.map(row => (row.head, row))
     val join4 = _root_.monitoring.Monitors.monitorJoinSymEx(map7, map8, 5, expressionAccumulator)
+    join4.take(10).foreach(println)
+
     val map9 = join4.map({
       case (_, ((dd_row, ss_row, i_row, c_row), ca_row)) =>
         (ss_row(6), (dd_row, ss_row, i_row, c_row, ca_row))
     })
     val map10 = store.map(row => (row.head, row))
     val join5 = _root_.monitoring.Monitors.monitorJoinSymEx(map9, map10, 6, expressionAccumulator)
+    join5.take(10).foreach(println)
+
     val map11 = join5.map({
       case (_, ((dd_row, ss_row, i_row, c_row, ca_row), s_row)) =>
         (dd_row, ss_row, i_row, c_row, ca_row, s_row)
@@ -79,6 +93,8 @@ object Q19 extends Serializable {
         val s_zip = s_row(25)
         _root_.monitoring.Monitors.monitorPredicateSymEx(ca_zip.take(5) != s_zip.take(5), (List(), List()), 7, expressionAccumulator)
     })
+    filter1.take(10).foreach(println)
+
     val map12 = filter1.map({
       case (_, ss_row, i_row, _, _, _) =>
         val ss_ext_sales_price = convertColToFloat(ss_row, 14)
@@ -89,6 +105,8 @@ object Q19 extends Serializable {
         ((i_brand_id, i_brand, i_manufact_id, i_manufact), ss_ext_sales_price)
     })
     val rbk1 = map12.reduceByKey(_ + _)
+    rbk1.take(10).foreach(println)
+
     val sortBy1 = rbk1.sortBy(_._1)
     sortBy1.take(10).foreach(println)
     _root_.monitoring.Monitors.finalizeSymEx(expressionAccumulator)

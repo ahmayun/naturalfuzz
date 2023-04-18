@@ -68,6 +68,8 @@ object Q19 extends Serializable {
       }
     val map6 = customer.map(row => (row.head, row))
     val join3 = map5.join(map6)
+    join3.take(10).foreach(println)
+
     val map7 = join3.map {
         case (_, ((dd_row, ss_row, i_row), c_row)) =>
           (c_row(4)/*c_current_addr_sk*/, (dd_row, ss_row, i_row, c_row))

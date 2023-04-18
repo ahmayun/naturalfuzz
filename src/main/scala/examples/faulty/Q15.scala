@@ -34,6 +34,7 @@ object Q15 extends Serializable {
           val d_year = row(6)
           d_qoy == QOY.toString && d_year == YEAR.toString
       }
+    filtered_dd.take(10).foreach(println)
 
     val map1 = catalog_sales.map(row => (row(2)/*cs_bill_customer_sk*/, row))
     val map2 = customer.map(row => (row.head, row))

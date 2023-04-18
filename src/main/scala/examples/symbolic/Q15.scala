@@ -35,15 +35,21 @@ object Q15 extends Serializable {
       val d_year = row(6)
       _root_.monitoring.Monitors.monitorPredicateSymEx(d_qoy == QOY.toString && d_year == YEAR.toString, (List(), List()), 0, expressionAccumulator)
     }
+    filtered_dd.foreach(println)
+
     val map1 = catalog_sales.map(row => (row(2), row))
     val map2 = customer.map(row => (row.head, row))
     val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map1, map2, 1, expressionAccumulator)
+    join1.take(10).foreach(println)
+
     val map3 = join1.map({
       case (_, (cs_row, c_row)) =>
         (c_row(4), (cs_row, c_row))
     })
     val map4 = customer_address.map(row => (row.head, row))
     val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map3, map4, 2, expressionAccumulator)
+    join2.take(10).foreach(println)
+
     val map5 = join2.map({
       case (_, ((cs_row, c_row), ca_row)) =>
         (cs_row.last, (cs_row, c_row, ca_row))
@@ -60,14 +66,20 @@ object Q15 extends Serializable {
           expressionAccumulator
         )
     })
+    filter1.take(10).foreach(println)
+
     val map6 = filtered_dd.map(row => (row.head, row))
     val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(filter1, map6, 4, expressionAccumulator)
+    join3.take(10).foreach(println)
+
     val map7 = join3.map({
       case (_, ((cs_row, c_row, ca_row), dd_row)) =>
         val cs_sales_price = convertColToFloat(cs_row, 20)
         (ca_row(9), cs_sales_price)
     })
     val rbk1 = map7.reduceByKey(_+_)
+    rbk1.take(10).foreach(println)
+
     val sortBy1 = rbk1.sortBy(_._1)
     sortBy1.take(10).foreach(println)
     _root_.monitoring.Monitors.finalizeSymEx(expressionAccumulator)
