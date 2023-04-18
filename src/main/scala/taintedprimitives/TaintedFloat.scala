@@ -78,7 +78,7 @@ case class TaintedFloat(override val value: Float, p:Provenance, expr: SymbolicE
   
   // Incomplete comparison operators - see discussion in TaintedDouble on provenance
   def >(x: TaintedFloat): TaintedBoolean = {
-    TaintedBoolean(value > x.value, newProvenance(x.getProvenance()), expr > x.expr)
+    TaintedBoolean(value > x.value, mergeProvenance(getProvenance(), x.getProvenance()), expr > x.expr)
   }
   
   /**

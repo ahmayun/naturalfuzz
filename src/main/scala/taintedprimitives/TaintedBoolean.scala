@@ -22,7 +22,15 @@ case class TaintedBoolean(override val value: Boolean, p : Provenance, symbolicE
     TaintedBoolean(value && b.value, newProvenance(b.getProvenance()), symbolicExpression.and(b.symbolicExpression))
   }
 
+  def &&(b: Boolean): TaintedBoolean = {
+    TaintedBoolean(value && b, newProvenance(getProvenance()), symbolicExpression)
+  }
+
   def ||(b: TaintedBoolean): TaintedBoolean = {
     TaintedBoolean(value || b.value, newProvenance(b.getProvenance()), symbolicExpression.or(b.symbolicExpression))
+  }
+
+  def ||(b: Boolean): TaintedBoolean = {
+    TaintedBoolean(value || b, newProvenance(getProvenance()), symbolicExpression)
   }
 }

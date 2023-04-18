@@ -54,7 +54,7 @@ object Q15 extends Serializable {
         val ca_state = getColOrEmpty(ca_row, 8)
         val cs_sales_price = convertColToFloat(cs_row, 20)
         _root_.monitoring.Monitors.monitorPredicateSymEx(
-          ca_zip != "error" && ca_state != "error" && (ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500.0f || STATES.contains(ca_state)),
+          ZIPS.contains(ca_zip.take(5)) || cs_sales_price > 500.0f || STATES.contains(ca_state),
           (List(), List()),
           3,
           expressionAccumulator
