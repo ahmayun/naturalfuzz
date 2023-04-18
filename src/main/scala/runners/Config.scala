@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 object Config {
 
   // RIGFuzz params
-  var benchmarkName = "Q7" // this value is overridden by a runner
+  var benchmarkName = "Q6" // this value is overridden by a runner
   var sparkMaster = "local[*]" // this value is overridden by a runner
   var expressionAccumulator: CollectionAccumulator[SymbolicExpression] = null
   val keepColProb = 0.2f
