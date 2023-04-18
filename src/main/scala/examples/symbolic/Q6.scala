@@ -26,23 +26,6 @@ object Q6 extends Serializable {
     val item = sc.textFileProv(args(4), _.split(","))
 
 
-
-
-
-    join4.take(10).foreach(println)
-
-    println(s"reduce1 = $reduce1")
-
-    println(s"subquery2 result = ${subquery2_result}")
-
-    filter2.take(10).foreach(println)
-
-    filter3.take(10).foreach(println)
-
-    rbk1.take(10).foreach(println)
-
-    filter4.take(10).foreach(println)
-
     val filter1 = date_dim.filter {
       row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6).toInt == YEAR.toInt && row(8).toInt == MONTH, (List(), List()), 0, expressionAccumulator)
     }
@@ -78,6 +61,8 @@ object Q6 extends Serializable {
     })
     val map9 = item.map(row => (row.head, row))
     val join4 = _root_.monitoring.Monitors.monitorJoinSymEx(map8, map9, 4, expressionAccumulator)
+    join4.take(10).foreach(println)
+
     val map10 = join4.map({
       case (item_sk, ((ca_row, c_row, ss_row, dd_row), i_row)) =>
         (ca_row, c_row, ss_row, dd_row, i_row)
@@ -90,13 +75,22 @@ object Q6 extends Serializable {
       case ((v1, c1), (v2, c2)) =>
         (v1 + v2, c1 + c2)
     })
+    println(s"reduce1 = $reduce1")
+
+
     val subquery2_result = reduce1._1 / reduce1._2
+    println(s"subquery2 result = ${subquery2_result}")
+
     val filter2 = map10.filter(tup => _root_.monitoring.Monitors.monitorPredicateSymEx(tup._4(3) == take1, (List(), List()), 5, expressionAccumulator))
+    filter2.take(10).foreach(println)
+
     val filter3 = filter2.filter({
       case (_, _, _, _, i_row) =>
         val i_current_price = convertColToFloat(i_row, 5)
         _root_.monitoring.Monitors.monitorPredicateSymEx(i_current_price > (subquery2_result * 1.2f), (List(), List()), 6, expressionAccumulator)
     })
+    filter3.take(10).foreach(println)
+
     val map12 = filter3.map({
       case (ca_row, c_row, ss_row, dd_row, i_row) =>
         (try {
@@ -106,10 +100,14 @@ object Q6 extends Serializable {
         }, 1)
     })
     val rbk1 = map12.reduceByKey(_ + _)
+    rbk1.take(10).foreach(println)
+
     val filter4 = rbk1.filter({
       case (state, count) =>
         count > 10
     })
+    filter4.take(10).foreach(println)
+
     val sortBy1 = filter4.sortBy(_._2)
     val take2 = sortBy1.take(10)
     val sortWith1 = take2.sortWith({
