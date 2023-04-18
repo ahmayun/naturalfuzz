@@ -24,27 +24,54 @@ object Q6 extends Serializable {
     val store_sales = sc.textFileProv(args(2), _.split(","))
     val date_dim = sc.textFileProv(args(3), _.split(","))
     val item = sc.textFileProv(args(4), _.split(","))
+
+
+
+
+
+    join4.take(10).foreach(println)
+
+    println(s"reduce1 = $reduce1")
+
+    println(s"subquery2 result = ${subquery2_result}")
+
+    filter2.take(10).foreach(println)
+
+    filter3.take(10).foreach(println)
+
+    rbk1.take(10).foreach(println)
+
+    filter4.take(10).foreach(println)
+
     val filter1 = date_dim.filter {
       row => _root_.monitoring.Monitors.monitorPredicateSymEx(row(6).toInt == YEAR.toInt && row(8).toInt == MONTH, (List(), List()), 0, expressionAccumulator)
     }
+    filter1.take(10).foreach(println)
+
     val map1 = filter1.map(row => row(3))
     val distinct = map1.distinct
     val take1 = distinct.take(1).head
     val map2 = customer_address.map(row => (row.head, row))
     val map3 = customer.map(row => (row(4), row))
     val join1 = _root_.monitoring.Monitors.monitorJoinSymEx(map2, map3, 1, expressionAccumulator)
+    join1.take(10).foreach(println)
+
     val map4 = join1.map({
       case (addr_sk, (ca_row, c_row)) =>
         (c_row.head, (ca_row, c_row))
     })
     val map5 = store_sales.map(row => (row(2), row))
     val join2 = _root_.monitoring.Monitors.monitorJoinSymEx(map4, map5, 2, expressionAccumulator)
+    join2.take(10).foreach(println)
+
     val map6 = join2.map({
       case (customer_sk, ((ca_row, c_row), ss_row)) =>
         (ss_row.last, (ca_row, c_row, ss_row))
     })
     val map7 = date_dim.map(row => (row.head, row))
     val join3 = _root_.monitoring.Monitors.monitorJoinSymEx(map6, map7, 3, expressionAccumulator)
+    join3.take(10).foreach(println)
+
     val map8 = join3.map({
       case (date_sk, ((ca_row, c_row, ss_row), dd_row)) =>
         (ss_row(1), (ca_row, c_row, ss_row, dd_row))
