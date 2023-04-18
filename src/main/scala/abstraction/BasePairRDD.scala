@@ -4,6 +4,10 @@ import scala.reflect.ClassTag
 class BasePairRDD[K, V](val data: Seq[(K, V)]) extends PairRDD[K, V] {
   override def map[U: ClassTag](f: ((K, V)) => U): RDD[U] = new BaseRDD(data.map(f))
 
+  def distinct: BasePairRDD[K, V] = {
+    new BasePairRDD(data.distinct)
+  }
+
   override def flatMap[U: ClassTag](f: ((K, V)) => TraversableOnce[U]): RDD[U] = new BaseRDD(data.flatMap(f))
 
   override def filter(f: ((K, V)) => Boolean): RDD[(K, V)] = new BasePairRDD(data.filter(f))

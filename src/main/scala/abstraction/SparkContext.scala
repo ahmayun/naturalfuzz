@@ -9,8 +9,14 @@ class SparkContext(config: SparkConf) {
     new BaseRDD(data)
   }
 
-  def setLogLevel(str: String) = {
+  def setLogLevel(str: String): Unit = {
 
   }
 
+}
+
+object SparkContext {
+  def getOrCreate(_conf: SparkConf): SparkContext = {
+    new SparkContext(_conf)
+  }
 }

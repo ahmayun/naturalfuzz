@@ -179,9 +179,14 @@ object Config {
     "MapString" -> Switch(null, faulty.MapString.main, faultTest),
     "OldIncomeAggregation" -> Switch(null, faulty.IncomeAggregation.main, faultTest),
     "LoanType" -> Switch(null, faulty.LoanType.main, faultTest),
-    "Q3" -> faulty.Q3.main,
     "Q1" -> faulty.Q1.main,
-    "Q6" -> faulty.Q1.main,
+    "Q3" -> faulty.Q3.main,
+    "Q6" -> faulty.Q6.main,
+    "Q7" -> faulty.Q7.main,
+    "Q12" -> faulty.Q12.main,
+    "Q15" -> faulty.Q15.main,
+    "Q19" -> faulty.Q19.main,
+    "Q20" -> faulty.Q20.main,
     "RIGTestProgram" -> fuzzable.RIGTestProgram.main,
     "RIGTestJoin" -> fuzzable.RIGTestJoin.main
   )

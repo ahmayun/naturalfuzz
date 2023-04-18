@@ -1,8 +1,6 @@
-package examples.tpcds
+package examples.faulty
 
-import org.apache.spark.{SparkConf, SparkContext}
-
-import scala.util.Random
+import abstraction.{SparkConf, SparkContext}
 
 object Q19 extends Serializable {
 

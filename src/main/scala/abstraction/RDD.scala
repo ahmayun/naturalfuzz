@@ -6,6 +6,8 @@ trait RDD[T] {
 
   def map[U: ClassTag](f: T => U): RDD[U]
 
+  def distinct: RDD[T]
+
   def flatMap[U:ClassTag](f: T => TraversableOnce[U]): RDD[U]
 
   def filter(f: T => Boolean): RDD[T]

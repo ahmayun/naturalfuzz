@@ -24,6 +24,11 @@ class BaseRDD[T:ClassTag](val data: Seq[T]) extends RDD[T]{
     new BaseRDD(data.map(f))
   }
 
+  def distinct: BaseRDD[T] = {
+    new BaseRDD(data.distinct)
+  }
+
+
   def collect(): Array[T] = {
     data.toArray
   }

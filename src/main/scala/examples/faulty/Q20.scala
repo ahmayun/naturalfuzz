@@ -1,16 +1,15 @@
-package examples.tpcds
+package examples.faulty
 
-import org.apache.spark.{SparkConf, SparkContext}
+import abstraction.{SparkConf, SparkContext}
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import scala.util.Random
-
-object Q12 extends Serializable {
+object Q20 extends Serializable {
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 12").setMaster("spark://zion-headnode:7077")
+    sparkConf.setAppName("TPC-DS Query 20").setMaster("spark://zion-headnode:7077")
     val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
 //    val datasetsPath = "./data_tpcds"
@@ -22,8 +21,8 @@ object Q12 extends Serializable {
     val CAT = List("Home", "Electronics", "Shoes") // many more
 
     val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
-    args(0) = s"$p/web_sales"
-    val web_sales = sc.textFile(args(0)).map(_.split(","))
+    args(0) = s"$p/catalog_sales"
+    val catalog_sales = sc.textFile(args(0)).map(_.split(","))
     args(1) = s"$p/date_dim"
     val date_dim = sc.textFile(args(1)).map(_.split(","))
     args(2) = s"$p/item"
@@ -32,7 +31,7 @@ object Q12 extends Serializable {
     val filtered_item = item.filter {
       row =>
         val category = row(12)
-        category == CAT(0) || category == CAT(1) || category == CAT(2)
+        CAT.contains(category)
     }
     filtered_item.take(10).foreach(println)
 
@@ -43,54 +42,59 @@ object Q12 extends Serializable {
     }
     filtered_dd.take(10).foreach(println)
 
-    val map1 = web_sales.map(row => (row(2)/*ws_item_sk*/, row))
-    val map7 = filtered_item.map(row => (row.head, row))
-    val join1 = map1.join(map7)
+    val map1 = catalog_sales.map(row => (row(2)/*ws_item_sk*/, row))
+
+    val map2 = filtered_item.map(row => (row.head, row))
+
+    val join1 = map1.join(map2)
     join1.take(10).foreach(println)
 
-    val map2 = join1.map {
-        case (item_sk, (ws_row, i_row)) =>
-          (ws_row.last/*ws_sold_date*/, (ws_row, i_row))
+    val map3 = join1.map {
+        case (item_sk, (cs_row, i_row)) =>
+          (cs_row.last/*ws_sold_date*/, (cs_row, i_row))
       }
-    val map8 = filtered_dd.map(row => (row.head, row))
-    val join2 = map2.join(map8)
+
+    val map4 = filtered_dd.map(row => (row.head, row))
+
+    val join2 = map3.join(map4)
     join2.take(10).foreach(println)
 
-    val map3 = join2.map {
-        case (_, ((ws_row, i_row), dd_row)) =>
+    val map5 = join2.map {
+        case (_, ((cs_row, i_row), dd_row)) =>
           val i_item_id = i_row(1)
           val i_item_desc = i_row(4)
           val i_category = i_row(12)
           val i_class = i_row(10)
           val i_current_price = i_row(5)
-          val ws_ext_sales_price = convertColToFloat(ws_row, 22)
+          val cs_ext_sales_price = convertColToFloat(cs_row, 22)
 
 
-          ((i_item_id, i_item_desc, i_category, i_class, i_current_price), ws_ext_sales_price) // there should be another value here
+          ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) // there should be another value here
       }
 
-    val map4 = map3.map {
-        case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), ws_ext_sales_price) =>
-          (i_class, ws_ext_sales_price)
+    val map6 = map5.map {
+        case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
+          (i_class, cs_ext_sales_price)
       }
-    val rbk1 = map4.reduceByKey(_+_)
+    val rbk1 = map6.reduceByKey(_+_)
     rbk1.take(10).foreach(println)
 
-    val rbk2 = map3.reduceByKey(_ + _)
+
+    val rbk2 = map5.reduceByKey(_ + _)
     rbk2.take(10).foreach(println)
 
-    val map5 = rbk2.map {
-        case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), ws_ext_sales_price) =>
-          (i_class, (i_item_id, i_item_desc, i_category, i_current_price, ws_ext_sales_price))
+    val map7 = rbk2.map {
+        case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
+          (i_class, (i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price))
       }
-    val join3 = map5.join(rbk1)
+    val join3 = map7.join(rbk1)
     join3.take(10).foreach(println)
 
-    val map6 = join3.map {
-        case (i_class, ((i_item_id, i_item_desc, i_category, i_current_price, ws_ext_sales_price), class_rev)) =>
-          (i_item_id, i_item_desc, i_category, i_class, i_current_price, ws_ext_sales_price, ws_ext_sales_price/class_rev)
+    val map8 = join3.map {
+        case (i_class, ((i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price), class_rev)) =>
+          (i_item_id, i_item_desc, i_category, i_class, i_current_price, cs_ext_sales_price, cs_ext_sales_price/class_rev)
       }
-    val sortBy1 = map6.sortBy(_._3)
+    val sortBy1 = map8.sortBy(_._3)
 
     sortBy1.take(10).foreach(println)
 

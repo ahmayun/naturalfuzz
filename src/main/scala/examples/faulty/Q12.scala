@@ -1,10 +1,9 @@
-package examples.tpcds
+package examples.faulty
 
-import org.apache.spark.{SparkConf, SparkContext}
+import abstraction.{SparkConf, SparkContext}
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
-import scala.util.Random
 
 object Q12 extends Serializable {
 
