@@ -54,7 +54,7 @@ object Q3 extends Serializable {
     val map4 = filter2.map(row => (row.head, row))
 
     println("item.filter")
-    map4.take(10).foreach{case (_, row) => println(row.mkString(","))}
+    map4.take(10).foreach{case (_, i_row) => println(s"${i_row(0)},${i_row(7)},${i_row(8)},${i_row(13)}")}
 
     val join2 = map3.join(map4)
 
