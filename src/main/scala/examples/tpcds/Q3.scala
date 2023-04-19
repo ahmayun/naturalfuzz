@@ -27,8 +27,8 @@ object Q3 extends Serializable {
 
     val filter1 = date_dim.filter(row => row(8) /*d_moy*/ == MONTH)
 
-    println("filter1")
-    filter1.take(10).foreach(println)
+    println("datedim.filter")
+    filter1.take(10).foreach{arr => println(arr.mkString(","))}
 
     val map2 = filter1.map(row => (row.head, row))
 
@@ -37,8 +37,8 @@ object Q3 extends Serializable {
     // t.d_date_sk = store_sales.ss_sold_date_sk
     val join1 = map2.join(map1)
 
-    println("join1")
-    join1.take(10).foreach(println)
+    println("dd join ss")
+    join1.take(10).foreach{case (_, (dd_row, ss_row)) => println(s"${dd_row.mkString(",")}|${ss_row.mkString(",")}")}
 
     val map3 = join1.map {
       case (date_sk, (date_dim_row, ss_row)) =>
@@ -49,13 +49,13 @@ object Q3 extends Serializable {
     val filter2 = item.filter(row => row(13) /*i_manufact_id*/ == MANUFACT) // and item.i_manufact_id = [MANUFACT]
     val map4 = filter2.map(row => (row.head, row))
 
-    println("filter2.map4")
-    map4.take(10).foreach(println)
+    println("item.filter")
+    map4.take(10).foreach{case (_, row) => println(row.mkString(","))}
 
     val join2 = map3.join(map4)
 
     println("join2")
-    join2.take(10).foreach(println)
+    join2.take(10).foreach{case (_, ((dd_row, ss_row), item_row)) => println(s"${dd_row.mkString(",")}\n${ss_row.mkString(",")}\n${item_row.mkString(",")}\n\n")}
 
     val map5 = join2.map {
       case (item_sk, ((date_dim_row, ss_row), item_row)) =>
