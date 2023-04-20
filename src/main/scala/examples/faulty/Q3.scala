@@ -66,7 +66,7 @@ object Q3 {
         val ss_sales_price = convertColToFloat(ss_row, 12)
         val ss_ext_discount_amt = convertColToFloat(ss_row, 13)
         val ss_net_profit = convertColToFloat(ss_row, 21)
-        val sum = /*ss_net_profit + ss_sales_price + */ss_ext_sales_price - ss_ext_discount_amt
+        val sum = ss_net_profit + ss_sales_price + ss_ext_sales_price + ss_ext_discount_amt
 
         val d_year = date_dim_row(6)
         val i_brand = item_row(8)
