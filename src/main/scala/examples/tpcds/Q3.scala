@@ -58,14 +58,28 @@ object Q3 extends Serializable {
 
     val join2 = map3.join(map4)
 
-    println("join2")
-    join2.take(10).foreach{
+    println("join2.date_dim")
+    val join2collect = join2.take(10)
+    join2collect.foreach{
       case (_, ((dd_row, ss_row), i_row)) =>
         println(
-          s"dd\n${dd_row(0)},${dd_row(6)},${dd_row(8)}\nss" +
-            s"\n${ss_row(1)},${ss_row(12)},${ss_row(14)},${ss_row(12)},${ss_row(21)},${ss_row.last}\nitem" +
-            s"\n${i_row(0)},${i_row(7)},${i_row(8)},${i_row(13)}\n")
+          s"${dd_row(0)},${dd_row(6)},${dd_row(8)}")
     }
+    println("join2.store_sales")
+    join2collect.foreach {
+      case (_, ((dd_row, ss_row), i_row)) =>
+        println(
+          s"${ss_row(1)},${ss_row(12)},${ss_row(14)},${ss_row(12)},${ss_row(21)},${ss_row.last}")
+    }
+    println("join2.item")
+    join2collect.foreach {
+      case (_, ((dd_row, ss_row), i_row)) =>
+        println(
+          s"${i_row(0)},${i_row(7)},${i_row(8)},${i_row(13)}")
+    }
+    println("")
+
+
 
     val map5 = join2.map {
       case (item_sk, ((date_dim_row, ss_row), item_row)) =>
