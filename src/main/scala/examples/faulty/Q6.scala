@@ -6,7 +6,8 @@ import capture.IOStreams._println
 object Q6 extends Serializable {
   val MONTH = 1 // rand.nextInt(12)+1
   val YEAR = 2001 // rand.nextInt(2002 - 1998) + 1998
-
+  var take1 = ""
+  var subquery2_result = 0.0f
   def main(args: Array[String]) {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("TPC-DS Query 6")
@@ -27,7 +28,7 @@ object Q6 extends Serializable {
 
     val map1 = filter1.map(map1_f)
     val distinct = map1.distinct
-    val take1 = distinct.take(1).head
+    take1 = distinct.take(1).head
     val map2 = customer_address.map(map2_f)
     val map3 = customer.map(map3_f)
     val join1 = map2.join(map3)
@@ -41,14 +42,14 @@ object Q6 extends Serializable {
     val join3 = map6.join(map7)
     join3.take(10).foreach(_println)
     val map8 = join3.map(map8_f)
-    val map9 = item.map(map9_f())
+    val map9 = item.map(map9_f)
     val join4 = map8.join(map9)
     join4.take(10).foreach(_println)
     val map10 = join4.map(map10_f)
     val map11 = map10.map(map11_f)
     val reduce1 = map11.reduce(reduce1_f)
     _println(s"reduce1 = $reduce1")
-    val subquery2_result = reduce1._1 / reduce1._2
+    subquery2_result = reduce1._1 / reduce1._2
     _println(s"subquery2 result = ${subquery2_result}")
     val filter2 = map10.filter(filter2_f)
     filter2.take(10).foreach(_println)

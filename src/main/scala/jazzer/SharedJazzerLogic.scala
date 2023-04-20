@@ -4,20 +4,107 @@ import com.code_intelligence.jazzer.api.FuzzedDataProvider
 import scoverage.Platform.FileWriter
 import scoverage.Serializer
 import utils.{FileUtils, IOUtils}
-
-import java.io.File
+import fuzzer.NewFuzzer._
+import fuzzer._
+import java.io.{File, FileFilter}
+import scala.reflect.io.Directory
 
 object SharedJazzerLogic {
 
   var i = 0
   var prevCov = 0.0
   var t_start: Long = 0
+  var lastCoverage = 0.0;
+  var testCaseOutDir = ""
+  var coverageOutDir = ""
+  var refCoverageOutDir = ""
+  var mutantKilled = false
+  var postMutantKill = false
+  var refExecStats: ExecStats = null
+  var mutantExecStats: ExecStats = null
+  var refProgram: ExecutableProgram = null
+  var mutantProgram: ExecutableProgram = null
+  var stats = new FuzzStats("ref")
+  var outDir = ""
 
   def updateIteration(measurementsDir: String): Unit = {
-    i+=1
     new FileWriter(new File(s"$measurementsDir/iter"))
     .append(s"${getElapsedSeconds(t_start)}\n")
     .flush()
+  }
+
+  def fuzzerInitialize(args: Array[String], f: Array[String] => Unit, f_mutant: Array[String] => Unit): Unit = {
+    outDir = args(0)
+    testCaseOutDir = s"$outDir/interesting-inputs"
+    coverageOutDir = s"$outDir/scoverage-results"
+    refCoverageOutDir = s"$coverageOutDir/referenceProgram"
+    createMeasurementDir(outDir)
+    t_start = System.currentTimeMillis()
+    refProgram = new Program("ref","","",f,Array())
+    mutantProgram = new Program("mutant","","",f_mutant,Array())
+  }
+
+  def fuzzTestOneInputMutant(
+                        data: FuzzedDataProvider,
+                        f: Array[String] => Unit,
+                        f_mutant: Array[String] => Unit,
+                        measurementsDir: String,
+                        datasets: Array[String]): Unit = {
+
+    val mutated_files = createMutatedDatasets(data, datasets)
+    updateIteration(refCoverageOutDir)
+
+    var outDirTestCase = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
+    if (!mutantKilled) {
+      val (same, _refExecStats, _mutantExecStats) = compareExecutions(refProgram, mutantProgram, mutated_files)
+      refExecStats = _refExecStats
+      mutantExecStats = _mutantExecStats
+      mutantKilled = !same
+      if (mutantKilled) {
+        // handle diverging output
+        // probably should stop fuzzing here
+        val newOutDirTestCase = s"${outDirTestCase}_diverging"
+        new File(outDirTestCase).renameTo(new File(newOutDirTestCase))
+        outDirTestCase = newOutDirTestCase
+        //          return (stats, t_start, System.currentTimeMillis())
+      }
+    } else {
+      val execInfo = exec(refProgram, mutated_files)
+      postMutantKill = true
+    }
+
+    val (newStats, newLastCoverage, changed) = analyzeAndLogCoverage(refCoverageOutDir, stats, lastCoverage, t_start)
+    //      val (newMutantStats, newMutantLastCoverage, _) = analyzeAndLogCoverage(mutantCoverageOutDir, mutantStats, mutantLastCoverage)
+
+    logTimeAndIteration(outDir, t_start)
+
+    if (changed) {
+      logTimeAndIteration(outDirTestCase, t_start)
+      writeStringToFile(s"$outDirTestCase/ref_output.stdout", refExecStats.stdout)
+      writeStringToFile(s"$outDirTestCase/ref_output.stderr", refExecStats.stderr)
+      if (!postMutantKill) {
+        writeStringToFile(s"$outDirTestCase/mutant_output.stdout", mutantExecStats.stdout)
+        writeStringToFile(s"$outDirTestCase/mutant_output.stderr", mutantExecStats.stderr)
+      }
+      new File(outDirTestCase).renameTo(new File(s"${outDirTestCase}_newCov_${newLastCoverage}"))
+    }
+
+    if (!changed && (!mutantKilled || postMutantKill)) {
+      new Directory(new File(outDirTestCase)).deleteRecursively()
+    }
+
+    stats = newStats
+    lastCoverage = newLastCoverage
+    i+=1
+    SharedJazzerLogic.trackCumulativeCoverage(refCoverageOutDir)
+//    var throwable: Throwable = null
+//    try {
+//      f(newDatasets)
+//    }
+//    catch { case e: Throwable => throwable = e}
+//    finally {  }
+//    if (throwable != null)
+//      throw throwable
   }
 
   def fuzzTestOneInput(
@@ -78,12 +165,13 @@ object SharedJazzerLogic {
 
 
   def createMutatedDatasets(provider: FuzzedDataProvider, datasets: Array[String]): Array[String] = {
-    datasets.map{ path => createMutatedDataset(provider, path) }
+    val toConsume = provider.remainingBytes()/datasets.length
+    datasets.map{ path => createMutatedDataset(provider, path, toConsume) }
   }
 
-  def createMutatedDataset(provider: FuzzedDataProvider, path: String): String = {
-    val data = provider.consumeRemainingAsAsciiString().split("\n")
-    FileUtils.writeToFile(data.toSeq, s"$path/part-00000")
+  def createMutatedDataset(provider: FuzzedDataProvider, path: String, toConsume: Int): String = {
+    val data = provider.consumeAsciiString(toConsume)
+    FileUtils.writeToFile(Seq(data), s"$path/part-00000")
     path
   }
 }

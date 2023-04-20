@@ -13,6 +13,8 @@ object JazzerTargetQ3 {
     "/inputs/ds2",
     "/inputs/ds3"
   )
+  var f: Array[String] => Unit = null
+  var f_mutant: Array[String] => Unit = null
 
   def fuzzerInitialize(args: Array[String]): Unit = {
     measurementsDir = args(0)
@@ -20,8 +22,19 @@ object JazzerTargetQ3 {
     pkg = args(2)
     mutantName = args(3)
 
-    SharedJazzerLogic.t_start = System.currentTimeMillis()
-    SharedJazzerLogic.createMeasurementDir(measurementsDir)
+    f = pkg match {
+      case "faulty" => examples.faulty.Q3.main
+    }
+
+    f_mutant = mutantName.takeRight(2) match {
+      case "M0" => examples.mutants.Q3.Q3_M0.main
+      case "M1" => examples.mutants.Q3.Q3_M1.main
+      case "M2" => examples.mutants.Q3.Q3_M2.main
+      case "M3" => examples.mutants.Q3.Q3_M3.main
+      case "M4" => examples.mutants.Q3.Q3_M4.main
+    }
+
+    SharedJazzerLogic.fuzzerInitialize(args,f,f_mutant)
   }
 
   def fuzzerTestOneInput(data: FuzzedDataProvider): Unit = {
@@ -32,10 +45,6 @@ object JazzerTargetQ3 {
     // Schema ds1 & ds2: string,int,int,int,int,int,string
 
 
-    val f: Array[String] => Unit = pkg match {
-      case "faulty" => examples.faulty.Q3.main
-    }
-
     mode match {
       case "reproduce" => SharedJazzerLogic.fuzzTestOneInput(
         data,
@@ -45,6 +54,13 @@ object JazzerTargetQ3 {
       case "fuzz" => SharedJazzerLogic.fuzzTestOneInput(
         data,
         f,
+        measurementsDir,
+        datasets
+      )
+      case "mutant" => SharedJazzerLogic.fuzzTestOneInputMutant(
+        data,
+        f,
+        f_mutant,
         measurementsDir,
         datasets
       )
