@@ -195,7 +195,7 @@ object RunRIGFuzzOverheadTest extends Serializable {
 
     qrs.foreach {
       qr =>
-        println("qr------")
+        println(s"qr [${qr.query.head.tree}]------")
         qr.filterQueryRDDs.foreach(rdd => rdd.foreach(println))
     }
 
