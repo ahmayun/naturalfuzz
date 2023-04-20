@@ -29,6 +29,7 @@ DIR_JAZZER_OUT="target/jazzer-output/$MUTANT_NAME"
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
+mkdir -p $DIR_JAZZER_OUT/measurements/refProgram || exit 1
 
 ./crash-checker.sh 	$DIR_JAZZER_OUT/reproducers/  \
 			target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/iter \
@@ -46,12 +47,12 @@ sbt assembly || exitScript
 java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
-          $DIR_JAZZER_OUT/measurements \
+          $DIR_JAZZER_OUT/measurements/refProgram \
           || exit 1
 
 
-mkdir -p target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements
-cp $DIR_JAZZER_OUT/measurements/scoverage.coverage target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements || exit 1
+mkdir -p target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/refProgram
+cp $DIR_JAZZER_OUT/measurements/refProgram/scoverage.coverage target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/refProgram || exit 1
 
 pushd target/scala-$SCALA_VER/classes || exit
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
@@ -88,13 +89,13 @@ chown $(whoami):$(whoami) target/scala-$SCALA_VER/crash*
 mv -v -f target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
 mv -v -f target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
 
-echo "Removing target/scala-$SCALA_VER/target"
-rm -rf target/scala-$SCALA_VER/target
+#echo "Removing target/scala-$SCALA_VER/target"
+#rm -rf target/scala-$SCALA_VER/target
 
 echo "Consolidating measurements"
 java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.CoverageMeasurementConsolidator \
-          $DIR_JAZZER_OUT/measurements \
+          $DIR_JAZZER_OUT/measurements/refProgram \
           src/main/scala \
           $DIR_JAZZER_OUT/report
 
