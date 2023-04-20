@@ -38,7 +38,8 @@ object SharedJazzerLogic {
     testCaseOutDir = s"$outDir/interesting-inputs"
     coverageOutDir = s"$outDir/scoverage-results"
     refCoverageOutDir = s"$coverageOutDir/referenceProgram"
-    createMeasurementDir(outDir)
+    createDirs(testCaseOutDir)
+    createDirs(refCoverageOutDir)
     t_start = System.currentTimeMillis()
     refProgram = new Program("ref","","",f,Array())
     mutantProgram = new Program("mutant","","",f_mutant,Array())
@@ -160,6 +161,10 @@ object SharedJazzerLogic {
   }
 
   def createMeasurementDir(path: String): Unit = {
+    new File(path).mkdirs()
+  }
+
+  def createDirs(path: String): Unit = {
     new File(path).mkdirs()
   }
 
