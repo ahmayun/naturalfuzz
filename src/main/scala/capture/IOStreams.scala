@@ -3,8 +3,9 @@ package capture
 object IOStreams {
 
   def _println(x: Any): Unit = {
-    fuzzer.Global.stdout += s"${x.toString}\n"
-    println(flatAny(x))
+    val str = flatAny(x)
+    fuzzer.Global.stdout += s"${str}\n"
+    println(str)
   }
 
   def flatProduct(t: Product): Iterator[Any] = {
