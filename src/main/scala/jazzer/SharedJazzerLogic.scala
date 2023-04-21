@@ -90,7 +90,7 @@ object SharedJazzerLogic {
     }
 
     if (!changed && (!mutantKilled || postMutantKill)) {
-//      new Directory(new File(outDirTestCase)).deleteRecursively()
+      new Directory(new File(outDirTestCase)).deleteRecursively()
     }
 
     stats = newStats
