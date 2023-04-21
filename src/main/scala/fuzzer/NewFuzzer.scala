@@ -137,7 +137,7 @@ object NewFuzzer {
   }
 
   def constructErrorReport(e: Throwable) = {
-    s"$e2\nmessage: ${e2.getMessage}\nstack_trace:-\n${e2.getStackTrace.mkString("\n")}"
+    s"$e\nmessage: ${e.getMessage}\nstack_trace:-\n${e.getStackTrace.mkString("\n")}"
   }
 
   def exec(program: ExecutableProgram, args: Array[String]): ExecStats = {
