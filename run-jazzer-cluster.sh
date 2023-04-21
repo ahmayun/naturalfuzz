@@ -86,11 +86,11 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
 chown -R $(whoami):$(whoami) target/scala-$SCALA_VER/target
 chown $(whoami):$(whoami) target/scala-$SCALA_VER/crash*
 
-cp -r -v -f target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
-cp -r -v -f target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
+cp -r -f target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
+cp -r -f target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
 
-#echo "Removing target/scala-$SCALA_VER/target"
-#rm -rf target/scala-$SCALA_VER/target
+echo "Removing target/scala-$SCALA_VER/target"
+rm -rf target/scala-$SCALA_VER/target
 
 echo "Consolidating measurements"
 java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
