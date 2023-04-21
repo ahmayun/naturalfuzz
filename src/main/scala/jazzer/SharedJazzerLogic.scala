@@ -177,6 +177,11 @@ object SharedJazzerLogic {
 
   def createMutatedDataset(provider: FuzzedDataProvider, path: String, toConsume: Int): String = {
     val data = provider.consumeAsciiString(toConsume)
+    println(
+      s"""
+        |DATA GENERATED (CONSUMING $toConsume BYTES | TOTAL BYTES: ${provider.remainingBytes()}):
+        |${data}
+        |""".stripMargin)
     FileUtils.writeToFile(Seq(data), s"$path/part-00000")
     path
   }
