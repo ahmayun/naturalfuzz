@@ -11,7 +11,6 @@ import scala.reflect.io.Directory
 
 object SharedJazzerLogic {
 
-  var i = 0
   var prevCov = 0.0
   var t_start: Long = 0
   var lastCoverage = 0.0;
@@ -91,12 +90,11 @@ object SharedJazzerLogic {
     }
 
     if (!changed && (!mutantKilled || postMutantKill)) {
-      new Directory(new File(outDirTestCase)).deleteRecursively()
+//      new Directory(new File(outDirTestCase)).deleteRecursively()
     }
 
     stats = newStats
     lastCoverage = newLastCoverage
-    i+=1
     fuzzer.Global.iteration += 1
     SharedJazzerLogic.trackCumulativeCoverage(refCoverageOutDir)
 //    var throwable: Throwable = null
@@ -177,11 +175,6 @@ object SharedJazzerLogic {
 
   def createMutatedDataset(provider: FuzzedDataProvider, path: String, toConsume: Int): String = {
     val data = provider.consumeAsciiString(toConsume)
-    println(
-      s"""
-        |DATA GENERATED (CONSUMING $toConsume BYTES | TOTAL BYTES: ${provider.remainingBytes()}):
-        |${data}
-        |""".stripMargin)
     FileUtils.writeToFile(Seq(data), s"$path/part-00000")
     path
   }
