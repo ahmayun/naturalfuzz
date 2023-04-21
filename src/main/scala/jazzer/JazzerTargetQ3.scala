@@ -9,9 +9,9 @@ object JazzerTargetQ3 {
   var measurementsDir: String = ""
   var mutantName = ""
   val datasets: Array[String] = Array(
-    "/inputs/ds1",
-    "/inputs/ds2",
-    "/inputs/ds3"
+    "dataset_0",
+    "dataset_1",
+    "dataset_2"
   )
   var f: Array[String] => Unit = null
   var f_mutant: Array[String] => Unit = null

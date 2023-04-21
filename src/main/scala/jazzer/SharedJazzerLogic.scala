@@ -52,10 +52,10 @@ object SharedJazzerLogic {
                         measurementsDir: String,
                         datasets: Array[String]): Unit = {
 
-    val mutated_files = createMutatedDatasets(data, datasets)
+    var outDirTestCase = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
+    val mutated_files = createMutatedDatasets(data, datasets.map(n => s"$outDirTestCase/$n"))
     updateIteration(refCoverageOutDir)
 
-    var outDirTestCase = s"$testCaseOutDir/iter_${fuzzer.Global.iteration}"
     if (!mutantKilled) {
       val (same, _refExecStats, _mutantExecStats) = compareExecutions(refProgram, mutantProgram, mutated_files)
       refExecStats = _refExecStats
@@ -97,6 +97,7 @@ object SharedJazzerLogic {
     stats = newStats
     lastCoverage = newLastCoverage
     i+=1
+    fuzzer.Global.iteration += 1
     SharedJazzerLogic.trackCumulativeCoverage(refCoverageOutDir)
 //    var throwable: Throwable = null
 //    try {
@@ -153,7 +154,7 @@ object SharedJazzerLogic {
     coverage.apply(measurements)
     if(coverage.statementCoveragePercent > prevCov) {
       new FileWriter(new File(s"$measurementsDir/coverage.tuples"), true)
-          .append(s"(${getElapsedSeconds(t_start)},${coverage.statementCoveragePercent}) %iter=$i")
+          .append(s"(${getElapsedSeconds(t_start)},${coverage.statementCoveragePercent}) %iter=${fuzzer.Global.iteration}")
           .append("\n")
           .flush()
       prevCov = coverage.statementCoveragePercent
