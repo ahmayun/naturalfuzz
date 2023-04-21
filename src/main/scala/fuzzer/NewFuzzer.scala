@@ -136,13 +136,16 @@ object NewFuzzer {
     (stats, t_start, System.currentTimeMillis())
   }
 
+  def constructErrorReport(e: Throwable) = {
+    s"$e2\nmessage: ${e2.getMessage}\nstack_trace:-\n${e2.getStackTrace.mkString("\n")}"
+  }
+
   def exec(program: ExecutableProgram, args: Array[String]): ExecStats = {
     val execStats = try {
       program.invokeMain(args)
       new ExecStats(Global.stdout, "", args, false)
     } catch {
-      case e: Throwable => new ExecStats(Global.stdout, s"$e", args, true)
-      case e2 => new ExecStats(Global.stdout, s"$e2", args, true)
+      case e: Throwable => new ExecStats(Global.stdout, constructErrorReport(e), args, true)
     }
     Global.stdout = ""
     execStats
