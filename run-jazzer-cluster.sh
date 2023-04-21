@@ -29,7 +29,7 @@ DIR_JAZZER_OUT="target/jazzer-output/$MUTANT_NAME"
 rm -rf $DIR_JAZZER_OUT
 rm -rf target/inputs/{ds1,ds2}
 mkdir -p $DIR_JAZZER_OUT/{measurements,report,log,reproducers,crashes} || exit 1
-mkdir -p $DIR_JAZZER_OUT/measurements/referenceProgram || exit 1
+mkdir -p $DIR_JAZZER_OUT/measurements/scoverage-results/referenceProgram || exit 1
 
 ./crash-checker.sh 	$DIR_JAZZER_OUT/reproducers/  \
 			target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/iter \
@@ -47,12 +47,12 @@ sbt assembly || exitScript
 java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
-          $DIR_JAZZER_OUT/measurements/referenceProgram \
+          $DIR_JAZZER_OUT/measurements/scoverage-results/referenceProgram \
           || exit 1
 
 
-mkdir -p target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/referenceProgram
-cp $DIR_JAZZER_OUT/measurements/referenceProgram/scoverage.coverage target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/referenceProgram || exit 1
+mkdir -p target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/scoverage-results/referenceProgram
+cp $DIR_JAZZER_OUT/measurements/scoverage-results/referenceProgram/scoverage.coverage target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/scoverage-results/referenceProgram || exit 1
 
 pushd target/scala-$SCALA_VER/classes || exit
 jar uvf  ../ProvFuzz-assembly-1.0.jar \
@@ -95,7 +95,7 @@ cp -r -v -f target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_O
 echo "Consolidating measurements"
 java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
           utils.CoverageMeasurementConsolidator \
-          $DIR_JAZZER_OUT/measurements/referenceProgram \
+          $DIR_JAZZER_OUT/measurements/scoverage-results/referenceProgram \
           src/main/scala \
           $DIR_JAZZER_OUT/report
 
