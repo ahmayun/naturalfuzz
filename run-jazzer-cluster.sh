@@ -103,6 +103,7 @@ java -cp  target/scala-$SCALA_VER/ProvFuzz-assembly-1.0.jar \
 echo "Killing watchers"
 kill $(ps -e | grep inotifywait | sed -e 's/\([0-9]\+\).\+/\1/')
 
+cat $DIR_JAZZER_OUT/measurements/scoverage-results/referenceProgram/coverage.tuples
 
 # to reproduce errors
 #sudo docker run \
