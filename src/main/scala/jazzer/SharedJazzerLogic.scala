@@ -29,7 +29,7 @@ object SharedJazzerLogic {
 
   def updateIteration(measurementsDir: String): Unit = {
     new FileWriter(new File(s"$measurementsDir/iter"))
-    .append(s"${getElapsedSeconds(t_start)}\n")
+    .append(s"elapsed_time=${getElapsedSeconds(t_start)} iter=${fuzzer.Global.iteration}\n")
     .flush()
   }
 
