@@ -86,8 +86,8 @@ timeout $DURATION docker run -v "$(pwd)"/target/scala-$SCALA_VER:/fuzzing \
 chown -R $(whoami):$(whoami) target/scala-$SCALA_VER/target
 chown $(whoami):$(whoami) target/scala-$SCALA_VER/crash*
 
-mv -v -f target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
-mv -v -f target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
+cp -r -v -f target/scala-$SCALA_VER/crash* $DIR_JAZZER_OUT/crashes
+cp -r -v -f target/scala-$SCALA_VER/$DIR_JAZZER_OUT/measurements/* $DIR_JAZZER_OUT/measurements
 
 #echo "Removing target/scala-$SCALA_VER/target"
 #rm -rf target/scala-$SCALA_VER/target
