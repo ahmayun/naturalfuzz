@@ -15,6 +15,6 @@ for i in $(seq 1 10); do
       SCALAFILE=$(basename "$file") # drop path prefix
       PROGRAM=${SCALAFILE%.*} # drop .scala extension
       echo "Running EXPERIMENT $i for $PROGRAM"
+      fuzz-mutants $PROGRAM
     done
-  fuzz-mutants $PROGRAM
 done
