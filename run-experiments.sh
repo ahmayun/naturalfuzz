@@ -26,10 +26,44 @@ drop-path-and-ext() {
   echo ${FILE%.*} # drop .scala extension
 }
 
+get-dataset-paths() {
+  QUERY=$1
+
+  case $QUERY in
+    Q1)
+      echo "Path for Q1 dataset"
+      ;;
+    Q3)
+      echo "Path for Q3 dataset"
+      ;;
+    Q6)
+      echo "Path for Q6 dataset"
+      ;;
+    Q7)
+      echo "Path for Q7 dataset"
+      ;;
+    Q12)
+      echo "Path for Q12 dataset"
+      ;;
+    Q15)
+      echo "Path for Q15 dataset"
+      ;;
+    Q19)
+      echo "Path for Q19 dataset"
+      ;;
+    Q20)
+      echo "Path for Q20 dataset"
+      ;;
+    *)
+      echo "Invalid query"
+      ;;
+  esac
+}
+
 run-overhead-test() {
   QUERY=$1
   echo "starting overhead test for $QUERY"
-#  echo "./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest Q1 spark://zion-headnode:7077 ~/overheadtests /TPCDS_1G_NOHEADER_NOCOMMAS/{store_returns,date_dim,store,customer}"
+  echo "./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 ~/overheadtests $(get-dataset-paths $QUERY)"
   unset QUERY
 }
 
