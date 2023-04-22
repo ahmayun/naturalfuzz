@@ -68,6 +68,7 @@ get-dataset-paths() {
 run-overhead-test() {
   QUERY=$1
   echo "starting overhead test for $QUERY"
+  sed -i "s/var benchmarkName = \".*\"/var benchmarkName = \"$QUERY\"/" src/main/scala/runners/Config.scala
   ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 $EXPERIMENT_DIR $(get-dataset-paths $QUERY) || exit 1
   unset QUERY
 }
