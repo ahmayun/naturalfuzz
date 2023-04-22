@@ -74,7 +74,7 @@ run-overhead-test() {
 
 
 # Loop from 1 to 10
-for i in $(seq 1 1); do
+for i in $(seq 1 5); do
     for file in src/main/scala/examples/faulty/Q*; do
       PROGRAM=$(drop-path-and-ext $file)
       echo "running EXPERIMENT $i for $PROGRAM"
