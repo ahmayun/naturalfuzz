@@ -7,7 +7,7 @@ fuzz-mutant() {
   echo "starting fuzzing for mutant $MUTANT of program $QUERY"
 }
 
-run-fuzzing() {
+run-fuzzing-test() {
   QUERY=$1
   echo "starting fuzzing tests for $QUERY"
   DIR="src/main/scala/examples/mutants/$QUERY"
