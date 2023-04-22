@@ -12,8 +12,9 @@ fuzz-mutants() {
 # Loop from 1 to 10
 for i in $(seq 1 10); do
     for file in src/main/scala/examples/faulty/Q*; do
-      PROGRAM=$(basename "$file")
+      SCALAFILE=$(basename "$file") # drop path prefix
+      PROGRAM=${SCALAFILE%.*} # drop .scala extension
       echo "Running EXPERIMENT $i for $PROGRAM"
     done
-#  fuzz-mutants PROGRAM
+  fuzz-mutants PROGRAM
 done
