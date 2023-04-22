@@ -31,28 +31,28 @@ get-dataset-paths() {
 
   case $QUERY in
     Q1)
-      echo "Path for Q1 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{store_returns,date_dim,store,customer}"
       ;;
     Q3)
-      echo "Path for Q3 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{store_sales,date_dim,item}"
       ;;
     Q6)
-      echo "Path for Q6 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{customer_address,customer,store_sales,date_dim,item}"
       ;;
     Q7)
-      echo "Path for Q7 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{customer_demographics,promotion,store_sales,date_dim,item}"
       ;;
     Q12)
-      echo "Path for Q12 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{web_sales,date_dim,item}"
       ;;
     Q15)
-      echo "Path for Q15 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{catalog_sales,customer,customer_address,date_dim}"
       ;;
     Q19)
-      echo "Path for Q19 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{date_dim,store_sales,item,customer,customer_address,store}"
       ;;
     Q20)
-      echo "Path for Q20 dataset"
+      eval echo "/TPCDS_1G_NOHEADER_NOCOMMAS/{catalog_sales,date_dim,item}"
       ;;
     *)
       echo "Invalid query"
