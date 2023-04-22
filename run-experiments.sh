@@ -26,26 +26,6 @@ drop-path-and-ext() {
   echo ${FILE%.*} # drop .scala extension
 }
 
-run-overhead-test() {
-  QUERY=$1
-  echo "starting overhead test for $QUERY"
-  echo "./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 ~/overheadtests $(get-dataset-paths $QUERY)"
-  unset QUERY
-}
-
-
-# Loop from 1 to 10
-for i in $(seq 1 1); do
-    for file in src/main/scala/examples/faulty/Q*; do
-      PROGRAM=$(drop-path-and-ext $file)
-      echo "running EXPERIMENT $i for $PROGRAM"
-      run-overhead-test $PROGRAM
-      run-fuzzing-test $PROGRAM
-    done
-done
-
-
-
 get-dataset-paths() {
   QUERY=$1
 
@@ -79,3 +59,21 @@ get-dataset-paths() {
       ;;
   esac
 }
+
+run-overhead-test() {
+  QUERY=$1
+  echo "starting overhead test for $QUERY"
+  echo "./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 ~/overheadtests $(get-dataset-paths $QUERY)"
+  unset QUERY
+}
+
+
+# Loop from 1 to 10
+for i in $(seq 1 1); do
+    for file in src/main/scala/examples/faulty/Q*; do
+      PROGRAM=$(drop-path-and-ext $file)
+      echo "running EXPERIMENT $i for $PROGRAM"
+      run-overhead-test $PROGRAM
+      run-fuzzing-test $PROGRAM
+    done
+done
