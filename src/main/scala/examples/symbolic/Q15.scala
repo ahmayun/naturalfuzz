@@ -75,7 +75,7 @@ object Q15 extends Serializable {
     val map7 = join3.map({
       case (_, ((cs_row, c_row, ca_row), dd_row)) =>
         val cs_sales_price = convertColToFloat(cs_row, 20)
-        (ca_row(9), cs_sales_price)
+        (getColOrEmpty(ca_row,9), cs_sales_price)
     })
     val rbk1 = map7.reduceByKey(_+_)
     rbk1.take(10).foreach(println)
