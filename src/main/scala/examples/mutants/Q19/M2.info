@@ -1,1 +1,1 @@
-M2_L46_eq_gte: d_moy == MONTH.toString
+M2_L96_eq_gte: d_moy == MONTH.toString
