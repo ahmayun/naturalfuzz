@@ -7,19 +7,17 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 object Q20 extends Serializable {
+  val YEAR = 1998
+  val START_DATE = s"$YEAR-01-01"
+  val END_DATE = s"$YEAR-02-01"
+  val CAT = List("Home", "Electronics", "Shoes") // many more
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 20").setMaster("spark://zion-headnode:7077")
-    val sc = SparkContext.getOrCreate(sparkConf)
+      .setMaster("local[1]")
+      .setAppName("TPC-DS Query 20")
+    val sc = new SparkContext(sparkConf)
     sc.setLogLevel("ERROR")
-//    val datasetsPath = "./data_tpcds"
-//    val seed = "ahmad".hashCode()
-//    val rand = new Random(seed)
-    val YEAR = 1999 // rand.nextInt(2003 - 1998) + 1998
-    val START_DATE = s"$YEAR-01-01"
-    val END_DATE = s"$YEAR-02-01"
-    val CAT = List("Home", "Electronics", "Shoes") // many more
 
     val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
     args(0) = s"$p/catalog_sales"
@@ -29,116 +27,44 @@ object Q20 extends Serializable {
     args(2) = s"$p/item"
     val item = sc.textFile(args(2)).map(_.split(","))
 
-    val filtered_item = item.filter {
-      row =>
-        val category = row(12)
-        CAT.contains(category)
-    }
+    val filtered_item = item.filter(filtered_item_f)
     filtered_item.take(10).foreach(_println)
 
-    val filtered_dd = date_dim.filter {
-      row =>
-        val d_date = row(2)
-        isBetween(d_date, START_DATE, END_DATE)
-    }
+    val filtered_dd = date_dim.filter(filtered_dd_f)
     filtered_dd.take(10).foreach(_println)
 
-    val map1 = catalog_sales.map(row => (row(2)/*ws_item_sk*/, row))
+    val map1 = catalog_sales.map(map1_f)
 
-    val map2 = filtered_item.map(row => (row.head, row))
+    val map2 = filtered_item.map(map2_f)
 
     val join1 = map1.join(map2)
     join1.take(10).foreach(_println)
 
-    val map3 = join1.map {
-        case (item_sk, (cs_row, i_row)) =>
-          (cs_row.last/*ws_sold_date*/, (cs_row, i_row))
-      }
+    val map3 = join1.map(map3_f)
 
-    val map4 = filtered_dd.map(row => (row.head, row))
+    val map4 = filtered_dd.map(map4_f)
 
     val join2 = map3.join(map4)
     join2.take(10).foreach(_println)
 
-    val map5 = join2.map {
-        case (_, ((cs_row, i_row), dd_row)) =>
-          val i_item_id = i_row(1)
-          val i_item_desc = i_row(4)
-          val i_category = i_row(12)
-          val i_class = i_row(10)
-          val i_current_price = i_row(5)
-          val cs_ext_sales_price = convertColToFloat(cs_row, 22)
+    val map5 = join2.map(map5_f)
 
-
-          ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) // there should be another value here
-      }
-
-    val map6 = map5.map {
-        case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
-          (i_class, cs_ext_sales_price)
-      }
-    val rbk1 = map6.reduceByKey(_+_)
+    val map6 = map5.map(map6_f)
+    val rbk1 = map6.reduceByKey(rbk1_f)
     rbk1.take(10).foreach(_println)
 
 
-    val rbk2 = map5.reduceByKey(_ + _)
+    val rbk2 = map5.reduceByKey(rbk2_f)
     rbk2.take(10).foreach(_println)
 
-    val map7 = rbk2.map {
-        case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
-          (i_class, (i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price))
-      }
+    val map7 = rbk2.map(map7_f)
     val join3 = map7.join(rbk1)
     join3.take(10).foreach(_println)
 
-    val map8 = join3.map {
-        case (i_class, ((i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price), class_rev)) =>
-          (i_item_id, i_item_desc, i_category, i_class, i_current_price, cs_ext_sales_price, cs_ext_sales_price/class_rev)
-      }
+    val map8 = join3.map(map8_f)
     val sortBy1 = map8.sortBy(_._3)
 
     sortBy1.take(10).foreach(_println)
-
-    /*
-
-    define YEAR=random(1998,2002,uniform);
-    define SDATE=date([YEAR]+"-01-01",[YEAR]+"-07-01",sales);
-    define CATEGORY=ulist(dist(categories,1,1),3);
-    define _LIMIT=100;
-
-    [_LIMITA] select [_LIMITB] i_item_id
-          ,i_item_desc
-          ,i_category
-          ,i_class
-          ,i_current_price
-          ,sum(ws_ext_sales_price) as itemrevenue
-          ,sum(ws_ext_sales_price)*100/sum(sum(ws_ext_sales_price)) over
-              (partition by i_class) as revenueratio
-    from
-      web_sales
-          ,item
-          ,date_dim
-    where
-      ws_item_sk = i_item_sk
-        and i_category in ('[CATEGORY.1]', '[CATEGORY.2]', '[CATEGORY.3]')
-        and ws_sold_date_sk = d_date_sk
-      and d_date between cast('[SDATE]' as date)
-            and (cast('[SDATE]' as date) + 30 days)
-    group by
-      i_item_id
-            ,i_item_desc
-            ,i_category
-            ,i_class
-            ,i_current_price
-    order by
-      i_category
-            ,i_class
-            ,i_item_id
-            ,i_item_desc
-            ,revenueratio
-    [_LIMITC];
-    */
-
   }
 
   def convertColToFloat(row: Array[String], col: Int): Float = {
@@ -161,36 +87,64 @@ object Q20 extends Serializable {
     }
   }
 
-  /* ORIGINAL QUERY:
-  define COUNTY = random(1, rowcount("active_counties", "store"), uniform);
-  define STATE = distmember(fips_county, [COUNTY], 3);
-  define YEAR = random(1998, 2002, uniform);
-  define AGG_FIELD = text({"SR_RETURN_AMT",1},{"SR_FEE",1},{"SR_REFUNDED_CASH",1},{"SR_RETURN_AMT_INC_TAX",1},{"SR_REVERSED_CHARGE",1},{"SR_STORE_CREDIT",1},{"SR_RETURN_TAX",1});
-  define _LIMIT=100;
+  def filtered_item_f(row: Array[String]) = {
+    val category = row(12)
+    CAT.contains(category)
+  }
+  def filtered_dd_f(row: Array[String]) = {
+    val d_date = row(2)
+    isBetween(d_date, START_DATE, END_DATE)
+  }
+  def map1_f(row: Array[String]) = {
+    (row(2)/*ws_item_sk*/, row)
+  }
+  def map2_f(row: Array[String]) = {
+    (row.head, row)
+  }
+  def map3_f(row: (String, (Array[String], Array[String]))) = {
+    row match {
+      case (item_sk, (cs_row, i_row)) =>
+        (cs_row.last/*ws_sold_date*/, (cs_row, i_row))
+    }
+  }
+  def map4_f(row: Array[String]) = {
+    (row.head, row)
+  }
+  def map5_f(row: (String, ((Array[String], Array[String]), Array[String]))) = {
+    row match {
+      case (_, ((cs_row, i_row), dd_row)) =>
+        val i_item_id = i_row(1)
+        val i_item_desc = i_row(4)
+        val i_category = i_row(12)
+        val i_class = i_row(10)
+        val i_current_price = i_row(5)
+        val cs_ext_sales_price = convertColToFloat(cs_row, 22)
 
-  with customer_total_return as
-  (
-      select sr_customer_sk as ctr_customer_sk ,sr_store_sk as ctr_store_sk ,sum([AGG_FIELD])
-                                                                                  as ctr_total_return
-      from store_returns ,date_dim
-      where sr_returned_date_sk = d_date_sk
-      and d_year =[YEAR]
-      group by sr_customer_sk ,sr_store_sk
-  )
-  [_LIMITA]
-
-  select [_LIMITB] c_customer_id
-  from customer_total_return ctr1 ,store ,customer
-  where ctr1.ctr_total_return >   (
-                                      -- subquery 1
-                                      select avg(ctr_total_return)*1.2
-                                      from customer_total_return ctr2
-                                      where ctr1.ctr_store_sk = ctr2.ctr_store_sk
-                                  )
-  and s_store_sk = ctr1.ctr_store_sk
-  and s_state = '[STATE]'
-  and ctr1.ctr_customer_sk = c_customer_sk
-  order by c_customer_id
-  [_LIMITC];
-   */
+        ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) // there should be another value here
+    }
+  }
+  def map6_f(row: ((String, String, String, String, String), Float)) = {
+    row match {
+      case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
+        (i_class, cs_ext_sales_price)
+    }
+  }
+  def rbk1_f(x: Float, y: Float) = {
+    x + y
+  }
+  def rbk2_f(x: Float, y: Float) = {
+    x + y
+  }
+  def map7_f(row: ((String, String, String, String, String), Float)) = {
+    row match {
+      case ((i_item_id, i_item_desc, i_category, i_class, i_current_price), cs_ext_sales_price) =>
+        (i_class, (i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price))
+    }
+  }
+  def map8_f(row: (String, ((String, String, String, String, Float), Float))) = {
+    row match {
+      case (i_class, ((i_item_id, i_item_desc, i_category, i_current_price, cs_ext_sales_price), class_rev)) =>
+        (i_item_id, i_item_desc, i_category, i_class, i_current_price, cs_ext_sales_price, cs_ext_sales_price/class_rev)
+    }
+  }
 }
