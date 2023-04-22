@@ -68,7 +68,7 @@ get-dataset-paths() {
 run-overhead-test() {
   QUERY=$1
   echo "starting overhead test for $QUERY"
-  ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 $EXPERIMENT_DIR $(get-dataset-paths $QUERY)
+  ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 $EXPERIMENT_DIR $(get-dataset-paths $QUERY) || exit 1
   unset QUERY
 }
 
