@@ -203,11 +203,16 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
               case _ => try {
                 row(col).toFloat
               } catch {
+                case _: ArrayIndexOutOfBoundsException => ""
                 case _: Throwable => row(n.getCol)
               }
             }
           } else {
-            row(n.getCol)
+            try {
+              row(n.getCol)
+            } catch {
+              case _: Throwable => ""
+            }
           }
         case _ => 0
       }
@@ -217,6 +222,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
 
     val leval = left.eval(row, ds, offsetDS2)
     val reval = right.eval(row, ds, offsetDS2)
+
 
     if(leval.isInstanceOf[Boolean] || reval.isInstanceOf[Boolean]) {
       return encode(true)
@@ -274,7 +280,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
       case (_:String, _, _) => encode(false)
       case (_, _, "contains") => encode(true)
       case (_, _, "nop") => 0
-      case n => encode(false) // throw new Exception(s"n=$n imd=$isMultiDatasetQuery")
+      case n => 0 // encode(false) // throw new Exception(s"n=$n imd=$isMultiDatasetQuery")
     }
   }
 
