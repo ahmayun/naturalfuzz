@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# sample run:
+#     ./run-experiments.sh ~/final-experiments
+
+EXPERIMENT_DIR=$1
+mkdir -p $EXPERIMENT_DIR || exit 1
 
 fuzz-mutant() {
   QUERY=$1
@@ -63,7 +68,7 @@ get-dataset-paths() {
 run-overhead-test() {
   QUERY=$1
   echo "starting overhead test for $QUERY"
-  echo "./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 ~/overheadtests $(get-dataset-paths $QUERY)"
+  ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest $QUERY spark://zion-headnode:7077 $EXPERIMENT_DIR $(get-dataset-paths $QUERY)
   unset QUERY
 }
 
@@ -74,6 +79,6 @@ for i in $(seq 1 1); do
       PROGRAM=$(drop-path-and-ext $file)
       echo "running EXPERIMENT $i for $PROGRAM"
       run-overhead-test $PROGRAM
-      run-fuzzing-test $PROGRAM
+#      run-fuzzing-test $PROGRAM
     done
 done
