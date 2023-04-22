@@ -15,14 +15,14 @@ object Q15 extends Serializable {
     val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
 
-    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
-    args(0) = s"$p/catalog_sales"
+//    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+//    args(0) = s"$p/catalog_sales"
     val catalog_sales = sc.textFile(args(0)).map(_.split(","))
-    args(1) = s"$p/customer"
+//    args(1) = s"$p/customer"
     val customer = sc.textFile(args(1)).map(_.split(","))
-    args(2) = s"$p/customer_address"
+//    args(2) = s"$p/customer_address"
     val customer_address = sc.textFile(args(2)).map(_.split(","))
-    args(3) = s"$p/date_dim"
+//    args(3) = s"$p/date_dim"
     val date_dim = sc.textFile(args(3)).map(_.split(","))
     val filtered_dd = date_dim.filter(filtered_dd_f)
     filtered_dd.take(10).foreach(_println)

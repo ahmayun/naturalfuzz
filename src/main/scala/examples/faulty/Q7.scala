@@ -51,6 +51,7 @@ object Q7 extends Serializable {
     join4.take(10).foreach(_println)
 
     val map10 = join4.map(map10_f)
+    map10.take(10).foreach(_println)
     val rbk1 = map10.reduceByKey(rbk1_f)
     rbk1.take(10).foreach(_println)
 

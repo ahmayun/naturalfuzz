@@ -19,12 +19,12 @@ object Q20 extends Serializable {
     val sc = new SparkContext(sparkConf)
     sc.setLogLevel("ERROR")
 
-    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
-    args(0) = s"$p/catalog_sales"
+//    val p = "/TPCDS_1G_NOHEADER_NOCOMMAS"
+//    args(0) = s"$p/catalog_sales"
     val catalog_sales = sc.textFile(args(0)).map(_.split(","))
-    args(1) = s"$p/date_dim"
+//    args(1) = s"$p/date_dim"
     val date_dim = sc.textFile(args(1)).map(_.split(","))
-    args(2) = s"$p/item"
+//    args(2) = s"$p/item"
     val item = sc.textFile(args(2)).map(_.split(","))
 
     val filtered_item = item.filter(filtered_item_f)
