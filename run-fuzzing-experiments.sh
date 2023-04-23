@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # sample run:
-#     ./run-fuzzing-experiments.sh ~/final-overhead-tests seeds/bigfuzz jazzer 20
+#     ./run-fuzzing-experiments.sh ~/final-overhead-tests seeds/bigfuzz jazzer 305
 
 EXPERIMENTS_DIR=$1
 DIR_BIGFUZZ_SAMPLES=$2
