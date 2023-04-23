@@ -8,7 +8,10 @@ EXPERIMENTS_DIR=$1
 fuzz-mutant() {
   QUERY=$1
   MUTANT=$2
+  FUZZ_DIR=$3
   echo "starting fuzzing for mutant $MUTANT of program $QUERY"
+  echo "RIGFUZZ"
+  echo $QUERY $MUTANT faulty 20 $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
 
 }
 
@@ -19,7 +22,7 @@ run-fuzzing-test() {
   DIR="src/main/scala/examples/mutants/$QUERY"
   for mutant in "$DIR"/Q*; do
     MUTANT=$(drop-path-and-ext $mutant)
-    fuzz-mutant $QUERY $MUTANT
+    fuzz-mutant $QUERY $MUTANT $FUZZ_DIR
   done
   unset QUERY
   unset MUTANT
