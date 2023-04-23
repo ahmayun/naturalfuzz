@@ -6,6 +6,7 @@
 EXPERIMENTS_DIR=$1
 DIR_BIGFUZZ_SAMPLES=$2
 TOOL=$3
+DURATION=$4
 
 get-dataset-paths() {
   QUERY=$1
@@ -54,13 +55,13 @@ fuzz-mutant() {
   echo "starting fuzzing for mutant $MUTANT of program $QUERY"
   case $TOOL in
     rigfuzz)
-      echo ./run-rigfuzz.sh $QUERY $MUTANT faulty 20 $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
+      ./run-rigfuzz.sh $QUERY $MUTANT faulty $DURATION $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
       ;;
     bigfuzz)
-      echo ./run-bigfuzz.sh $QUERY $MUTANT faulty 20 $(get-dataset-paths $QUERY)
+      ./run-bigfuzz.sh $QUERY $MUTANT faulty $DURATION $(get-dataset-paths $QUERY)
       ;;
     jazzer)
-      echo ./run-jazzer-cluster.sh $QUERY $MUTANT mutant faulty 20
+      ./run-jazzer-cluster.sh $QUERY $MUTANT mutant faulty $DURATION
 
   esac
 
