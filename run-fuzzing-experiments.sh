@@ -11,28 +11,28 @@ get-dataset-paths() {
 
   case $QUERY in
     Q1)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{store_returns,date_dim,store,customer}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{store_returns,date_dim,store,customer}"
       ;;
     Q3)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{store_sales,date_dim,item}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{store_sales,date_dim,item}"
       ;;
     Q6)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{customer_address,customer,store_sales,date_dim,item}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{customer_address,customer,store_sales,date_dim,item}"
       ;;
     Q7)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{customer_demographics,promotion,store_sales,date_dim,item}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{customer_demographics,promotion,store_sales,date_dim,item}"
       ;;
     Q12)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{web_sales,date_dim,item}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{web_sales,date_dim,item}"
       ;;
     Q15)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{catalog_sales,customer,customer_address,date_dim}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{catalog_sales,customer,customer_address,date_dim}"
       ;;
     Q19)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{date_dim,store_sales,item,customer,customer_address,store}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{date_dim,store_sales,item,customer,customer_address,store}"
       ;;
     Q20)
-      eval echo "$DIR_BIGFUZZ_SAMPLES/{catalog_sales,date_dim,item}"
+      eval echo "$DIR_BIGFUZZ_SAMPLES/$QUERY/{catalog_sales,date_dim,item}"
       ;;
     *)
       echo "Invalid query"
