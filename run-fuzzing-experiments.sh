@@ -5,6 +5,7 @@
 
 EXPERIMENTS_DIR=$1
 DIR_BIGFUZZ_SAMPLES=$2
+TOOL=$3
 
 get-dataset-paths() {
   QUERY=$1
@@ -51,7 +52,7 @@ fuzz-mutant() {
   MUTANT=$2
   FUZZ_DIR=$3
   echo "starting fuzzing for mutant $MUTANT of program $QUERY"
-  case $QUERY in
+  case $TOOL in
     rigfuzz)
       echo ./run-rigfuzz.sh $QUERY $MUTANT faulty 20 $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
       ;;
