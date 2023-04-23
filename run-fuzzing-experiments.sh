@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # sample run:
-#     ./run-experiments.sh outdir:~/final-experiments datasetsdir:/TPCDS_1G_NOHEADER_NOCOMMAS
+#     ./run-experiments.sh experimentsdir:~/final-experiments datasetsdir:src/seeds/bigfuzz
 
-EXPERIMENT_DIR=$1
-mkdir -p $EXPERIMENT_DIR || exit 1
+EXPERIMENTS_DIR=$1
 
 fuzz-mutant() {
   QUERY=$1
@@ -15,6 +14,7 @@ fuzz-mutant() {
 
 run-fuzzing-test() {
   QUERY=$1
+  FUZZ_DIR=$2
   echo "starting fuzzing tests for $QUERY"
   DIR="src/main/scala/examples/mutants/$QUERY"
   for mutant in "$DIR"/Q*; do
@@ -75,12 +75,8 @@ run-overhead-test() {
 }
 
 
-# Loop from 1 to 10
-for i in $(seq 1 5); do
-    for file in src/main/scala/examples/faulty/Q*; do
-      PROGRAM=$(drop-path-and-ext $file)
-      echo "running EXPERIMENT $i for $PROGRAM"
-      run-overhead-test $PROGRAM
-#      run-fuzzing-test $PROGRAM
-    done
+for file in $(ls -hatr1 $EXPERIMENTS_DIR | grep Q); do
+  PROGRAM=$(echo $file | sed -E 's/(Q[0-9]{1,2}).+/\1/')
+  echo "fuzzing $PROGRAM from $file"
+  run-fuzzing-test $PROGRAM $file
 done
