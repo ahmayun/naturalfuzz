@@ -51,10 +51,17 @@ fuzz-mutant() {
   MUTANT=$2
   FUZZ_DIR=$3
   echo "starting fuzzing for mutant $MUTANT of program $QUERY"
-  echo "RIGFUZZ"
-#  echo ./run-rigfuzz.sh $QUERY $MUTANT faulty 20 $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
-  echo "BIGFUZZ"
-  echo ./run-bigfuzz.sh $QUERY $MUTANT faulty 20 $(get-dataset-paths $QUERY)
+  case $QUERY in
+    rigfuzz)
+      echo ./run-rigfuzz.sh $QUERY $MUTANT faulty 20 $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
+      ;;
+    bigfuzz)
+      echo ./run-bigfuzz.sh $QUERY $MUTANT faulty 20 $(get-dataset-paths $QUERY)
+      ;;
+    jazzer)
+      echo ./run-jazzer-cluster.sh $QUERY $MUTANT mutant faulty 20
+
+  esac
 
 }
 
