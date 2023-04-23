@@ -86,6 +86,6 @@ for file in $(ls -hatr1 $EXPERIMENTS_DIR | grep Q); do
   PROGRAM=$(echo $file | sed -E 's/(Q[0-9]{1,2}).+/\1/')
   SUFFIX=$(echo $file | sed -E 's/Q[0-9]{1,2}(.+)/\1/')
   echo "fuzzing $PROGRAM from $file"
-  echo "SUFFIX"
+  echo "SUFFIX $SUFFIX"
 #  run-fuzzing-test $PROGRAM "$EXPERIMENTS_DIR/$file"
 done
