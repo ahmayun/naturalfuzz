@@ -52,29 +52,34 @@ fuzz-mutant() {
   QUERY=$1
   MUTANT=$2
   FUZZ_DIR=$3
+  SUFFIX=$4
   echo "starting fuzzing for mutant $MUTANT of program $QUERY"
   case $TOOL in
     rigfuzz)
       ./run-rigfuzz.sh $QUERY $MUTANT faulty $DURATION $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
+      mv target/RIG-output/$MUTANT "target/RIG-output/$MUTANT$SUFFIX"
       ;;
     bigfuzz)
       ./run-bigfuzz.sh $QUERY $MUTANT faulty $DURATION $(get-dataset-paths $QUERY)
+      mv target/bigfuzz-output/$MUTANT "target/bigfuzz-output/$MUTANT$SUFFIX"
       ;;
     jazzer)
       ./run-jazzer-cluster.sh $QUERY $MUTANT mutant faulty $DURATION
-
+      mv target/jazzer-output/$MUTANT "target/jazzer-output/$MUTANT$SUFFIX"
+      ;;
   esac
 
 }
 
 run-fuzzing-test() {
   QUERY=$1
-  FUZZ_DIR=$2
+  SUFFIX=$2
+  FUZZ_DIR=$3
   echo "starting fuzzing tests for $QUERY"
   DIR="src/main/scala/examples/mutants/$QUERY"
   for mutant in "$DIR"/Q*; do
     MUTANT=$(drop-path-and-ext $mutant)
-    fuzz-mutant $QUERY $MUTANT $FUZZ_DIR
+    fuzz-mutant $QUERY $MUTANT $FUZZ_DIR $SUFFIX
   done
   unset QUERY
   unset MUTANT
@@ -86,6 +91,5 @@ for file in $(ls -hatr1 $EXPERIMENTS_DIR | grep Q); do
   PROGRAM=$(echo $file | sed -E 's/(Q[0-9]{1,2}).+/\1/')
   SUFFIX=$(echo $file | sed -E 's/Q[0-9]{1,2}(.+)/\1/')
   echo "fuzzing $PROGRAM from $file"
-  echo "SUFFIX $SUFFIX"
-#  run-fuzzing-test $PROGRAM "$EXPERIMENTS_DIR/$file"
+  run-fuzzing-test $PROGRAM $SUFFIX "$EXPERIMENTS_DIR/$file"
 done
