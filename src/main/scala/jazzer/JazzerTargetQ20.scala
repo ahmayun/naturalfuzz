@@ -23,7 +23,7 @@ object JazzerTargetQ20 {
     mutantName = args(3)
 
     f = pkg match {
-      case "faulty" => examples.faulty.Q1.main
+      case "faulty" => examples.faulty.Q20.main
     }
 
     f_mutant = mutantName.takeRight(2) match {
