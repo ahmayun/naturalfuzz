@@ -73,6 +73,7 @@ object NewFuzzer {
     val t_start = System.currentTimeMillis()
     var mutantKilled = false
     var postMutantKill = false
+    var mutantKilledThisIter = false
     var refExecStats: ExecStats = null
     var mutantExecStats: ExecStats = null
     while(!guidance.isDone()) {
@@ -90,6 +91,7 @@ object NewFuzzer {
           val newOutDirTestCase = s"${outDirTestCase}_diverging"
           new File(outDirTestCase).renameTo(new File(newOutDirTestCase))
           outDirTestCase = newOutDirTestCase
+          mutantKilledThisIter = true
 //          return (stats, t_start, System.currentTimeMillis())
         }
       } else {
@@ -103,7 +105,7 @@ object NewFuzzer {
       logTimeAndIteration(outDir, t_start)
       guidance.updateCoverage(getCoverage(refCoverageOutDir, fuzzer.Global.iteration))
 
-      if(changed) {
+      if(changed || mutantKilledThisIter) {
         logTimeAndIteration(outDirTestCase,t_start)
         writeStringToFile(s"$outDirTestCase/ref_output.stdout", refExecStats.stdout)
         writeStringToFile(s"$outDirTestCase/ref_output.stderr", refExecStats.stderr)
@@ -123,6 +125,7 @@ object NewFuzzer {
       lastCoverage = newLastCoverage
 //      mutantLastCoverage = newMutantLastCoverage
       fuzzer.Global.iteration += 1
+      mutantKilledThisIter = false
     }
 
     new FileWriter(new File(s"$refCoverageOutDir/coverage.tuples"), true)

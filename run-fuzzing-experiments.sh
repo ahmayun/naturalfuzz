@@ -56,15 +56,15 @@ fuzz-mutant() {
   echo "starting fuzzing for mutant $MUTANT of program $QUERY"
   case $TOOL in
     rigfuzz)
-      ./run-rigfuzz.sh $QUERY $MUTANT faulty $DURATION $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*}
+      ./run-rigfuzz.sh $QUERY $MUTANT faulty $DURATION $FUZZ_DIR/{qrs.pkl,reduced_data/dataset_*} || exit 1
       mv target/RIG-output/$MUTANT "target/RIG-output/$MUTANT$SUFFIX"
       ;;
     bigfuzz)
-      ./run-bigfuzz.sh $QUERY $MUTANT faulty $DURATION $(get-dataset-paths $QUERY)
+      ./run-bigfuzz.sh $QUERY $MUTANT faulty $DURATION $(get-dataset-paths $QUERY) || exit 1
       mv target/bigfuzz-output/$MUTANT "target/bigfuzz-output/$MUTANT$SUFFIX"
       ;;
     jazzer)
-      ./run-jazzer-cluster.sh $QUERY $MUTANT mutant faulty $DURATION
+      ./run-jazzer-cluster.sh $QUERY $MUTANT mutant faulty $DURATION || exit 1
       mv target/jazzer-output/$MUTANT "target/jazzer-output/$MUTANT$SUFFIX"
       ;;
   esac
