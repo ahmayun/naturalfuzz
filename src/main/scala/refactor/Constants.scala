@@ -12,7 +12,7 @@ object Constants extends Enumeration {
   val KEY_PREDICATE = "predicate"
 
   val MAP_TRANSFORMS = Map(
-//    KEY_FILTER -> "monitorFilterSymEx",
+    KEY_FILTER -> "monitorFilterSymEx",
     KEY_JOIN -> "monitorJoinSymEx",
     KEY_PREDICATE -> "monitorPredicateSymEx"
 //    KEY_GBK -> "monitorGroupByKey",

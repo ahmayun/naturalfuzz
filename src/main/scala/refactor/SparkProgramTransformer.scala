@@ -51,13 +51,41 @@ case class SparkProgramTransformer(tree: Tree) extends Transformer {
     Term.Apply(Term.Select(prefix, Term.Name("textFileProv")), args :+ parseFunc)
   }
 
+  def attachPredicateMonitorToStatement(stat: Stat): Stat = {
+    println(stat.structure)
+    val newstat = s"${Constants.MAP_TRANSFORMS(Constants.KEY_PREDICATE)}($stat, (List(), List()), 0, expressionAccumulator)".parse[Stat].get
+    println(newstat)
+    newstat
+  }
+  def attachPredicateMonitorAtEnd(body: Term): Term = {
+    body match {
+      case Term.Block(statements) =>
+        Term.Block(statements.updated(statements.length-1, attachPredicateMonitorToStatement(statements.last)))
+      case stat: Stat =>
+        Term.Block(List(attachPredicateMonitorToStatement(stat)))
+    }
+  }
+
+  def attachPredicateMonitor(udf: Term): Term = {
+    udf match {
+      case Term.Function(args, body) =>
+        Term.Function(args, attachPredicateMonitorAtEnd(body))
+      case Term.PartialFunction(cases) =>
+        Term.PartialFunction(cases.map {
+          case Case(pat, cond, body) => Case(pat, cond, attachPredicateMonitorAtEnd(body))
+        })
+    }
+  }
+
   def attachDFOMonitor(dfo: Term): Term = {
     val Term.Apply(Term.Select(rddName, Term.Name(dfoName)), args) = dfo
     dfoName match {
       case Constants.KEY_JOIN => s"${Constants.MAP_TRANSFORMS(Constants.KEY_JOIN)}($rddName, ${args.mkString(",")}, 0, expressionAccumulator)".parse[Term].get
       case Constants.KEY_GBK => s"${Constants.MAP_TRANSFORMS(Constants.KEY_GBK)}($rddName, 0)".parse[Term].get
       case Constants.KEY_RBK => s"${Constants.MAP_TRANSFORMS(Constants.KEY_RBK)}($rddName, ${args.mkString(",")}, 0, expressionAccumulator)".parse[Term].get
-      //      case Constants.KEY_FILTER => s"${Constants.MAP_TRANSFORMS(Constants.KEY_FILTER)}($rddName, ${args.mkString(",")}, $id)".parse[Term].get
+      case Constants.KEY_FILTER =>
+        val modifiedUDF = args.updated(0, attachPredicateMonitor(args.head))
+        Term.Apply(Term.Select(rddName, Term.Name(dfoName)), modifiedUDF)
       case _ => dfo
     }
   }
