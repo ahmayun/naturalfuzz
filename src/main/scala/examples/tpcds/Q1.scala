@@ -17,19 +17,9 @@ object Q1 extends Serializable {
     //    val expressionAccumulator: CollectionAccumulator[SymbolicExpression] = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
 
     val Array(store_returns, date_dim, store, customer) = if (!args.isEmpty) {
-      println("loading ds1")
-      val store_returns = try {
-        sc.textFile(args(0)).map(_.split(","))
-      } catch {
-      case e: Throwable =>
-        println(s"loading error: ${e}")
-          null
-    }
-      println("loading ds2")
+      val store_returns = sc.textFile(args(0)).map(_.split(","))
       val date_dim = sc.textFile(args(1)).map(_.split(","))
-      println("loading ds3")
       val store = sc.textFile(args(2)).map(_.split(","))
-      println("loading ds4")
       val customer = sc.textFile(args(3)).map(_.split(","))
       Array(store_returns, date_dim, store, customer)
     } else {
