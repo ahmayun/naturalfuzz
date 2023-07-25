@@ -38,12 +38,12 @@ libraryDependencies += "ai.djl" % "api" % "0.19.0"
 // https://mvnrepository.com/artifact/ai.djl.pytorch/pytorch-engine
 libraryDependencies += "ai.djl.pytorch" % "pytorch-engine" % "0.19.0"
 
-
+libraryDependencies += "io.spray" %%  "spray-json" % "1.3.6"
 
 ThisBuild / assemblyMergeStrategy := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-//  case PathList("org", "apache", "hadoop", "fs", xs @ _*) =>
-//    MergeStrategy.last
+  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+//  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case PathList("META-INF", "services", "org.apache.hadoop.fs.FileSystem") => MergeStrategy.filterDistinctLines
   case _ => MergeStrategy.first
 }
 

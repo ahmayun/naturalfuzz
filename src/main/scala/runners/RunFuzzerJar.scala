@@ -1,74 +1,69 @@
 package runners
 
 import fuzzer.Fuzzer.writeToFile
-
-import java.net.InetAddress
-import fuzzer.{Fuzzer, Global, Program, SymbolicProgram}
-import guidance.RIGGuidance
-import org.apache.spark.rdd.RDD
+import fuzzer._
+import guidance.ProvFuzzGuidance
 import org.apache.spark.{SparkConf, SparkContext}
-import runners.RunRIGFuzz.prettify
-import scoverage.report.ScoverageHtmlWriter
-import scoverage.{IOUtils, Serializer}
-import symbolicexecution.{SymbolicExecutor, SymbolicExpression}
+import refactor.SparkProgramTransformer
+import runners.RunRIGFuzzJar.{checkMembership, createSavedJoins, generateList, printIntermediateRDDs}
+import symbolicexecution.{SymExResult, SymbolicExecutor, SymbolicExpression}
 import utils.MiscUtils.toBinaryStringWithLeadingZeros
-import utils.{FilterQueries, Pickle, QueriedRDDs, QueryResult, RIGUtils}
-import RunRIGFuzzJar.{generateList, createSavedJoins, checkMembership, printIntermediateRDDs}
-import org.apache.spark.util.AccumulatorV2
-import java.io.File
+import utils.{Pickle, QueryResult, RIGUtils}
+
 import scala.collection.mutable.ListBuffer
 
-object RunRIGFuzzJarCluster extends Serializable {
+
+object RunFuzzerJar {
 
   def main(args: Array[String]): Unit = {
 
-    println("RunRIGFuzzJar called with following args:")
-    println(args.mkString("\n"))
+    val (benchmarkName, sparkMaster, duration, outDir, inputFiles) = if (!args.isEmpty) {
+      (args(0), args(1), args(2), args(3), args.takeRight(args.length-4))
+    } else {
+//      val name = "WebpageSegmentation"
+//      val Some(files) = Config.mapInputFilesReduced.get(name)
+//      (name, "local[*]", "20", s"target/depfuzz-output/$name", files)
+      val name = "Q1"
+      val _mutantName = "Q1"
+      (name,
+        "local[*]",
+        "20",
+        "<not used, placeholder>",
+        Array("store_returns", "date_dim", "store", "customer").map(s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s"))
+    }
+//    val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
+//    val Some(codepInfo) = Config.provInfos.get(benchmarkName)
+    val outPathInstrumented = "src/main/scala/examples/instrumented"
+    val outPathFWA = "src/main/scala/examples/fwa"
 
-    // ==P.U.T. dependent configurations=======================
-    val (benchmarkName, sparkMaster, pargs) =
-      if (!args.isEmpty) {
-        (args(0),
-          args(1),
-          args.takeRight(args.length - 2))
-      } else {
-//        ("FlightDistance", "local[*]",
-//          Array("flights", "airports").map { s => s"seeds/reduced_data/LongFlights/$s" })
-        val name = "Q1"
-        val _mutantName = "Q1"
-        (name,
-          "local[*]",
-          Array("store_returns", "date_dim", "store", "customer").map(s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s"))
-      }
-    Config.benchmarkName = benchmarkName
-    val Some(funSymEx) = Config.mapFunSymEx.get(benchmarkName)
-    val benchmarkClass = s"examples.faulty.$benchmarkName"
-    // ========================================================
+    val instPackage = "examples.instrumented"
+    val instProgramClass = s"$instPackage.$benchmarkName"
+    val instProgramPath = s"$outPathInstrumented/$benchmarkName.scala"
 
-    val benchmarkPath = s"src/main/scala/${benchmarkClass.split('.').mkString("/")}.scala"
-
-    val symProgram = new SymbolicProgram(
-      benchmarkName,
-      benchmarkClass,
-      benchmarkPath,
-      funSymEx,
-      pargs :+ sparkMaster)
-
-    val sc = SparkContext.getOrCreate(
+    val sc = new SparkContext(
       new SparkConf()
+        .setAppName("NaturalFuzz")
         .setMaster(sparkMaster)
-        .setAppName(s"RunRIGFuzzJar: symbolic.${benchmarkName}")
     )
-    sc.setLogLevel("ERROR")
 
-    // create an accumulator in the driver and initialize it to an empty list
     val expressionAccumulator = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
-//    Config.expressionAccumulator = expressionAccumulator
-//    monitoring.Monitors.setAccumulator(expressionAccumulator)
+
+    val symProgram = new DynLoadedProgram[SymExResult](
+      benchmarkName,
+      instProgramClass,
+      instProgramPath,
+      inputFiles,
+      expressionAccumulator,
+      {
+        case Some(expressions) => expressions.asInstanceOf[SymExResult]
+        case _ => null
+      }
+    )
+
 
     // Preprocessing and Fuzzing
     println("Running monitored program")
-    val pathExpressions = SymbolicExecutor.execute(symProgram, expressionAccumulator)
+    val pathExpressions = symProgram.invokeMain(symProgram.args)
     println("Creating filter queries")
     val branchConditions = RIGUtils.createFilterQueries(pathExpressions)
     println("All pieces:")
@@ -80,7 +75,7 @@ object RunRIGFuzzJarCluster extends Serializable {
           println(i, q.tree)
       }
 
-    val rawDS = pargs
+    val rawDS = inputFiles
       .map(sc.textFile(_))
 
     val preJoinFill = branchConditions.createSatVectors(rawDS)
@@ -89,7 +84,7 @@ object RunRIGFuzzJarCluster extends Serializable {
 
     val savedJoins = createSavedJoins(preJoinFill, branchConditions)
     println("Saved Joins")
-    if (savedJoins.length > 0) {
+    if (savedJoins.nonEmpty) {
       savedJoins
         .head
         ._1
@@ -120,20 +115,20 @@ object RunRIGFuzzJarCluster extends Serializable {
           val qr = rdds.zipWithIndex.map {
             case (rdd, i) =>
               rdd.filter {
-                case (row, pv) =>
-                  val result = (pv & mask) != 0
-                  //                  if(q.involvesDS(i)) {
-                  //                    println(s"${toBinaryStringWithLeadingZeros(pv)} = $row")
-                  //                    println(s"${toBinaryStringWithLeadingZeros(mask)} = MASK")
-                  //                    println(s"$result = RESULT")
-                  //                  }
-                  result
-              }
+                  case (row, pv) =>
+                    val result = (pv & mask) != 0
+                    //                  if(q.involvesDS(i)) {
+                    //                    println(s"${toBinaryStringWithLeadingZeros(pv)} = $row")
+                    //                    println(s"${toBinaryStringWithLeadingZeros(mask)} = MASK")
+                    //                    println(s"$result = RESULT")
+                    //                  }
+                    result
+                }
                 .map {
                   case (row, pv) =>
                     s"$row${Config.delimiter}$pv"
                 }
-                .takeSample(false, 10).toSeq
+                .takeSample(withReplacement = false, 10).toSeq
           }
           new QueryResult(qr, Seq(q), q.locs)
       }
@@ -211,10 +206,43 @@ object RunRIGFuzzJarCluster extends Serializable {
       //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
     }
 
-    val foldername = createSafeFileName(benchmarkName, pargs)
+    val foldername = createSafeFileName(benchmarkName, inputFiles)
     Pickle.dump(qrs, s"./pickled/qrs/$foldername.pkl")
     finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"./pickled/reduced_data/$foldername", e, i) }
+
   }
 
+  def reportStats(program: ExecutableProgram, stats: FuzzStats, timeStartFuzz: Long, timeEndFuzz: Long): Unit = {
+    val durationProbe = 0.1f // (timeEndProbe - timeStartProbe) / 1000.0
+    val durationFuzz = (timeEndFuzz - timeStartFuzz) / 1000.0
+    val durationTotal = durationProbe + durationFuzz
 
+    // Printing results
+    stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(program.name, msg.mkString(","))} $c x $msg") }
+    stats.failureMap.foreach { case (msg, (_, c, i)) => println(s"i=$i:line=${getLineNo(program.name, msg.mkString(","))} x $c") }
+    stats.failureMap.map { case (msg, (_, c, i)) => (getLineNo(program.name, msg.mkString("\n")), c, i) }
+      .groupBy(_._1)
+      .map { case (line, list) => (line, list.size) }
+      .toList.sortBy(_._1)
+      .foreach(println)
+
+    println(s"=== RESULTS: ProvFuzz ${program.name} ===")
+    println(s"failures: ${stats.failureMap.map { case (_, (_, _, i)) => i + 1 }.toSeq.sortBy(i => i).mkString(",")}")
+    println(s"# of Failures: ${stats.failures} (${stats.failureMap.keySet.size} unique)")
+    println(s"coverage progress: ${stats.plotData._2.map(limitDP(_, 2)).mkString(",")}")
+    println(s"iterations: ${Global.iteration}")
+    println(s"Total Time (s): ${limitDP(durationTotal, 2)} (P: $durationProbe | F: $durationFuzz)")
+  }
+
+  def limitDP(d: Double, dp: Int): Double = {
+    BigDecimal(d).setScale(dp, BigDecimal.RoundingMode.HALF_UP).toDouble
+  }
+
+  def getLineNo(filename: String, trace: String): String = {
+    val pattern = s"""$filename.scala:(\\d+)"""
+    pattern.r.findFirstIn(trace) match {
+      case Some(str) => str.split(':').last
+      case _ => "-"
+    }
+  }
 }

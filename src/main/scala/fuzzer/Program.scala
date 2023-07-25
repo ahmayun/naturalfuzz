@@ -4,13 +4,14 @@ import org.apache.spark.util.CollectionAccumulator
 import symbolicexecution.{SymExResult, SymbolicExpression}
 
 trait ExecutableProgram {
-  def invokeMain(args: Array[String]): Unit
+  def invokeMain(args: Array[String]): Any
   def name: String
   def classname: String
   def classpath: String
   def args: Array[String]
 
 }
+
 
 class Program(val name: String,
               val classname: String,
@@ -22,15 +23,16 @@ class Program(val name: String,
   }
 }
 
-class DynLoadedProgram( val name: String,
-                        val classname: String,
-                        val classpath: String,
-                        val main: java.lang.reflect.Method,
-                        val args: Array[String]) extends ExecutableProgram {
+class DynLoadedProgram[T]( val name: String,
+                           val classname: String,
+                           val classpath: String,
+                           val args: Array[String],
+                           val acc: CollectionAccumulator[SymbolicExpression],
+                           val postProcess: Option[Any] => T
+                         ) extends ExecutableProgram {
 
-  val runtimeClass = Class.forName(classname)
-  def invokeMain(args: Array[String]): Unit = {
-    main.invoke(runtimeClass, args)
+  def invokeMain(_args: Array[String]): T = {
+    postProcess(utils.reflection.DynamicClassLoader.invokeMethod(classname, "main", _args, acc))
   }
 }
 

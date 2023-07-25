@@ -3,6 +3,10 @@
 # SAMPLE RUN:
 #       ./run-rigfuzz.py FlightDistance faulty 86400 --email=ahmad35@vt.edu --compile=True
 
+#export JAVA_HOME=~/.jdks/corretto-1.8.0_332
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+sudo update-alternatives --set java $JAVA_HOME/bin/java || exit 1
+sudo update-alternatives --set javac $JAVA_HOME/bin/javac || exit 1
 exitScript() {
     mv ~/jazzerresults src/main/scala
     exit 1;
@@ -23,12 +27,25 @@ DATASETS=$@
 PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
 PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
 DIR_RIGFUZZ_OUT="target/RIG-output/$MUTANT_NAME"
+JAR_NAME=ProvFuzz-assembly-1.0.jar
 
 rm -rf $DIR_RIGFUZZ_OUT
-mkdir -p $DIR_RIGFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1
+mkdir -p graphs $DIR_RIGFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1
 
 
+#sbt assembly || exit 1
+
+java -cp  target/scala-2.12/$JAR_NAME \
+          refactor.RunTransformer \
+          $NAME \
+          || exit
+
+sbt assembly || exit 1
 # sbt assembly || exit 1
+
+java -cp  target/scala-2.12/$JAR_NAME \
+          runners.RunFuzzerJar
+exit 0
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \

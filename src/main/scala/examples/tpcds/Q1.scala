@@ -1,25 +1,51 @@
 package examples.tpcds
 
 import org.apache.spark.{SparkConf, SparkContext}
-import scala.util.Random
 
 object Q1 extends Serializable {
 
   def main(args: Array[String]) {
+    //  def main(args: Array[String]): Unit = {
+    println(s"Q1 called with args:\n${args.mkString("\n")}")
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 1")
+      .setMaster("local[*]")
+      .setAppName("TPC-DS Query 1")
     val sc = SparkContext.getOrCreate(sparkConf)
     sc.setLogLevel("ERROR")
-//    val datasetsPath = "./data_tpcds"
-//    val seed = "ahmad".hashCode()
-//    val rand = new Random(seed)
-    val YEAR = 1999 // rand.nextInt(2002 - 1998) + 1998
+    val YEAR = 1999
     val STATE = "TN"
+    //    val expressionAccumulator: CollectionAccumulator[SymbolicExpression] = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
 
-    val store_returns = sc.textFile(args(0)).map(_.split(","))
-    val date_dim = sc.textFile(args(1)).map(_.split(","))
-    val store = sc.textFile(args(2)).map(_.split(","))
-    val customer = sc.textFile(args(3)).map(_.split(","))
+    val Array(store_returns, date_dim, store, customer) = if (!args.isEmpty) {
+      println("loading ds1")
+      val store_returns = try {
+        sc.textFile(args(0)).map(_.split(","))
+      } catch {
+      case e: Throwable =>
+        println(s"loading error: ${e}")
+          null
+    }
+      println("loading ds2")
+      val date_dim = sc.textFile(args(1)).map(_.split(","))
+      println("loading ds3")
+      val store = sc.textFile(args(2)).map(_.split(","))
+      println("loading ds4")
+      val customer = sc.textFile(args(3)).map(_.split(","))
+      Array(store_returns, date_dim, store, customer)
+    } else {
+      Array("store_returns", "date_dim", "store", "customer")
+        .map(s => sc.textFile(s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s").map(_.split(",")))
+    }
+
+    //    _root_.monitoring.Monitors.monitorPredicateSymEx()
+    //    store_returns.map(row => convertColToFloat(row, 10) + convertColToFloat(row, 11)).collect().foreach(x => println(x.expr))
+    //    store_returns
+    //      .filter(row => try{row(0).toInt + row(1).toInt; true} catch {case _: Throwable => false})
+    //      .map(row => row(0).toInt + row(1).toInt)
+    //      .collect()
+    //      .foreach(x => println(x.expr))
+    //    sys.exit(0)
+
 
     val filter1 = date_dim.filter(row => row(6).toInt == YEAR)
 
