@@ -17,11 +17,11 @@ object Q1 extends Serializable {
     //    val expressionAccumulator: CollectionAccumulator[SymbolicExpression] = sc.collectionAccumulator[SymbolicExpression]("ExpressionAccumulator")
 
     val Array(store_returns, date_dim, store, customer) = if (!args.isEmpty) {
-      val store_returns = sc.textFile(args(0)).map(_.split(","))
-      val date_dim = sc.textFile(args(1)).map(_.split(","))
-      val store = sc.textFile(args(2)).map(_.split(","))
-      val customer = sc.textFile(args(3)).map(_.split(","))
-      Array(store_returns, date_dim, store, customer)
+      val _store_returns = sc.textFile(args(0)).map(_.split(","))
+      val _date_dim = sc.textFile(args(1)).map(_.split(","))
+      val _store = sc.textFile(args(2)).map(_.split(","))
+      val _customer = sc.textFile(args(3)).map(_.split(","))
+      Array(_store_returns, _date_dim, _store, _customer)
     } else {
       Array("store_returns", "date_dim", "store", "customer")
         .map(s => sc.textFile(s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s").map(_.split(",")))

@@ -32,7 +32,12 @@ class DynLoadedProgram[T]( val name: String,
                          ) extends ExecutableProgram {
 
   def invokeMain(_args: Array[String]): T = {
-    postProcess(utils.reflection.DynamicClassLoader.invokeMethod(classname, "main", _args, acc))
+    val call = if (acc != null)
+      utils.reflection.DynamicClassLoader.invokeMethod(classname, "main", _args, acc)
+    else
+      utils.reflection.DynamicClassLoader.invokeMethod(classname, "main", _args)
+
+    postProcess(call)
   }
 }
 

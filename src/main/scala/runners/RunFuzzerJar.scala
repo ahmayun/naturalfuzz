@@ -2,13 +2,13 @@ package runners
 
 import fuzzer.Fuzzer.writeToFile
 import fuzzer._
-import guidance.ProvFuzzGuidance
+import guidance.{ProvFuzzGuidance, RIGGuidance}
 import org.apache.spark.{SparkConf, SparkContext}
 import refactor.SparkProgramTransformer
-import runners.RunRIGFuzzJar.{checkMembership, createSavedJoins, generateList, printIntermediateRDDs}
+import runners.RunRIGFuzzJar.{checkMembership, createSavedJoins, generateList, getLineNo, limitDP, printIntermediateRDDs}
 import symbolicexecution.{SymExResult, SymbolicExecutor, SymbolicExpression}
 import utils.MiscUtils.toBinaryStringWithLeadingZeros
-import utils.{Pickle, QueryResult, RIGUtils}
+import utils.{Pickle, QueriedRDDs, QueryResult, RIGUtils}
 
 import scala.collection.mutable.ListBuffer
 
@@ -28,17 +28,20 @@ object RunFuzzerJar {
       (name,
         "local[*]",
         "20",
-        "<not used, placeholder>",
+        s"target/naturalfuzz-output/$name",
         Array("store_returns", "date_dim", "store", "customer").map(s => s"/home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/$s"))
     }
-//    val Some(funFuzzable) = Config.mapFunFuzzables.get(benchmarkName)
-//    val Some(codepInfo) = Config.provInfos.get(benchmarkName)
+
     val outPathInstrumented = "src/main/scala/examples/instrumented"
     val outPathFWA = "src/main/scala/examples/fwa"
+    val fwaPackage = "examples.fwa"
+    val fwaProgramClass = s"$fwaPackage.$benchmarkName"
+    val fwaProgramPath = s"$outPathFWA/$benchmarkName.scala"
 
     val instPackage = "examples.instrumented"
     val instProgramClass = s"$instPackage.$benchmarkName"
     val instProgramPath = s"$outPathInstrumented/$benchmarkName.scala"
+
 
     val sc = new SparkContext(
       new SparkConf()
@@ -58,6 +61,15 @@ object RunFuzzerJar {
         case Some(expressions) => expressions.asInstanceOf[SymExResult]
         case _ => null
       }
+    )
+
+    val program = new DynLoadedProgram[Unit](
+      benchmarkName,
+      fwaProgramClass,
+      fwaProgramPath,
+      inputFiles,
+      null,
+      { case _ => Unit }
     )
 
 
@@ -203,12 +215,27 @@ object RunFuzzerJar {
 
     def createSafeFileName(pname: String, pargs: Array[String]): String = {
       s"$pname"
-      //s"${pname}_${pargs.map(_.split("/").last).mkString("-")}"
     }
 
     val foldername = createSafeFileName(benchmarkName, inputFiles)
     Pickle.dump(qrs, s"./pickled/qrs/$foldername.pkl")
-    finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"./pickled/reduced_data/$foldername", e, i) }
+    val reducedInputFiles = finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"./pickled/reduced_data/$foldername", e, i) }
+
+//    qrs.foreach {
+//      qr =>
+//        println(s"====QR: ${qr.query.map(_.tree).mkString(" <=>")} ===== ")
+//        qr.filterQueryRDDs
+//          .zipWithIndex
+//          .foreach {
+//            case (rdd, i) =>
+//              println(s"=> RDD ${i}")
+//              println(rdd.mkString("\n"))
+//          }
+//    }
+    val guidance = new RIGGuidance(reducedInputFiles, null, duration.toInt, new QueriedRDDs(qrs))
+
+    val (stats, timeStartFuzz, timeEndFuzz) = NewFuzzer.FuzzMutants(program, program, guidance, outDir, compile = false)
+    reportStats(program, stats, timeStartFuzz, timeEndFuzz)
 
   }
 

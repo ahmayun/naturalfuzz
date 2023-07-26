@@ -12,45 +12,42 @@ exitScript() {
     exit 1;
 }
 
-mv src/main/scala/jazzerresults ~ # sbt gets stuck in infinite loop so move this out of directory
-sbt assembly || exitScript
-mv ~/jazzerresults src/main/scala
+#mv src/main/scala/jazzerresults ~ # sbt gets stuck in infinite loop so move this out of directory
+#sbt assembly || exit 1 # exitScript
+#mv ~/jazzerresults src/main/scala
 
 NAME=$1
 MUTANT_NAME=$2
-PACKAGE=$3
-DURATION=$4
-PICKLE_DIR=$5
-shift 5
+DURATION=$3
+shift 3
 DATASETS=$@
 
-PATH_SCALA_SRC="src/main/scala/examples/$PACKAGE/$NAME.scala"
-PATH_INSTRUMENTED_CLASSES="examples/$PACKAGE/$NAME*"
-DIR_RIGFUZZ_OUT="target/RIG-output/$MUTANT_NAME"
+PATH_SCALA_SRC="src/main/scala/examples/fwa/$NAME.scala"
+PATH_INSTRUMENTED_CLASSES="examples/fwa/$NAME*"
+DIR_NATURALFUZZ_OUT="target/naturalfuzz-output/$MUTANT_NAME"
 JAR_NAME=ProvFuzz-assembly-1.0.jar
 
-rm -rf $DIR_RIGFUZZ_OUT
-mkdir -p graphs $DIR_RIGFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1
+rm -rf $DIR_NATURALFUZZ_OUT
+mkdir -p graphs $DIR_NATURALFUZZ_OUT/{scoverage-results,report,log,reproducers,crashes} || exit 1
 
 
-#sbt assembly || exit 1
+sbt assembly || exit 1
 
 java -cp  target/scala-2.12/$JAR_NAME \
           refactor.RunTransformer \
           $NAME \
-          || exit
+          || exit 1
 
 sbt assembly || exit 1
 # sbt assembly || exit 1
 
-java -cp  target/scala-2.12/$JAR_NAME \
-          runners.RunFuzzerJar
-exit 0
-
+#java -cp  target/scala-2.12/$JAR_NAME \
+#          runners.RunFuzzerJar
+echo "Instrumenting with scoverage..."
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
-          $DIR_RIGFUZZ_OUT/scoverage-results/referenceProgram
+          $DIR_NATURALFUZZ_OUT/scoverage-results/referenceProgram || exit 1
 
 pushd target/scala-2.12/classes || exit 1
 jar uvf ../ProvFuzz-assembly-1.0.jar \
@@ -58,17 +55,15 @@ jar uvf ../ProvFuzz-assembly-1.0.jar \
         || exit 1
 popd || exit 1
 
-date > $DIR_RIGFUZZ_OUT/start.time
+date > $DIR_NATURALFUZZ_OUT/start.time
 
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
-          runners.RunRIGFuzzJarFuzzing \
+          runners.RunFuzzerJar \
           $NAME \
-          $MUTANT_NAME \
           local[*] \
           $DURATION \
-          $DIR_RIGFUZZ_OUT \
-          $PICKLE_DIR \
+          $DIR_NATURALFUZZ_OUT \
           $DATASETS
 
-date > $DIR_RIGFUZZ_OUT/end.time
-cat $DIR_RIGFUZZ_OUT/scoverage-results/referenceProgram/coverage.tuples
+date > $DIR_NATURALFUZZ_OUT/end.time
+cat $DIR_NATURALFUZZ_OUT/scoverage-results/referenceProgram/coverage.tuples

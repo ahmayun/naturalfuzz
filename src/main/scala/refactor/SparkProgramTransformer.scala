@@ -52,10 +52,7 @@ case class SparkProgramTransformer(tree: Tree) extends Transformer {
   }
 
   def attachPredicateMonitorToStatement(stat: Stat): Stat = {
-    println(stat.structure)
-    val newstat = s"${Constants.MAP_TRANSFORMS(Constants.KEY_PREDICATE)}($stat, (List(), List()), 0, expressionAccumulator)".parse[Stat].get
-    println(newstat)
-    newstat
+    s"${Constants.MAP_TRANSFORMS(Constants.KEY_PREDICATE)}($stat, (List(), List()), 0, expressionAccumulator)".parse[Stat].get
   }
   def attachPredicateMonitorAtEnd(body: Term): Term = {
     body match {

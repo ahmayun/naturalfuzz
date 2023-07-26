@@ -64,11 +64,11 @@ object NewFuzzer {
     var lastCoverage = 0.0;
     var mutantLastCoverage = 0.0;
 
-    if(compile) {
-      new Directory(new File(outDir)).deleteRecursively()
-      CompileWithScoverage(refProgram.classpath, refCoverageOutDir)
-//      CompileWithScoverage(mutantProgram.classpath, mutantCoverageOutDir)
-    }
+//    if(compile) {
+//      new Directory(new File(outDir)).deleteRecursively()
+//      CompileWithScoverage(refProgram.classpath, refCoverageOutDir)
+////      CompileWithScoverage(mutantProgram.classpath, mutantCoverageOutDir)
+//    }
 
     val t_start = System.currentTimeMillis()
     var mutantKilled = false
