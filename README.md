@@ -9,7 +9,11 @@ Clone this repository:
 ```
 git clone https://github.com/ahmayun/naturalfuzz.git
 ```
-Inside the repository folder build the docker image using:
+Navigate into the repository folder:
+```
+cd NaturalFuzz
+```
+Build the docker image using:
 > **_NOTE:_** Depending on how docker is configured, you may need to `sudo` this
 ```
 docker build . -t naturalfuzz --no-cache
@@ -22,17 +26,20 @@ Obtain a shell instance inside the docker container:
 docker run -v ./graphs:/NaturalFuzz/graphs -it naturalfuzz bash
 ```
 ## 4. Running the Experiments
+> **_NOTE:_** All following commands must be run on the shell instance inside the docker container
+
 Navigate into the repository folder:
 ```
-cd naturalfuzz
+cd NaturalFuzz
 ```
 The following is the template command for running any of the benchmark programs:
 ```
 ./run-fuzzer.sh <PROGRAM_NAME> <DURATION> <DATASETPATH_1> ... <DATASETPATH_N>
-------------
-PROGRAM_NAME = Q1|Q3|Q6|Q
 ```
-For this example we will run Q1
+For `PROGRAM_NAME` you may pass in the name of any scala file under `src/main/scala/examples/tpcds/` after omitting the extension
+
+We will show you how to run the tool for Q1:
+
 
 ## 5. Computing Perplexity Scores
 
