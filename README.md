@@ -1,4 +1,4 @@
-# Artificat: NaturalFuzz: Natural Input Generation for Big Data Analytics
+# Artifact: NaturalFuzz: Natural Input Generation for Big Data Analytics
 ## 1. Pre-requisites
 This manual assumes `docker` is installed and set up properly on your device.\
 These instructions have been tested with the following configurations: 
@@ -38,7 +38,11 @@ The following is the template command for running any of the benchmark programs:
 ```
 For `PROGRAM_NAME` you may pass in the name of any scala file under `src/main/scala/examples/tpcds/` after omitting the extension
 
-We will show you how to run the tool for Q1:
+We will show you how to run the tool for Q1. To fuzz `Q1` for 5 minutes, run:
+```
+./run-fuzzer.sh Q1 300 data/{store_returns,data_dim,store,customer}
+```
+
 
 
 ## 5. Computing Perplexity Scores
