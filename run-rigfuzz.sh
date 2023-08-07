@@ -43,7 +43,6 @@ sbt assembly || exit 1
 
 #java -cp  target/scala-2.12/$JAR_NAME \
 #          runners.RunFuzzerJar
-echo "Instrumenting with scoverage..."
 java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           utils.ScoverageInstrumenter \
           $PATH_SCALA_SRC \
@@ -66,4 +65,13 @@ java -cp  target/scala-2.12/ProvFuzz-assembly-1.0.jar \
           $DATASETS
 
 date > $DIR_NATURALFUZZ_OUT/end.time
-cat $DIR_NATURALFUZZ_OUT/scoverage-results/referenceProgram/coverage.tuples
+#cat $DIR_NATURALFUZZ_OUT/scoverage-results/referenceProgram/coverage.tuples
+
+python3 gen_graph.py \
+        --coords-file $DIR_NATURALFUZZ_OUT/scoverage-results/referenceProgram/coverage.tuples \
+        --outfile graphs/graph-$NAME-coverage.png \
+        --title " Coverage: $NAME" \
+        --x-label "Time (s)" \
+        --y-label "Statement Coverage (%)" && echo "Graphs generated!"
+
+rm -rf src/main/scala/examples/{fwa,instrumented}
