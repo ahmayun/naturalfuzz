@@ -4,7 +4,7 @@ object RunTransformer {
 
   def main(args: Array[String]): Unit = {
 
-    val benchmarkName = if(!args.isEmpty) args(0) else "Q1"
+    val benchmarkName = if(!args.isEmpty) args(0) else "Q7"
     val outPathInstrumented = "src/main/scala/examples/instrumented"
     val outPathFWA = "src/main/scala/examples/fwa"
 

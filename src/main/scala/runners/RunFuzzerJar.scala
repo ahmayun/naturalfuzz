@@ -1,15 +1,15 @@
 package runners
 
-import fuzzer.Fuzzer.writeToFile
+import fuzzer.NewFuzzer.writeToFile
 import fuzzer._
-import guidance.{ProvFuzzGuidance, RIGGuidance}
+import guidance.RIGGuidance
+import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
-import refactor.SparkProgramTransformer
-import runners.RunRIGFuzzJar.{checkMembership, createSavedJoins, generateList, getLineNo, limitDP, printIntermediateRDDs}
-import symbolicexecution.{SymExResult, SymbolicExecutor, SymbolicExpression}
+import symbolicexecution.{SymExResult, SymbolicExpression}
 import utils.MiscUtils.toBinaryStringWithLeadingZeros
-import utils.{Pickle, QueriedRDDs, QueryResult, RIGUtils}
+import utils.{FilterQueries, Pickle, QueriedRDDs, QueryResult, RIGUtils}
 
+import java.io.File
 import scala.collection.mutable.ListBuffer
 
 
@@ -218,20 +218,17 @@ object RunFuzzerJar {
     }
 
     val foldername = createSafeFileName(benchmarkName, inputFiles)
-    Pickle.dump(qrs, s"./pickled/qrs/$foldername.pkl")
-    val reducedInputFiles = finalReduced.zipWithIndex.map { case (e, i) => writeToFile(s"./pickled/reduced_data/$foldername", e, i) }
+    val pickledPath = s"./pickled/qrs"
+    val reducedDataPath = s"./pickled/reduced_data"
 
-//    qrs.foreach {
-//      qr =>
-//        println(s"====QR: ${qr.query.map(_.tree).mkString(" <=>")} ===== ")
-//        qr.filterQueryRDDs
-//          .zipWithIndex
-//          .foreach {
-//            case (rdd, i) =>
-//              println(s"=> RDD ${i}")
-//              println(rdd.mkString("\n"))
-//          }
-//    }
+    new File(pickledPath).mkdirs()
+    new File(reducedDataPath).mkdirs()
+
+    val pickleFile = s"$pickledPath/$foldername.pkl"
+    Pickle.dump(qrs, pickleFile)
+
+    val reducedDataFolder = s"$reducedDataPath/$foldername"
+    val reducedInputFiles = finalReduced.zipWithIndex.map { case (e, i) => writeToFile(reducedDataFolder, e, i) }
     val guidance = new RIGGuidance(reducedInputFiles, null, duration.toInt, new QueriedRDDs(qrs))
 
     val (stats, timeStartFuzz, timeEndFuzz) = NewFuzzer.FuzzMutants(program, program, guidance, outDir, compile = false)
@@ -271,5 +268,141 @@ object RunFuzzerJar {
       case Some(str) => str.split(':').last
       case _ => "-"
     }
+  }
+
+  def generateList(start: Int, count: Int): List[Int] = {
+    require(count >= 1, "Invalid value for count")
+    if (count == 1) {
+      List(start)
+    } else {
+      start :: generateList(start >>> 2, count - 1)
+    }
+  }
+
+  def computeHashEquivalence(rowInfo: (String, Int, Long), reducedDSRow: String, reducedDSID: Int, joinTable: List[List[(Int, List[Int])]]): Boolean = {
+    val (row, ds, rowID) = rowInfo
+    var found = false
+    joinTable.foreach {
+      case List((ds1, cols1), (ds2, cols2)) =>
+        if (ds1 == ds || ds2 == ds) {
+          val (otherDS, otherCols, thisDS, thisCols) = if (ds1 == ds) (ds2, cols2, ds, cols1) else (ds1, cols1, ds2, cols2)
+          if (otherDS == reducedDSID) {
+            val thisRow = row.split(",")
+            val otherRow = reducedDSRow.split(",")
+            found = found || {
+              val res = hashKeys(thisRow, thisCols) == hashKeys(otherRow, otherCols)
+              res
+            }
+          }
+        }
+    }
+    found
+  }
+
+  def hashKeys(row: Array[String], cols: List[Int]): Int = {
+    // hash(thisRow(thisCols.head)) == hash(otherRow(otherCols.head))
+    val (selected, _) = row
+      .zipWithIndex
+      .filter {
+        case (e, i) =>
+          cols.contains(i)
+      }
+      .unzip
+
+    val res = selected
+      .sorted
+      .toList // required to produce reliable hashcode for a list with same elements
+      .hashCode
+
+    //    println(s"HASHING [$res]: ${cols.mkString("|")} - ${selected.mkString(",")}")
+    return res
+  }
+
+  def checkMembership(rowInfo: (String, Int, Long), reduced: ListBuffer[List[(String, Long)]], joinTable: List[List[(Int, List[Int])]]): Boolean = {
+    if (reduced.isEmpty)
+      return true
+
+    if (rowInfo._2 == 0)
+      return true
+
+    val (rddRow, dsID, rowID) = rowInfo
+    var member = false
+    reduced
+      .zipWithIndex
+      .foreach {
+        case (ds, i) =>
+          ds.foreach {
+            case (reducedDSRow, _) =>
+              member ||= computeHashEquivalence(rowInfo, reducedDSRow, i, joinTable)
+          }
+      }
+    member
+  }
+
+  def hash(s: String): Int = s.hashCode
+
+  def createSavedJoins(preJoinFilled: Array[RDD[(String, Int)]], branchConditions: FilterQueries): List[(RDD[(String, ((String, Long), (String, Long)))], Int, Int)] = {
+    val joins = branchConditions.getJoinConditions // returns (ds0ID,ds1ID,List(colsDs0),List(colsDs1))
+    println("DETECTED JOINS")
+    joins.foreach(println)
+
+    joins.map {
+      case (dsA, dsB, colsA, colsB) =>
+        (preJoinFilled(dsA)
+          .zipWithIndex
+          .map {
+            case ((row, _), i) =>
+              val cols = row.split(Config.delimiter)
+              val key = colsA.map(c => try {
+                cols(c)
+              } catch {
+                case _: Throwable => "null"
+              }).mkString("|")
+              (key, (row, i))
+          }
+          .join(
+            preJoinFilled(dsB)
+              .zipWithIndex
+              .map {
+                case ((row, _), i) =>
+                  val cols = row.split(Config.delimiter)
+                  val key = colsB.map(c => try {
+                    cols(c)
+                  } catch {
+                    case _: Throwable => "null"
+                  }).mkString("|")
+                  (key, (row, i))
+              }
+          ), dsA, dsB)
+    }
+  }
+
+  def printIntermediateRDDs(heading: String, rdds: Array[RDD[(String, Int)]], branchConditions: FilterQueries): Unit = {
+    println(heading)
+    rdds
+      .zipWithIndex
+      .foreach {
+        case (rdd, i) =>
+          println(s"RDD $i:")
+          println(s"|\tds_row\t\t\t\t|\t${branchConditions.filterQueries.map(_.tree).mkString("", "\t|\t", "\t|")}")
+          rdd
+            .take(10)
+            .foreach {
+              case (row, pv) =>
+                println(prettify(row, toBinaryStringWithLeadingZeros(pv).take(branchConditions.filterQueries.length * 2), branchConditions))
+            }
+      }
+  }
+
+  def prettify(row: String, pathVector: String, pieces: FilterQueries): String = {
+    val broken = pathVector.foldLeft(List[String]("")) {
+      case (acc, e) =>
+        if (acc.last.length < 2) {
+          acc.init :+ (acc.last + e)
+        } else {
+          acc ++ List(e.toString)
+        }
+    }
+    s"|\t$row\t|\t\t${broken.mkString("", "\t\t\t\t|\t\t\t\t", "\t\t\t\t|")}"
   }
 }

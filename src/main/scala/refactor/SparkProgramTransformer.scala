@@ -52,7 +52,13 @@ case class SparkProgramTransformer(tree: Tree) extends Transformer {
   }
 
   def attachPredicateMonitorToStatement(stat: Stat): Stat = {
-    s"${Constants.MAP_TRANSFORMS(Constants.KEY_PREDICATE)}($stat, (List(), List()), 0, expressionAccumulator)".parse[Stat].get
+    println(stat.structure)
+    stat match {
+      case infix: Term.ApplyInfix =>
+        s"${Constants.MAP_TRANSFORMS(Constants.KEY_PREDICATE)}($infix, (List(), List()), 0, expressionAccumulator)".parse[Stat].get
+      case _ =>
+        stat
+    }
   }
   def attachPredicateMonitorAtEnd(body: Term): Term = {
     body match {
@@ -71,6 +77,8 @@ case class SparkProgramTransformer(tree: Tree) extends Transformer {
         Term.PartialFunction(cases.map {
           case Case(pat, cond, body) => Case(pat, cond, attachPredicateMonitorAtEnd(body))
         })
+      case block: Term.Block =>
+        attachPredicateMonitorAtEnd(block)
     }
   }
 

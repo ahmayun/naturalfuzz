@@ -8,27 +8,33 @@ object Q3 extends Serializable {
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf()
-    sparkConf.setAppName("TPC-DS Query 3")
-    val sc = SparkContext.getOrCreate(sparkConf)
-    sc.setLogLevel("ERROR")
-    val seed = "ahmad".hashCode()
-    val rand = new Random(seed)
-    val MANUFACT = "1" // rand.nextInt(1000 - 1) + 1
-    val MONTH = "11" // rand.nextInt(2)+11
+    val ctx = SparkContext.getOrCreate(sparkConf)
+    ctx.setLogLevel("ERROR")
+    val MANUFACT = 1 //rand.nextInt(1000 - 1) + 1
+    val MONTH = 11 // rand.nextInt(2)+11
 
-    val store_sales = sc.textFile(args(0)).map(_.split(","))
-    val date_dim = sc.textFile(args(1)).map(_.split(","))
-    val item = sc.textFile(args(2)).map(_.split(","))
+    val store_sales = ctx.textFile(args(0)).map(_.split(","))
+    val date_dim = ctx.textFile(args(1)).map(_.split(","))
+    val item = ctx.textFile(args(2)).map(_.split(","))
+
 
     val map1 = store_sales.map(row => (row.last, row))
 
     println("map1")
     map1.take(10).foreach(println)
 
-    val filter1 = date_dim.filter(row => row(8) /*d_moy*/ == MONTH)
+    val safety1 = date_dim.filter { row =>
+      try {
+        row(8).toInt
+        true
+      } catch {
+        case _: Throwable => false
+      }
+    }
+    val filter1 = safety1.filter(row => row(8).toInt /*d_moy*/ == MONTH)
 
-    println("=========== datedim.filter ========")
-    filter1.take(10).foreach{dd_row => println(s"${dd_row(0)},${dd_row(6)},${dd_row(8)}")}
+    println("filter1")
+    filter1.take(10).foreach(println)
 
     val map2 = filter1.map(row => (row.head, row))
 
@@ -37,12 +43,8 @@ object Q3 extends Serializable {
     // t.d_date_sk = store_sales.ss_sold_date_sk
     val join1 = map2.join(map1)
 
-    println("====== dd join ss ===========")
-    join1.take(10).foreach { case (_, (dd_row, ss_row)) =>
-      println(
-        s"dd\n${dd_row(0)},${dd_row(6)},${dd_row(8)}\nss" +
-          s"\n${ss_row(1)},${ss_row(12)},${ss_row(14)},${ss_row(12)},${ss_row(21)},${ss_row.last}\n")
-    }
+    println("join1")
+    join1.take(10).foreach(println)
 
     val map3 = join1.map {
       case (date_sk, (date_dim_row, ss_row)) =>
@@ -50,36 +52,24 @@ object Q3 extends Serializable {
     }
     // and store_sales.ss_item_sk = item.i_item_sk
 
-    val filter2 = item.filter(row => row(13) /*i_manufact_id*/ == MANUFACT) // and item.i_manufact_id = [MANUFACT]
+    val safety2 = item.filter { row =>
+      try {
+        row(13).toInt
+        true
+      } catch {
+        case _: Throwable => false
+      }
+    }
+    val filter2 = safety2.filter(row => row(13).toInt /*i_manufact_id*/ == MANUFACT) // and item.i_manufact_id = [MANUFACT]
     val map4 = filter2.map(row => (row.head, row))
 
-    println("item.filter")
-    map4.take(10).foreach{case (_, i_row) => println(s"${i_row(0)},${i_row(7)},${i_row(8)},${i_row(13)}")}
+    println("filter2.map4")
+    map4.take(10).foreach(println)
 
     val join2 = map3.join(map4)
 
-    println("join2.date_dim")
-    val join2collect = join2.take(10)
-    join2collect.foreach{
-      case (_, ((dd_row, ss_row), i_row)) =>
-        println(
-          s"${dd_row(0)},${dd_row(6)},${dd_row(8)}")
-    }
-    println("join2.store_sales")
-    join2collect.foreach {
-      case (_, ((dd_row, ss_row), i_row)) =>
-        println(
-          s"${ss_row(1)},${ss_row(12)},${ss_row(14)},${ss_row(12)},${ss_row(21)},${ss_row.last}")
-    }
-    println("join2.item")
-    join2collect.foreach {
-      case (_, ((dd_row, ss_row), i_row)) =>
-        println(
-          s"${i_row(0)},${i_row(7)},${i_row(8)},${i_row(13)}")
-    }
-    println("")
-
-
+    println("join2")
+    join2.take(10).foreach(println)
 
     val map5 = join2.map {
       case (item_sk, ((date_dim_row, ss_row), item_row)) =>

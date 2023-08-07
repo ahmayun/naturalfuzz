@@ -1,12 +1,9 @@
 package symbolicexecution
 
-import abstraction.BaseRDD
 import fuzzer.Schema
 import org.apache.commons.lang.builder.HashCodeBuilder
 import provenance.data.{DummyProvenance, Provenance}
-import runners.Config.benchmarkName
-import runners.{Config, RunRIGFuzz}
-import taintedprimitives.TaintedBase
+import utils.SchemaUtils.inferType
 import utils.{Query, RDDLocations}
 
 import java.util.Objects
@@ -193,10 +190,7 @@ case class SymbolicTree(left: SymbolicTree, node: SymTreeNode, right: SymbolicTr
           // TODO: Add a callback to
           val nodeDS = n.getDS
           val col = n.getCol
-          val Some(schema) = Config.mapSchemas.get(benchmarkName)
-          val offset = if(ds.length == 2 && nodeDS == ds(1)) offsetDS2 else 0
-//          println(s"Debug eval: benchmarkName: $benchmarkName nodeDS: $nodeDS, col: $col, offset: $offset")
-          if(schema(nodeDS)(col-offset).dataType == Schema.TYPE_NUMERICAL) {
+          if(inferType(row(col)).dataType == Schema.TYPE_NUMERICAL) {
             try {
               row(col).toInt //TODO: Remove hardcoded type conversion to INT
             } catch {
