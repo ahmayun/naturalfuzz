@@ -11,3 +11,6 @@ python3 print_mutant_map.py FlightDistance src/main/scala/examples/mutants/Fligh
 ./cluster-assemble-and-distribute.sh runners.RunRIGFuzzOverheadTest Q3 spark://zion-headnode:7077 ~/overheadtests /TPCDS_1G_NOHEADER_NOCOMMAS/{store_sales,date_dim,item}
 ./run-rigfuzz.sh Q1 Q1 faulty 20 ./pickled/qrs/Q1.pkl ./pickled/reduced_data/Q1/dataset_{0,1,2,3}
 ./run-rigfuzz.sh Q1 Q1 60 /home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/{store_returns,date_dim,store,customer}
+./run-rigfuzz.sh Q3 Q3 300 /home/ahmad/Documents/VT/project2/tpcds-datagen/data_csv_no_header/{store_sales,date_dim,item}
+./run-rigfuzz.sh Q1 Q1 300 /home/ahmad/Documents/VT/project2/tpcds-datagen/tpcds_noheader_nocommas/{store_returns,date_dim,store,customer}
+./run-rigfuzz.sh Q6 Q6 30 data/{customer_address,customer,reduced_store_sales,date_dim,item}
